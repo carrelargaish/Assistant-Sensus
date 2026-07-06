@@ -7,15 +7,15 @@
 
   function mintaPassword() {
     // Memunculkan kotak dialog password
-    let inputUser = prompt("Masukkan Password Akses:");
+    let inputUser = prompt("Perasaan anda jadi kang sensus?");
     
     // Cek apakah password-nya benar
-    if (inputUser === "alganteng") {
+    if (inputUser === "mumet") {
       // Jika benar, buka gembok halaman
       document.documentElement.style.display = 'block';
     } else {
       // Jika salah, kasih peringatan lalu kunci lagi
-      alert("Password Salah! Akses Ditolak.");
+      alert("Hayolo! Akses Ditolak.");
       mintaPassword(); // Memanggil ulang kotak dialog sampai password-nya benar
     }
   }
