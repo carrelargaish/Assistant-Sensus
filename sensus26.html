@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistant PPL - SE2026 Toolkit</title>
+    
+    <!-- PWA Manifest Inline -->
+    <link rel="manifest" href="data:application/json,{%22name%22:%22FASIH%20Assistant%22,%22short_name%22:%22FASIH%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23f7f9f6%22,%22theme_color%22:%22%237d9d8b%22}">
+
+    <style>
+        /* TEMA BARU: KALEM, RIleKS, ZEN VIBE */
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap');
+
+        :root {
+            --primary: #7d9d8b; /* Soft Sage Green */
+            --secondary: #9cb49f; /* Lighter Sage */
+            --success: #88b082; /* Muted Green */
+            --danger: #d48b8b; /* Muted Rose (Tidak terlalu ngejreng) */
+            --warning: #e3c07f; /* Muted Sand */
+            --light: #f0f2eb; /* Warm Off-white */
+            --dark: #4a544c; /* Soft Dark Green-Grey */
+            --bg-color: #f7f9f6; /* Very light earthy tone */
+            --text-main: #4d544f;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding-bottom: 70px; line-height: 1.6; }
+        
+        header { 
+            background: var(--primary); 
+            color: white; 
+            padding: 25px 15px; 
+            text-align: center; 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            box-shadow: 0 4px 15px rgba(125, 157, 139, 0.15); 
+            border-bottom-left-radius: 24px; 
+            border-bottom-right-radius: 24px; 
+        }
+        header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: 0.5px; }
+        header p { font-size: 0.85rem; opacity: 0.9; margin-top: 5px; font-weight: 400; }
+
+        .container { max-width: 650px; margin: 25px auto; padding: 0 20px; }
+        
+        .card { 
+            background: white; 
+            padding: 25px; 
+            border-radius: 20px; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.03); 
+            margin-bottom: 25px; 
+            border: 1px solid rgba(125, 157, 139, 0.08); 
+        }
+        .card h2 { 
+            font-size: 1.2rem; 
+            margin-bottom: 20px; 
+            color: var(--dark); 
+            border-bottom: 2px dashed var(--light); 
+            padding-bottom: 12px; 
+        }
+        
+        .btn { 
+            display: inline-block; 
+            width: 100%; 
+            padding: 14px; 
+            border: none; 
+            border-radius: 14px; 
+            font-weight: 700; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            text-align: center; 
+            transition: all 0.3s ease; 
+            margin-top: 10px; 
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #6b8a78; transform: translateY(-1px); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #769c71; transform: translateY(-1px); }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #c27a7a; }
+        .btn-outline { background: transparent; border: 2px solid var(--secondary); color: var(--dark); }
+        .btn-outline:hover { background: var(--light); }
+        
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: var(--dark); }
+        .form-control { 
+            width: 100%; 
+            padding: 14px; 
+            border: 1px solid #e1e5df; 
+            border-radius: 12px; 
+            font-size: 1rem; 
+            background-color: #fcfcfc; 
+            color: var(--text-main);
+            transition: all 0.3s ease;
+        }
+        .form-control:focus { 
+            border-color: var(--primary); 
+            outline: none; 
+            background-color: white; 
+            box-shadow: 0 0 0 3px rgba(125, 157, 139, 0.15); 
+        }
+        
+        .flex-dynamic { display: flex; gap: 12px; margin-bottom: 12px; align-items: center; }
+        
+        /* Dashboard & Navigation */
+        .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .nav-item { 
+            background: white; 
+            padding: 25px 15px; 
+            border-radius: 20px; 
+            text-align: center; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.03); 
+            font-weight: 700; 
+            color: var(--dark); 
+            cursor: pointer; 
+            border: 1px solid rgba(125, 157, 139, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .nav-item:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,0.05); }
+        .nav-item:active { transform: scale(0.97); }
+
+        .badge { display: inline-block; padding: 6px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 700; color: white; letter-spacing: 0.5px; }
+        .badge-success { background: var(--success); }
+        .badge-danger { background: var(--danger); }
+
+        .sub-card { 
+            background: var(--light); 
+            border: none; 
+            padding: 20px; 
+            border-radius: 16px; 
+            margin-bottom: 18px; 
+            position: relative; 
+        }
+        
+        /* Validation Box - Warna dibuat tidak mengintimidasi */
+        .validation-box { background: #fdf6f6; border-left: 5px solid var(--danger); padding: 15px; margin-bottom: 20px; border-radius: 12px; display: none; }
+        .validation-box strong { color: #a85c5c; }
+        .validation-box p { color: #a85c5c; font-size: 0.85rem; margin-bottom: 5px; margin-top: 5px; }
+
+        /* Output Box - Lebar dan nyaman dibaca */
+        .output-box { 
+            background: #f7f9f6; 
+            border: 1px solid var(--secondary); 
+            padding: 20px; 
+            border-radius: 12px; 
+            font-size: 0.95rem; 
+            white-space: pre-wrap; 
+            margin-top: 15px; 
+            line-height: 1.6;
+            color: var(--dark);
+        }
+        
+        #splash { text-align: center; padding: 40px 20px; }
+        .disclaimer { font-size: 0.8rem; color: #8a968f; margin-top: 25px; line-height: 1.5; }
+
+        .hidden { display: none; }
+        .list-item-respond { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid var(--light); }
+        .list-item-respond:last-child { border-bottom: none; }
+        
+        /* Layout Biaya Multi Usaha */
+        .grid-biaya { display: grid; grid-template-columns: 1fr; gap: 12px; background: white; padding: 15px; border-radius: 12px; border: 1px solid #e1e5df; margin-top: 10px; }
+        .row-biaya { display: flex; flex-direction: column; gap: 6px; border-bottom: 1px dashed var(--light); padding-bottom: 12px; }
+        .row-biaya:last-child { border-bottom: none; padding-bottom: 0; }
+        .row-biaya-inputs { display: flex; gap: 8px; }
+        
+        /* Label & Result styling yang lebih rapi */
+        .result-highlight { background: #f4f8f5; padding: 12px; border-radius: 12px; border: 1px solid #dce4e0; line-height: 1.7; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 id="app-title">🌿 Assistant PPL</h1>
+        <p>Alat tempur Pribadi Enumerator Sensus Ekonomi 2026</p>
+    </header>
+
+    <div class="container">
+        
+        <!-- ================= PAGE 1: DASHBOARD / SPLASH ================= -->
+        <div id="page-dashboard" class="page">
+            <div class="card" id="splash">
+                <h2 style="border-bottom:none; margin-bottom:10px;">Tarik napas, senyum, kamu pasti bisa! ✨</h2>
+                <p style="color: var(--text-main);">Gunakan menu cepat di bawah untuk mengelola data sensus offline tanpa perlu terburu-buru.</p>
+                <div class="disclaimer">
+                    <strong>KangSensus Assistant</strong><br>
+                    Alat bantu pribadi untuk enumerator SE2026.<br>
+                    Dirancang khusus agar mata tetap adem dan nggak gampang stres.<br>
+                    Bukan aplikasi resmi BPS.
+                </div>
+            </div>
+
+            <div class="nav-grid">
+                <div class="nav-item" onclick="switchPage('page-input')"><span style="font-size: 2rem; display:block; margin-bottom:10px;">📝</span>Input Data Responden</div>
+                <div class="nav-item" onclick="switchPage('page-daftar')"><span style="font-size: 2rem; display:block; margin-bottom:10px;">📋</span>Daftar Terdata</div>
+            </div>
+        </div>
+
+        <!-- ================= PAGE 2: INPUT / FORM RESPONDEN ================= -->
+        <div id="page-input" class="page hidden">
+            <button class="btn btn-outline" style="margin-bottom: 20px;" onclick="switchPage('page-dashboard')">⬅ Kembali ke Beranda</button>
+            
+            <!-- Validasi Pintar -->
+            <div class="validation-box" id="validation-summary">
+                <strong>⚠️ Catatan Validasi Halus:</strong>
+                <div id="validation-list"></div>
+            </div>
+
+            <!-- Modul 1: Data Responden & Anggota RT -->
+            <div class="card">
+                <h2>3. Modul Data Responden & Anggota RT</h2>
+                <div class="form-group">
+                    <label>Alamat Rumah Tangga *</label>
+                    <input type="text" id="resp-alamat" class="form-control" placeholder="Nama Jalan, RT/RW, Nomor Blok">
+                </div>
+                <div class="form-group">
+                    <label>Nomor HP Krt (Opsional)</label>
+                    <input type="tel" id="resp-hp" class="form-control" placeholder="08xxxxxx">
+                </div>
+                
+                <div style="border-top: 2px dashed var(--light); padding-top: 15px; margin-top: 15px;">
+                    <label style="font-weight: 700; color: var(--primary);">Daftar Anggota Rumah Tangga / Responden:</label>
+                    <div id="container-anggota-rt"></div>
+                    <button class="btn btn-outline" type="button" onclick="tambahAnggotaRT('', '', 0)">🧑‍🤝‍🧑 + Tambah Anggota RT</button>
+                </div>
+            </div>
+
+            <!-- Modul 2: Pendapatan Lainnya -->
+            <div class="card">
+                <h2>Pendapatan Lainnya</h2>
+                <div id="container-pendapatan-lain"></div>
+                <button class="btn btn-outline" type="button" onclick="tambahPendapatanLain('', 0, '')">➕ Tambah Pendapatan Lain</button>
+            </div>
+
+            <!-- Modul 3: Multi Usaha -->
+            <div class="card">
+                <h2>4 & 5. Modul Multi Usaha (Hitung Total Laba)</h2>
+                <div id="container-usaha"></div>
+                <button class="btn btn-outline" type="button" onclick="tambahUsaha()">➕ Tambah Usaha Baru</button>
+            </div>
+
+            <!-- Modul 4: Pengeluaran RT -->
+            <div class="card">
+                <h2>9. Pengeluaran Rumah Tangga</h2>
+                <div class="form-group">
+                    <label>Pengeluaran Makanan (Mingguan)</label>
+                    <input type="number" id="pengeluaran-makanan-minggu" class="form-control" value="0" oninput="hitungSegalaSesuatu()">
+                    <small style="color: #8a968f; display:block; margin-top:8px;">Estimasi Bulanan: Rp <strong id="lbl-makanan-bulan">0</strong> <br><span style="font-size:0.8rem; color:var(--primary);">(Otomatis dihitung, kamu nggak perlu mikir)</span></small>
+                </div>
+                
+                <div style="border-top: 2px dashed var(--light); padding-top: 15px; margin-top: 15px;">
+                    <label style="font-weight: 700; font-size: 0.95rem;">Pengeluaran Bulanan Non-Makanan</label>
+                    <div id="container-pengeluaran-bulan"></div>
+                    <button class="btn btn-outline" type="button" onclick="tambahPengeluaranDinamis('bulan', '', 0)">➕ Tambah Pengeluaran Bulanan</button>
+                </div>
+
+                <div style="border-top: 2px dashed var(--light); padding-top: 15px; margin-top: 25px;">
+                    <label style="font-weight: 700; font-size: 0.95rem;">Pengeluaran Tahunan</label>
+                    <div id="container-pengeluaran-tahun"></div>
+                    <button class="btn btn-outline" type="button" onclick="tambahPengeluaranDinamis('tahun', '', 0)">➕ Tambah Pengeluaran Tahunan</button>
+                </div>
+            </div>
+
+            <!-- Modul 5: Analisis & Catatan Otomatis -->
+            <div class="card">
+                <h2>10 & 11. Analisis & Catatan Otomatis</h2>
+                <div class="result-highlight" style="margin-bottom: 20px;">
+                    <p>Total Pendapatan Keluarga (Bln): <strong>Rp <span id="analisis-total-pendapatan">0</span></strong></p>
+                    <p>Total Laba Seluruh Usaha (Bln): <strong>Rp <span id="analisis-total-laba">0</span></strong></p>
+                    <p>Total Pengeluaran (+Makanan): <strong>Rp <span id="analisis-total-pengeluaran-bulan">0</span></strong></p>
+                    <p>Total Pengeluaran Tahunan: <strong>Rp <span id="analisis-total-pengeluaran-tahun">0</span></strong></p>
+                    <div style="height: 1px; background: #dce4e0; margin: 10px 0;"></div>
+                    <p>Selisih Bulanan (Pendapatan - Pengeluaran): <strong style="font-size:1.1rem; color: var(--primary);">Rp <span id="analisis-selisih">0</span></strong></p>
+                </div>
+
+                <div class="form-group">
+                    <label>Status Konsistensi Data:</label>
+                    <div id="status-konsistensi" style="font-weight: 700; padding: 15px; border-radius: 12px; text-align: center; font-size: 1.1rem; transition: background 0.3s;"></div>
+                </div>
+
+                <div id="box-konfirmasi" class="hidden">
+                    <div class="form-group">
+                        <label>Sumber Penutup Kekurangan *</label>
+                        <select id="konfirmasi-sumber" class="form-control" onchange="hitungSegalaSesuatu()">
+                            <option value="Hutang">Hutang</option>
+                            <option value="Tabungan">Tabungan</option>
+                            <option value="Bantuan Keluarga">Bantuan Keluarga</option>
+                            <option value="Menjual Aset">Menjual Aset</option>
+                            <option value="Pendapatan Musiman">Pendapatan Musiman</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Keterangan Tambahan / Catatan Santai</label>
+                    <textarea id="catatan-keterangan" class="form-control" rows="3" placeholder="Tambahkan catatan hasil ngobrol dengan responden di sini..." oninput="generateNarasi()"></textarea>
+                </div>
+
+                <label style="font-weight: 700;">Narasi Otomatis (Tinggal Salin):</label>
+                <div class="output-box" id="output-narasi"></div>
+                <button class="btn btn-primary" onclick="salinNarasi()" style="margin-top: 15px;">📋 Salin Catatan Otomatis</button>
+            </div>
+
+            <button class="btn btn-success" style="padding: 18px; font-size: 1.1rem; margin-top: 10px; margin-bottom: 30px;" onclick="simpanDataResponden()">💾 Simpan & Rileks Sejenak</button>
+        </div>
+
+        <!-- ================= PAGE 3: DAFTAR RESPONDEN ================= -->
+        <div id="page-daftar" class="page hidden">
+            <button class="btn btn-outline" style="margin-bottom: 20px;" onclick="switchPage('page-dashboard')">⬅ Kembali ke Beranda</button>
+            
+            <div class="card">
+                <h2>Daftar Responden Terdata</h2>
+                <div id="list-responden-container">
+                    <p style="color: #8a968f; text-align: center; padding: 20px;">Belum ada data responden yang disimpan. Semangat ya kerjanya!</p>
+                </div>
+                <button class="btn btn-danger" style="margin-top: 25px; padding: 12px;" onclick="clearSemuaData()">🗑️ Kosongkan Semua Data</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SEMUA JAVASCRIPT DI BAWAH INI SAMA PERSIS 100% TIDAK ADA FUNGSI YANG DIUBAH -->
+    <script>
+        let listResponden = JSON.parse(localStorage.getItem('FASIH_OFFLINE_DATA')) || [];
+        const kategoriKBLI = [
+            "Pertambangan & Penggalian", "Industri Pengolahan", "Konstruksi", 
+            "Perdagangan", "Transportasi", "Akomodasi & Makan Minum", 
+            "Informasi & Komunikasi", "Keuangan", "Real Estat", 
+            "Pendidikan", "Kesehatan", "Jasa Lainnya"
+        ];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            tambahAnggotaRT('Responden Utama', 'Wiraswasta', 0);
+        });
+
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.getElementById(pageId).classList.remove('hidden');
+            window.scrollTo(0,0);
+            if(pageId === 'page-daftar') renderDaftarResponden();
+        }
+
+        function tambahAnggotaRT(nama = '', pekerjaan = '', gaji = 0) {
+            const container = document.getElementById('container-anggota-rt');
+            const id = 'anggota_' + Date.now() + Math.random().toString(36).substr(2, 5);
+            const html = `
+                <div class="sub-card" id="${id}">
+                    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                        <input type="text" class="form-control rt-nama" placeholder="Nama Anggota" value="${nama}" oninput="updateSemuaDropdownResponden(); generateNarasi();">
+                        <button class="btn btn-danger" style="width: 45px; margin:0; border-radius:12px; padding:0;" onclick="hapusAnggota('${id}')">X</button>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                        <input type="text" class="form-control rt-pekerjaan" placeholder="Pekerjaan" value="${pekerjaan}" oninput="generateNarasi()">
+                        <input type="number" class="form-control rt-gaji" placeholder="Gaji/Bulan" value="${gaji}" oninput="hitungSegalaSesuatu()">
+                    </div>
+                </div>`;
+            container.insertAdjacentHTML('beforeend', html);
+            updateSemuaDropdownResponden();
+        }
+
+        function hapusAnggota(id) {
+            const container = document.getElementById('container-anggota-rt');
+            if (container.children.length <= 1) {
+                alert("Minimal harus ada 1 responden ya kak.");
+                return;
+            }
+            document.getElementById(id).remove();
+            updateSemuaDropdownResponden();
+            hitungSegalaSesuatu();
+        }
+
+        function dapetDaftarNamaAnggota() {
+            let namaArr = [];
+            document.querySelectorAll('.rt-nama').forEach(el => {
+                if(el.value.trim() !== '') namaArr.push(el.value.trim());
+            });
+            return namaArr.length > 0 ? namaArr : ['[Belum diisi]'];
+        }
+
+        function updateSemuaDropdownResponden() {
+            const listNama = dapetDaftarNamaAnggota();
+            
+            document.querySelectorAll('.p-lain-owner').forEach(select => {
+                const valLama = select.value;
+                select.innerHTML = listNama.map(n => `<option value="${n}">${n}</option>`).join('');
+                if(listNama.includes(valLama)) select.value = valLama;
+            });
+
+            document.querySelectorAll('.u-pj').forEach(select => {
+                const valLama = select.value;
+                select.innerHTML = listNama.map(n => `<option value="${n}">${n}</option>`).join('');
+                if(listNama.includes(valLama)) select.value = valLama;
+            });
+        }
+
+        function tambahPendapatanLain(nama = '', nominal = 0, pemilik = '') {
+            const container = document.getElementById('container-pendapatan-lain');
+            const id = 'lain_' + Date.now() + Math.random().toString(36).substr(2, 5);
+            const listNama = dapetDaftarNamaAnggota();
+            let opsiNama = listNama.map(n => `<option value="${n}">${n}</option>`).join('');
+            
+            const html = `
+                <div class="flex-dynamic" id="${id}">
+                    <select class="form-control p-lain-owner" style="flex: 1;" onchange="generateNarasi()">${opsiNama}</select>
+                    <input type="text" class="form-control p-lain-nama" style="flex: 1;" placeholder="Jenis: Sewa/Bansos" value="${nama}" oninput="hitungSegalaSesuatu()">
+                    <input type="number" class="form-control p-lain-nom" style="flex: 1;" placeholder="Nominal" value="${nominal}" oninput="hitungSegalaSesuatu()">
+                    <button class="btn btn-danger" style="width: 45px; margin:0; border-radius:12px; padding:0; height: 50px;" onclick="hapusElemen('${id}')">X</button>
+                </div>`;
+            container.insertAdjacentHTML('beforeend', html);
+            if(pemilik) container.querySelector(`#${id} .p-lain-owner`).value = pemilik;
+        }
+
+        function tambahPengeluaranDinamis(jenis, nama = '', nominal = 0) {
+            const container = document.getElementById(`container-pengeluaran-${jenis}`);
+            const id = `exp_${jenis}_` + Date.now() + Math.random().toString(36).substr(2, 5);
+            const html = `
+                <div class="flex-dynamic" id="${id}">
+                    <input type="text" class="form-control exp-${jenis}-nama" placeholder="Nama Pengeluaran" value="${nama}" oninput="hitungSegalaSesuatu()">
+                    <input type="number" class="form-control exp-${jenis}-nom" placeholder="Nominal" value="${nominal}" oninput="hitungSegalaSesuatu()">
+                    <button class="btn btn-danger" style="width: 45px; margin:0; border-radius:12px; padding:0; height: 50px;" onclick="hapusElemen('${id}')">X</button>
+                </div>`;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function tambahUsaha() {
+            const container = document.getElementById('container-usaha');
+            const id = 'usaha_' + Date.now() + Math.random().toString(36).substr(2, 5);
+            const listNama = dapetDaftarNamaAnggota();
+            let opsiNama = listNama.map(n => `<option value="${n}">${n}</option>`).join('');
+            let opsiKategori = kategoriKBLI.map(k => `<option value="${k}">${k}</option>`).join('');
+
+            const html = `
+                <div class="sub-card" id="${id}" style="border: 1px solid var(--primary);">
+                    <button class="btn btn-danger" style="position: absolute; top: 15px; right: 15px; width: 40px; height:40px; padding: 0; margin: 0; border-radius:12px;" onclick="hapusElemen('${id}')">X</button>
+                    
+                    <div class="form-group" style="padding-right: 50px;">
+                        <label>Penanggung Jawab Usaha *</label>
+                        <select class="form-control u-pj">${opsiNama}</select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nama Usaha</label>
+                        <input type="text" class="form-control u-nama" placeholder="Contoh: Warung Kelontong" oninput="hitungSegalaSesuatu()">
+                    </div>
+                    <div class="form-group">
+                        <label>Kategori Lapangan Usaha (SE2026)</label>
+                        <select class="form-control u-kat">${opsiKategori}</select>
+                    </div>
+                    <div class="form-group">
+                        <label>Jenis Usaha / Komoditas</label>
+                        <input type="text" class="form-control u-jenis" placeholder="Contoh: Toko Sembako">
+                    </div>
+                    
+                    <div style="background: white; padding:15px; border-radius:12px; margin-bottom:15px; border: 1px solid #e1e5df;">
+                        <div class="form-group" style="margin-bottom:10px;">
+                            <label style="color:var(--primary);">Periode Omzet Pendapatan</label>
+                            <select class="form-control u-omzet-periode" onchange="toggleHariKerja('${id}', 'omzet', this.value); hitungSegalaSesuatu();">
+                                <option value="Bulanan">Bulanan</option>
+                                <option value="Harian">Harian</option>
+                                <option value="Mingguan">Mingguan</option>
+                                <option value="Tahunan">Tahunan</option>
+                            </select>
+                        </div>
+                        <div class="form-group hidden" id="hari-kerja-box-omzet-${id}" style="margin-bottom:10px;">
+                            <label>Hari Kerja per Minggu (1 - 7 Hari)</label>
+                            <input type="number" class="form-control u-hari-kerja-omzet" min="1" max="7" value="7" oninput="hitungSegalaSesuatu()">
+                        </div>
+                        <div class="form-group" style="margin-bottom:0;">
+                            <label>Nilai Omzet Pendapatan (Rp)</label>
+                            <input type="number" class="form-control u-omzet-nilai" value="0" oninput="hitungSegalaSesuatu()">
+                        </div>
+                    </div>
+                    
+                    <h4 style="font-size:1rem; margin: 20px 0 10px 0; color: var(--dark);">Rincian Biaya Usaha:</h4>
+                    <div class="grid-biaya">
+                        <div class="row-biaya">
+                            <label style="font-size:0.85rem; font-weight:600;">1. Gaji Karyawan (Rp)</label>
+                            <div class="row-biaya-inputs">
+                                <select class="form-control u-b-gaji-p" style="flex:1; padding:10px;" onchange="toggleHariKerja('${id}','b-gaji',this.value); hitungSegalaSesuatu();">
+                                    <option value="Bulanan">Bulanan</option>
+                                    <option value="Harian">Harian</option>
+                                    <option value="Mingguan">Mingguan</option>
+                                    <option value="Tahunan">Tahunan</option>
+                                </select>
+                                <input type="number" class="form-control u-hari-gaji hidden" placeholder="Hr/Mg" value="7" style="flex:0.6; padding:10px;" oninput="hitungSegalaSesuatu()">
+                                <input type="number" class="form-control u-b-gaji-v" placeholder="Nominal" value="0" style="flex:1.4; padding:10px;" oninput="hitungSegalaSesuatu()">
+                            </div>
+                        </div>
+                        <div class="row-biaya">
+                            <label style="font-size:0.85rem; font-weight:600;">2. Bahan Baku / Kulakan (Rp)</label>
+                            <div class="row-biaya-inputs">
+                                <select class="form-control u-b-prod-p" style="flex:1; padding:10px;" onchange="toggleHariKerja('${id}','b-prod',this.value); hitungSegalaSesuatu();">
+                                    <option value="Bulanan">Bulanan</option>
+                                    <option value="Harian">Harian</option>
+                                    <option value="Mingguan">Mingguan</option>
+                                    <option value="Tahunan">Tahunan</option>
+                                </select>
+                                <input type="number" class="form-control u-hari-prod hidden" placeholder="Hr/Mg" value="7" style="flex:0.6; padding:10px;" oninput="hitungSegalaSesuatu()">
+                                <input type="number" class="form-control u-b-prod-v" placeholder="Nominal" value="0" style="flex:1.4; padding:10px;" oninput="hitungSegalaSesuatu()">
+                            </div>
+                        </div>
+                        <div class="row-biaya">
+                            <label style="font-size:0.85rem; font-weight:600;">3. Operasional (Sewa, Listrik, Bensin) (Rp)</label>
+                            <div class="row-biaya-inputs">
+                                <select class="form-control u-b-oper-p" style="flex:1; padding:10px;" onchange="toggleHariKerja('${id}','b-oper',this.value); hitungSegalaSesuatu();">
+                                    <option value="Bulanan">Bulanan</option>
+                                    <option value="Harian">Harian</option>
+                                    <option value="Mingguan">Mingguan</option>
+                                    <option value="Tahunan">Tahunan</option>
+                                </select>
+                                <input type="number" class="form-control u-hari-oper hidden" placeholder="Hr/Mg" value="7" style="flex:0.6; padding:10px;" oninput="hitungSegalaSesuatu()">
+                                <input type="number" class="form-control u-b-oper-v" placeholder="Nominal" value="0" style="flex:1.4; padding:10px;" oninput="hitungSegalaSesuatu()">
+                            </div>
+                        </div>
+                        <div class="row-biaya">
+                            <label style="font-size:0.85rem; font-weight:600;">4. Pengeluaran Non-Operasional (Rp)</label>
+                            <div class="row-biaya-inputs">
+                                <select class="form-control u-b-non-p" style="flex:1; padding:10px;" onchange="toggleHariKerja('${id}','b-non',this.value); hitungSegalaSesuatu();">
+                                    <option value="Bulanan">Bulanan</option>
+                                    <option value="Harian">Harian</option>
+                                    <option value="Mingguan">Mingguan</option>
+                                    <option value="Tahunan">Tahunan</option>
+                                </select>
+                                <input type="number" class="form-control u-hari-non hidden" placeholder="Hr/Mg" value="7" style="flex:0.6; padding:10px;" oninput="hitungSegalaSesuatu()">
+                                <input type="number" class="form-control u-b-non-v" placeholder="Nominal" value="0" style="flex:1.4; padding:10px;" oninput="hitungSegalaSesuatu()">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="result-highlight" style="margin-top:15px; border-color: var(--secondary);">
+                        <strong style="color:var(--dark);">📊 Output Bulanan Usaha:</strong><br>
+                        • Omzet: Rp <span class="lbl-u-omzet-bulan">0</span> | • Biaya: Rp <span class="lbl-u-biaya-bulan">0</span><br>
+                        • Laba Bersih: <strong style="color:var(--primary);">Rp <span class="lbl-u-laba-bulan">0</span></strong>
+                        <div style="border-top: 1px dashed var(--secondary); margin-top:10px; padding-top:8px; color:var(--dark);">
+                            <strong>📈 Proyeksi 1 Tahun:</strong><br>
+                            • Omzet: <strong>Rp <span class="lbl-u-omzet-tahun">0</span></strong><br>
+                            • Biaya: <strong>Rp <span class="lbl-u-biaya-tahun">0</span></strong><br>
+                            • Laba Bersih: <strong style="color:var(--success);">Rp <span class="lbl-u-laba-tahun">0</span></strong>
+                        </div>
+                    </div>
+                </div>`;
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function toggleHariKerja(cardId, tipe, periode) {
+            let el;
+            if (tipe === 'omzet') el = document.getElementById(`hari-kerja-box-omzet-${cardId}`);
+            if (tipe === 'b-gaji') el = document.querySelector(`#${cardId} .u-hari-gaji`);
+            if (tipe === 'b-prod') el = document.querySelector(`#${cardId} .u-hari-prod`);
+            if (tipe === 'b-oper') el = document.querySelector(`#${cardId} .u-hari-oper`);
+            if (tipe === 'b-non') el = document.querySelector(`#${cardId} .u-hari-non`);
+
+            if(el) {
+                if (periode === 'Harian') el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            }
+        }
+
+        function hapusElemen(id) {
+            document.getElementById(id).remove();
+            hitungSegalaSesuatu();
+        }
+
+        function dapatkanNilaiBulanan(periode, nilai, hariKerja) {
+            if(periode === 'Bulanan') return nilai;
+            if(periode === 'Harian') return nilai * (hariKerja || 1) * 4.33; 
+            if(periode === 'Mingguan') return nilai * 4.33;
+            if(periode === 'Tahunan') return nilai / 12;
+            return 0;
+        }
+
+        function hitungSegalaSesuatu() {
+            let totalGajiRT = 0;
+            document.querySelectorAll('.rt-gaji').forEach(el => {
+                totalGajiRT += parseFloat(el.value) || 0;
+            });
+            
+            let totalLain = 0;
+            document.querySelectorAll('.p-lain-nom').forEach(el => {
+                totalLain += parseFloat(el.value) || 0;
+            });
+
+            let totalLabaUsahaBulan = 0;
+            let listBlokUsaha = document.getElementById('container-usaha').children;
+            
+            for (let b of listBlokUsaha) {
+                let pOmzet = b.querySelector('.u-omzet-periode').value;
+                let nOmzet = parseFloat(b.querySelector('.u-omzet-nilai').value) || 0;
+                let hOmzet = parseFloat(b.querySelector('.u-hari-kerja-omzet').value) || 1;
+                let omzetBulanan = dapatkanNilaiBulanan(pOmzet, nOmzet, hOmzet);
+
+                let pGaji = b.querySelector('.u-b-gaji-p').value;
+                let hGaji = parseFloat(b.querySelector('.u-hari-gaji').value) || 1;
+                let vGaji = parseFloat(b.querySelector('.u-b-gaji-v').value) || 0;
+                let bGajiBulan = dapatkanNilaiBulanan(pGaji, vGaji, hGaji);
+
+                let pProd = b.querySelector('.u-b-prod-p').value;
+                let hProd = parseFloat(b.querySelector('.u-hari-prod').value) || 1;
+                let vProd = parseFloat(b.querySelector('.u-b-prod-v').value) || 0;
+                let bProdBulan = dapatkanNilaiBulanan(pProd, vProd, hProd);
+
+                let pOper = b.querySelector('.u-b-oper-p').value;
+                let hOper = parseFloat(b.querySelector('.u-hari-oper').value) || 1;
+                let vOper = parseFloat(b.querySelector('.u-b-oper-v').value) || 0;
+                let bOperBulan = dapatkanNilaiBulanan(pOper, vOper, hOper);
+
+                let pNon = b.querySelector('.u-b-non-p').value;
+                let hNon = parseFloat(b.querySelector('.u-hari-non').value) || 1;
+                let vNon = parseFloat(b.querySelector('.u-b-non-v').value) || 0;
+                let bNonBulan = dapatkanNilaiBulanan(pNon, vNon, hNon);
+
+                let totalBiayaBulanan = bGajiBulan + bProdBulan + bOperBulan + bNonBulan;
+                let labaBulanan = omzetBulanan - totalBiayaBulanan;
+                
+                let omzetTahunan = omzetBulanan * 12;
+                let biayaTahunan = totalBiayaBulanan * 12;
+                let labaTahunan = labaBulanan * 12;
+
+                b.querySelector('.lbl-u-omzet-bulan').innerText = Math.round(omzetBulanan).toLocaleString('id-ID');
+                b.querySelector('.lbl-u-biaya-bulan').innerText = Math.round(totalBiayaBulanan).toLocaleString('id-ID');
+                b.querySelector('.lbl-u-laba-bulan').innerText = Math.round(labaBulanan).toLocaleString('id-ID');
+                
+                b.querySelector('.lbl-u-omzet-tahun').innerText = Math.round(omzetTahunan).toLocaleString('id-ID');
+                b.querySelector('.lbl-u-biaya-tahun').innerText = Math.round(biayaTahunan).toLocaleString('id-ID');
+                b.querySelector('.lbl-u-laba-tahun').innerText = Math.round(labaTahunan).toLocaleString('id-ID');
+
+                totalLabaUsahaBulan += labaBulanan;
+            }
+
+            let totalPendapatanKeluarga = totalGajiRT + totalLain + totalLabaUsahaBulan;
+
+            let pMakananMinggu = parseFloat(document.getElementById('pengeluaran-makanan-minggu').value) || 0;
+            let pMakananBulan = pMakananMinggu * 4.33;
+            document.getElementById('lbl-makanan-bulan').innerText = Math.round(pMakananBulan).toLocaleString('id-ID');
+
+            let totalPengeluaranBulanDinamis = 0;
+            document.querySelectorAll('.exp-bulan-nom').forEach(el => {
+                totalPengeluaranBulanDinamis += parseFloat(el.value) || 0;
+            });
+            let totalSeluruhBulan = pMakananBulan + totalPengeluaranBulanDinamis;
+
+            let totalPengeluaranTahunDinamis = 0;
+            document.querySelectorAll('.exp-tahun-nom').forEach(el => {
+                totalPengeluaranTahunDinamis += parseFloat(el.value) || 0;
+            });
+
+            let selisih = totalPendapatanKeluarga - totalSeluruhBulan;
+
+            document.getElementById('analisis-total-pendapatan').innerText = Math.round(totalPendapatanKeluarga).toLocaleString('id-ID');
+            document.getElementById('analisis-total-laba').innerText = Math.round(totalLabaUsahaBulan).toLocaleString('id-ID');
+            document.getElementById('analisis-total-pengeluaran-bulan').innerText = Math.round(totalSeluruhBulan).toLocaleString('id-ID');
+            document.getElementById('analisis-total-pengeluaran-tahun').innerText = Math.round(totalPengeluaranTahunDinamis).toLocaleString('id-ID');
+            document.getElementById('analisis-selisih').innerText = Math.round(selisih).toLocaleString('id-ID');
+
+            const divStatus = document.getElementById('status-konsistensi');
+            const boxKonfirmasi = document.getElementById('box-konfirmasi');
+            
+            if(selisih >= 0) {
+                divStatus.innerText = "🟢 Data Konsisten";
+                divStatus.style.background = "#effaf1";
+                divStatus.style.color = "#427a4e";
+                divStatus.style.border = "1px solid #c7e6cf";
+                boxKonfirmasi.classList.add('hidden');
+            } else {
+                divStatus.innerText = "🟡 Perlu Dikonfirmasi Lanjut";
+                divStatus.style.background = "#fdf6f6";
+                divStatus.style.color = "#a85c5c";
+                divStatus.style.border = "1px solid #f2dcdc";
+                boxKonfirmasi.classList.remove('hidden');
+            }
+
+            jalankanValidasiPintar(selisih, listBlokUsaha);
+            generateNarasi();
+        }
+
+        function jalankanValidasiPintar(selisih, listBlokUsaha) {
+            const boxValidasi = document.getElementById('validation-summary');
+            const listValidasi = document.getElementById('validation-list');
+            listValidasi.innerHTML = '';
+            let warnings = [];
+
+            if (selisih < 0) warnings.push("Pengeluaran bulanan lebih besar dibanding total pendapatan rumah tangga. Tanyain pelan-pelan ya ke responden.");
+            
+            for(let b of listBlokUsaha) {
+                let namaU = b.querySelector('.u-nama').value || 'Tanpa Nama';
+                let nilaiOmzet = parseFloat(b.querySelector('.u-omzet-nilai').value) || 0;
+                
+                let lb = parseFloat(b.querySelector('.lbl-u-laba-bulan').innerText.replace(/\./g, '')) || 0;
+                if(lb < 0) warnings.push(`Laba usaha "${namaU}" terdeteksi minus. Coba cek lagi pengeluaran operasionalnya vs omzet.`);
+                if (nilaiOmzet === 0) warnings.push(`Usaha "${namaU}" ada, tapi omzetnya masih 0 kak.`);
+            }
+
+            if(warnings.length > 0) {
+                boxValidasi.style.display = 'block';
+                warnings.forEach(w => { listValidasi.innerHTML += `<p>• ${w}</p>`; });
+            } else {
+                boxValidasi.style.display = 'none';
+            }
+        }
+
+        function generateNarasi() {
+            let listAnggotaBlok = document.getElementById('container-anggota-rt').children;
+            let listTeksPekerjaan = [];
+            
+            for(let a of listAnggotaBlok) {
+                let n = a.querySelector('.rt-nama').value || '[Nama]';
+                let p = a.querySelector('.rt-pekerjaan').value || '[Pekerjaan]';
+                listTeksPekerjaan.push(`${n} bekerja sebagai ${p}`);
+            }
+
+            let totalLaba = document.getElementById('analisis-total-laba').innerText;
+            let totalPengeluaranBulan = document.getElementById('analisis-total-pengeluaran-bulan').innerText;
+            let selisihRaw = parseFloat(document.getElementById('analisis-selisih').innerText.replace(/\./g, '')) || 0;
+            
+            let teksRingkasanUsahaTahun = [];
+            let listBlokUsaha = document.getElementById('container-usaha').children;
+            for(let b of listBlokUsaha) {
+                let namaU = b.querySelector('.u-nama').value || '[Nama Usaha]';
+                let pj = b.querySelector('.u-pj').value;
+                let labaThn = b.querySelector('.lbl-u-laba-tahun').innerText;
+                teksRingkasanUsahaTahun.push(`usaha ${namaU} yang dikelola oleh ${pj} dengan estimasi keuntungan tahunan bersih mencapai Rp ${labaThn}`);
+            }
+
+            let narasi = `Susunan anggota keluarga rumah tangga: ${listTeksPekerjaan.join(', ')}. `;
+            
+            if(teksRingkasanUsahaTahun.length > 0) {
+                narasi += `Dari sektor produktif ekonomi, keluarga mengoperasikan ${teksRingkasanUsahaTahun.join(' beserta ')}. Total keuntungan bersih seluruh usaha dalam sebulan tercatat Rp ${totalLaba}. `;
+            } else {
+                narasi += `Total akumulasi keuntungan bersih bulanan usaha tercatat sebesar Rp ${totalLaba}. `;
+            }
+            
+            let listTeksPengeluaran = [];
+
+            let subCardBulan = document.getElementById('container-pengeluaran-bulan').children;
+            for(let c of subCardBulan) {
+                let nBulan = c.querySelector('.exp-bulan-nama').value;
+                let vBulan = parseFloat(c.querySelector('.exp-bulan-nom').value) || 0;
+                if(nBulan && vBulan > 0) {
+                    listTeksPengeluaran.push(`${nBulan.toLowerCase()} (Rp ${vBulan.toLocaleString('id-ID')}/bln)`);
+                }
+            }
+
+            let subCardTahun = document.getElementById('container-pengeluaran-tahun').children;
+            for(let c of subCardTahun) {
+                let nTahun = c.querySelector('.exp-tahun-nama').value;
+                let vTahun = parseFloat(c.querySelector('.exp-tahun-nom').value) || 0;
+                if(nTahun && vTahun > 0) {
+                    listTeksPengeluaran.push(`${nTahun.toLowerCase()} (Rp ${vTahun.toLocaleString('id-ID')}/thn)`);
+                }
+            }
+
+            let listTeksPendapatanLain = [];
+            let subCardLain = document.getElementById('container-pendapatan-lain').children;
+            for(let l of subCardLain) {
+                let owner = l.querySelector('.p-lain-owner').value;
+                let namaL = l.querySelector('.p-lain-nama').value;
+                let nomL = parseFloat(l.querySelector('.p-lain-nom').value) || 0;
+                if(namaL && nomL > 0) {
+                    listTeksPendapatanLain.push(`pendapatan ${namaL.toLowerCase()} yang diterima oleh ${owner} sebesar Rp ${nomL.toLocaleString('id-ID')}`);
+                }
+            }
+
+            if(listTeksPendapatanLain.length > 0) {
+                narasi += `Selain pemasukan utama, teridentifikasi ${listTeksPendapatanLain.join(', ')}. `;
+            }
+
+            if(listTeksPengeluaran.length > 0) {
+                narasi += `Alokasi pengeluaran rumah tangga meliputi: ${listTeksPengeluaran.join(', ')} dengan akumulasi pengeluaran bulanan Rp ${totalPengeluaranBulan}. `;
+            } else {
+                narasi += `Akumulasi total pengeluaran domestik bulanan keluarga tercatat sebesar Rp ${totalPengeluaranBulan}. `;
+            }
+
+            if(selisihRaw < 0) {
+                let alasan = document.getElementById('konfirmasi-sumber').value;
+                let ketTambahan = document.getElementById('catatan-keterangan').value;
+                narasi += `Dikarenakan alokasi biaya hidup melebihi pendapatan bulanan, dilakukan konfirmasi lapangan dan responden menjelaskan bahwa sisa kekurangan ditopang melalui ${alasan.toLowerCase()}. ${ketTambahan}`;
+            } else {
+                let ketTambahan = document.getElementById('catatan-keterangan').value;
+                narasi += `Struktur pengeluaran dan total pemasukan rumah tangga dinilai wajar dan konsisten. ${ketTambahan}`;
+            }
+
+            document.getElementById('output-narasi').innerText = narasi;
+        }
+
+        function salinNarasi() {
+            const txt = document.getElementById('output-narasi').innerText;
+            if(!txt || txt.includes('[Nama]')) {
+                alert("Isi data responden dengan benar terlebih dahulu ya kak!");
+                return;
+            }
+            navigator.clipboard.writeText(txt);
+            alert("Sip! Catatan otomatis udah tersalin.");
+        }
+
+        function simpanDataResponden() {
+            const alamat = document.getElementById('resp-alamat').value;
+            let listAnggotaBlok = document.getElementById('container-anggota-rt').children;
+            
+            if(listAnggotaBlok.length === 0 || !alamat) {
+                alert("Ups! Alamat dan minimal 1 Anggota RT wajib diisi ya.");
+                return;
+            }
+
+            let namaUtama = listAnggotaBlok[0].querySelector('.rt-nama').value || 'Responden Anonim';
+            let selisihRaw = parseFloat(document.getElementById('analisis-selisih').innerText.replace(/\./g, '')) || 0;
+            let status = selisihRaw >= 0 ? "Selesai" : "Perlu Konfirmasi";
+            let listBlokUsaha = document.getElementById('container-usaha').children;
+            
+            let data = {
+                id: Date.now(),
+                nama: namaUtama + " (Krt) dan keluarga",
+                alamat: alamat,
+                imagesUsaha: listBlokUsaha.length,
+                status: status
+            };
+
+            listResponden.push(data);
+            localStorage.setItem('FASIH_OFFLINE_DATA', JSON.stringify(listResponden));
+            
+            alert(`Kerja bagus! Data Rumah Tangga ${namaUtama} berhasil disimpan.\nIstirahat dulu kalau capek ya.`);
+            
+            document.getElementById('resp-alamat').value = '';
+            document.getElementById('resp-hp').value = '';
+            document.getElementById('pengeluaran-makanan-minggu').value = '0';
+            document.getElementById('catatan-keterangan').value = '';
+            document.getElementById('container-anggota-rt').innerHTML = '';
+            document.getElementById('container-usaha').innerHTML = '';
+            document.getElementById('container-pendapatan-lain').innerHTML = '';
+            document.getElementById('container-pengeluaran-bulan').innerHTML = '';
+            document.getElementById('container-pengeluaran-tahun').innerHTML = '';
+            
+            tambahAnggotaRT('Responden Utama', 'Wiraswasta', 0);
+            hitungSegalaSesuatu();
+            window.scrollTo(0,0);
+        }
+
+        function renderDaftarResponden() {
+            const container = document.getElementById('list-responden-container');
+            if(listResponden.length === 0) {
+                container.innerHTML = `<p style="color: #8a968f; text-align: center; padding: 20px;">Belum ada data responden yang disimpan. Semangat ya kerjanya!</p>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            listResponden.forEach(r => {
+                let badgeClass = r.status === 'Selesai' ? 'badge-success' : 'badge-danger';
+                container.innerHTML += `
+                    <div class="list-item-respond">
+                        <div>
+                            <strong style="color:var(--dark);">${r.nama}</strong><br>
+                            <small style="color:#8a968f;">📍 ${r.alamat} | 💼 ${r.imagesUsaha || 0} Usaha</small>
+                        </div>
+                        <div>
+                            <span class="badge ${badgeClass}">${r.status}</span>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function clearSemuaData() {
+            if(confirm("Yakin mau hapus semua data di HP ini? Pastikan data udah dipindah ya!")) {
+                listResponden = [];
+                localStorage.removeItem('FASIH_OFFLINE_DATA');
+                renderDaftarResponden();
+            }
+        }
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `
+                    const CACHE_NAME = 'fasih-assistant-zen-v1';
+                    self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE_NAME).then(c => c.add(self.location.href))); });
+                    self.addEventListener('fetch', e => { e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))); });
+                `;
+                const blob = new Blob([swCode], { type: 'text/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                navigator.serviceWorker.register(swUrl, { scope: './' })
+                    .then(() => console.log("Aplikasi Siap Digunakan Secara Offline Penuh!"))
+                    .catch(err => console.log("SW Gagal:", err));
+            });
+        }
+    </script>
+</body>
+</html>
