@@ -410,7 +410,7 @@
                 </div>
 
                 <div style="margin-top: 10px; margin-bottom: 8px; font-size: 13px; font-weight: bold; color: var(--primary);">
-                    Daftar Anggota Rumah Tangga (ART)
+                    Daftar Anggota Keluarga
                 </div>
                 <div id="m1_art_container"></div>
                 <button type="button" class="btn-add" onclick="addARTRow()">➕ Tambah Anggota RT</button>
@@ -1166,7 +1166,7 @@
             if(nonFood.length > 0) {
                 nonFood.forEach(nf => {
                     if(nf.nominal > 0) {
-                        text += `pengeluaran non-makanan untuk ${nf.nama || 'kebutuhan rutin'} sebesar ${formatRupiah(nf.nominal)} per ${nf.periode.toLowerCase()}, `;
+                        text += `pengeluaran bulanan lainnya mecakup biaya: ${nf.nama || 'kebutuhan rutin'} sebesar ${formatRupiah(nf.nominal)} per ${nf.periode.toLowerCase()}, `;
                     }
                 });
             }
