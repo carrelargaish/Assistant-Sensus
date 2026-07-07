@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Manajemen Sensus & Finansial Premium</title>
+    
+    <!-- Google Fonts: Menggunakan Font Modern & Bersih -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        /* Konfigurasi Variabel Warna Tema (Terang & Gelap) */
+        :root {
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            /* Mode Terang (Default) */
+            --bg-gradient: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --card-border: rgba(226, 232, 240, 0.8);
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --accent-primary: #3b82f6;
+            --accent-hover: #2563eb;
+            --shadow-sm: 0 2px 8px -1px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="dark"] {
+            /* Mode Gelap Premium */
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-primary: #06b6d4;
+            --accent-hover: #0891b2;
+            --shadow-sm: 0 2px 8px -1px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            transition: background 0.4s ease, color 0.4s ease;
+            min-height: 100vh;
+        }
+
+        /* Efek Glassmorphism Modern */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-md);
+            border-radius: 1.25rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.15);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            border-radius: 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .glass-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+
+        [data-theme="dark"] .glass-input {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        /* Custom Progress Bar Smooth Animation */
+        .progress-bar-fill {
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s ease;
+        }
+
+        /* Sembunyikan elemen sebelum password benar */
+        .protected-content {
+            display: none;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 antialiased">
+
+    <!-- CONTAINER UTAMA (BUNGKUSAN PASSWORD DAN KONTEN) -->
+    <div class="max-w-4xl mx-auto space-y-6">
+
+        <!-- ==================== SCREEN GERBANG PASSWORD ==================== -->
+        <div id="passwordScreen" class="glass-card p-6 md:p-8 max-w-md mx-auto text-center my-12">
+            <div class="w-16 h-16 bg-blue-500/10 dark:bg-cyan-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500 dark:text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+            </div>
+            <!-- Pertanyaan unik buatan Al tetap dipertahankan utuh -->
+            <h2 id="pwdQuestion" class="text-xl font-bold mb-2">Perasaan anda jadi kang sensus?</h2>
+            <p class="text-sm text-gray-500 dark:text-slate-400 mb-6">Silakan masukkan jawaban rahasia Anda untuk membuka aplikasi.</p>
+            
+            <input type="password" id="pwdInput" placeholder="Ketik jawaban di sini..." class="w-full p-3 mb-4 glass-input text-center font-medium">
+            <button onclick="checkPassword()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-lg transition duration-200 focus:outline-none">
+                Buka Akses Data
+            </button>
+            <p id="pwdError" class="text-red-500 text-sm mt-3 font-medium hidden">Jawaban salah! Coba ingat-ingat lagi isi hati Anda.</p>
+        </div>
+
+
+        <!-- ==================== APLIKASI UTAMA (DIPROTEKSI) ==================== -->
+        <div id="mainApp" class="protected-content space-y-6">
+            
+            <!-- HEADER UTAMA & UTILITIES CONTROL -->
+            <header class="glass-card p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center space-x-4">
+                    <!-- Maskot Avatar Bulat Minimalis -->
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-2xl shadow-md">
+                        👦🏻
+                    </div>
+                    <div>
+                        <!-- Auto Greeting / Salam Dinamis Sesuai Waktu -->
+                        <h1 id="greetingText" class="text-lg font-bold">Halo, Selamat Bekerja!</h1>
+                        <p class="text-xs text-gray-500 dark:text-slate-400">Dashboard Manajemen Data Sensus Lapangan v2.0</p>
+                    </div>
+                </div>
+
+                <!-- Akses Kontrol: Pengubah Ukuran Font & Saklar Mode Gelap/Terang -->
+                <div class="flex items-center space-x-3 bg-slate-200/50 dark:bg-slate-800/50 p-1.5 rounded-xl">
+                    <!-- Font Resizer Buttons -->
+                    <button onclick="changeFontSize('decrease')" title="Perkecil Tulisan" class="p-2 text-xs font-bold hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all">A-</button>
+                    <button onclick="changeFontSize('increase')" title="Perbesar Tulisan" class="p-2 text-xs font-bold hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all">A+</button>
+                    
+                    <div class="w-px h-5 bg-slate-300 dark:bg-slate-600"></div>
+
+                    <!-- Theme Toggle Switch (Matahari / Bulan) -->
+                    <button onclick="toggleTheme()" id="themeBtn" class="p-2 text-xl hover:bg-white dark:hover:bg-slate-700 rounded-lg transition-all" title="Ubah Mode Layar">
+                        ☀️
+                    </button>
+                </div>
+            </header>
+
+            <!-- RINGKASAN VISUAL MINI (PROGRESS BAR STATUS KEUANGAN DINAMIS) -->
+            <section class="glass-card p-5">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-semibold text-gray-500 dark:text-slate-400">Status Neraca Saldo Finansial</span>
+                    <span id="progressBarPercent" class="text-sm font-bold text-blue-500 dark:text-cyan-400">100% Secure</span>
+                </div>
+                <div class="w-full bg-slate-200 dark:bg-slate-800 h-3 rounded-full overflow-hidden">
+                    <div id="dynamicProgressBar" class="progress-bar-fill w-full h-full bg-emerald-500"></div>
+                </div>
+                <div class="flex justify-between items-center mt-2 text-xs text-gray-400">
+                    <span id="statusIndicatorText">Kondisi Finansial: Stabil & Aman</span>
+                    <span id="totalDataCountText">Total Responden: 0</span>
+                </div>
+            </section>
+
+            <!-- LAYOUT UTAMA: FORM INPUT DAN STATISTIK RINGKAS -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- KOLOM FORM INPUT DATA (SEBELAH KIRI) -->
+                <div class="md:col-span-1 space-y-6">
+                    <div class="glass-card p-5">
+                        <h3 class="text-md font-bold mb-4 flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                            Entri Data Baru
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold mb-1 opacity-70">Nama Kepala Keluarga / Responden</label>
+                                <input type="text" id="inputNama" placeholder="Contoh: Keluarga Bpk. Ahmad" class="w-full p-2.5 glass-input text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold mb-1 opacity-70">Pemasukan Bulanan (Rp)</label>
+                                <input type="number" id="inputPemasukan" placeholder="0" class="w-full p-2.5 glass-input text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold mb-1 opacity-70">Pengeluaran Bulanan (Rp)</label>
+                                <input type="number" id="inputPengeluaran" placeholder="0" class="w-full p-2.5 glass-input text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold mb-1 opacity-70">Jumlah Anggota Keluarga (Jiwa)</label>
+                                <input type="number" id="inputAnggota" placeholder="0" class="w-full p-2.5 glass-input text-sm">
+                            </div>
+                            
+                            <button onclick="tambahData()" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 dark:bg-cyan-600 dark:hover:bg-cyan-700 text-white font-semibold rounded-xl text-sm transition shadow-md">
+                                Simpan Rekaman Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KOLOM MONITORING DASHBOARD (SEBELAH KANAN / LEBIH LEBAR) -->
+                <div class="md:col-span-2 space-y-6">
+                    
+                    <!-- KARTU INDIKATOR UTAMA (FINANSIAL MONITOR) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="glass-card p-4 flex flex-col justify-between">
+                            <span class="text-xs font-semibold text-gray-400">Total Pemasukan</span>
+                            <span id="totalPemasukan" class="text-lg font-bold text-emerald-500 mt-2">Rp 0</span>
+                        </div>
+                        <div class="glass-card p-4 flex flex-col justify-between">
+                            <span class="text-xs font-semibold text-gray-400">Total Pengeluaran</span>
+                            <span id="totalPengeluaran" class="text-lg font-bold text-rose-500 mt-2">Rp 0</span>
+                        </div>
+                        <div class="glass-card p-4 flex flex-col justify-between">
+                            <span class="text-xs font-semibold text-gray-400">Saldo Netto / Sisa</span>
+                            <span id="saldoNetto" class="text-lg font-bold text-blue-500 dark:text-cyan-400 mt-2">Rp 0</span>
+                        </div>
+                    </div>
+
+                    <!-- TABEL & ACTIONS DISPLAY DATA -->
+                    <div class="glass-card p-5">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
+                            <h3 class="text-md font-bold flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>
+                                Database Sensus Finansial
+                            </h3>
+                            <div class="flex gap-2 w-full sm:w-auto">
+                                <button onclick="tampilkanSemuaData()" class="px-3 py-1.5 bg-slate-200 dark:bg-slate-800 hover:opacity-80 rounded-lg text-xs font-medium transition flex-1">
+                                    🔄 Refresh Tabel
+                                </button>
+                                <button onclick="hapusSemuaData()" class="px-3 py-1.5 bg-rose-600/10 hover:bg-rose-600 text-rose-500 hover:text-white rounded-lg text-xs font-medium transition flex-1">
+                                    🗑️ Reset Semua
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- RESPONSIVE TABLE CONTAINER -->
+                        <div class="overflow-x-auto rounded-xl max-h-72 overflow-y-auto border border-slate-200 dark:border-slate-800">
+                            <table class="w-full text-left text-xs">
+                                <thead class="bg-slate-100 dark:bg-slate-800 sticky top-0 text-gray-500 font-semibold">
+                                    <tr>
+                                        <th class="p-3">Nama Responden</th>
+                                        <th class="p-3">Pemasukan</th>
+                                        <th class="p-3">Pengeluaran</th>
+                                        <th class="p-3">Anggota</th>
+                                        <th class="p-3 text-center">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelDataBody" class="divide-y divide-slate-100 dark:divide-slate-800">
+                                    <!-- Baris data sensus akan masuk lewat JavaScript di sini tanpa mengubah logika lama -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ==================== LOGIKA JAVASCRIPT & SISTEM PEMROGRAMAN UTAMU ==================== -->
+    <script>
+        // DATA UTAMA / LOGIKA SENSUS (SAMA PERSIS DENGAN KODE LAMA ANDA)
+        let dataSensus = JSON.parse(localStorage.getItem('dataSensusAl')) || [];
+        
+        // Konstanta jawaban buatan Al: "mumet"
+        const SECRET_KEY = "mumet"; 
+        
+        // Font Size State Tracker
+        let currentFontSize = 100;
+
+        // 🔊 EFEK SUARA BARU: SOFT BUBBLE AUDIO FEEDBACK CONTEXT
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playClickSound() {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            
+            // Membuat gelombang suara soft bubble sintetis yang ringan tanpa perlu download file eksternal
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            
+            osc.type = 'sine'; // Suara gelombang mulus bulat
+            osc.frequency.setValueAtTime(400, audioCtx.currentTime); // Frekuensi dasar rendah lembut
+            osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.08); // Efek memantul ke atas pendek
+            
+            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1); // Menghilang dengan sangat halus
+            
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
+        }
+
+        // 🔒 LOGIKA GERBANG PASSWORD
+        function checkPassword() {
+            playClickSound();
+            const input = document.getElementById('pwdInput').value;
+            const errorElement = document.getElementById('pwdError');
+            
+            if (input.toLowerCase().trim() === SECRET_KEY) {
+                document.getElementById('passwordScreen').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('protected-content');
+                
+                // Inisialisasi awal fitur-fitur tambahan begitu layar terbuka
+                initTheme();
+                updateAutoGreeting();
+                tampilkanSemuaData();
+            } else {
+                errorElement.classList.remove('hidden');
+                // Efek getar kecil pada kotak dialog password saat salah akses
+                const box = document.getElementById('passwordScreen');
+                box.classList.add('translate-x-1');
+                setTimeout(() => box.classList.remove('translate-x-1'), 100);
+            }
+        }
+
+        // Sumbu Enter Key Listener buat Password Box
+        document.getElementById('pwdInput').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        // 🌓 FITUR MANAJEMEN TEMA (LIGHT/DARK) + SAKLAR MEMORI
+        function initTheme() {
+            const savedTheme = localStorage.getItem('appThemeAl') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeButtonUI(savedTheme);
+        }
+
+        function toggleTheme() {
+            playClickSound();
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('appThemeAl', newTheme);
+            updateThemeButtonUI(newTheme);
+        }
+
+        function updateThemeButtonUI(theme) {
+            const btn = document.getElementById('themeBtn');
+            if (theme === 'dark') {
+                btn.innerHTML = "🌙";
+                btn.className = "p-2 text-xl hover:bg-slate-700 rounded-lg transition-all text-cyan-400";
+            } else {
+                btn.innerHTML = "☀️";
+                btn.className = "p-2 text-xl hover:bg-white rounded-lg transition-all text-amber-500";
+            }
+        }
+
+        // ⏱️ FITUR SALAM DINAMIS (AUTO-GREETING)
+        function updateAutoGreeting() {
+            const jam = new Date().getHours();
+            let salam = "Selamat Bekerja, Al!";
+            
+            if (jam >= 4 && jam < 11) {
+                salam = "Selamat Pagi, Al! Semangat sensus hari ini! ☀️";
+            } else if (jam >= 11 && jam < 16) {
+                salam = "Selamat Siang, Al! Jaga kesehatan di lapangan ya! ⛅";
+            } else if (jam >= 16 && jam < 19) {
+                salam = "Selamat Sore, Al! Rehat sejenak, rapikan berkas dulu. 🌇";
+            } else {
+                salam = "Selamat Malam, Al! Pejuang data handal, waktu istirahat! 🌙";
+            }
+            document.getElementById('greetingText').innerText = salam;
+        }
+
+        // 🔤 FITUR PENGUBAH UKURAN TULISAN (FONT RESIZER)
+        function changeFontSize(action) {
+            playClickSound();
+            if (action === 'increase' && currentFontSize < 130) {
+                currentFontSize += 5;
+            } else if (action === 'decrease' && currentFontSize > 85) {
+                currentFontSize -= 5;
+            }
+            document.documentElement.style.fontSize = currentFontSize + "%";
+        }
+
+        // 📊 PROGRESS BAR FINANSIAL VISUAL & MONITORING MATRIKS DINAMIS
+        function updateFinancialVisuals(totalMasuk, totalKeluar) {
+            const progressBar = document.getElementById('dynamicProgressBar');
+            const percentText = document.getElementById('progressBarPercent');
+            const indicatorText = document.getElementById('statusIndicatorText');
+            
+            document.getElementById('totalDataCountText').innerText = `Total Responden: ${dataSensus.length}`;
+
+            if (totalMasuk === 0) {
+                progressBar.style.width = "100%";
+                progressBar.className = "progress-bar-fill h-full bg-slate-400";
+                percentText.innerText = "Data Kosong";
+                indicatorText.innerText = "Belum ada rasio finansial terkalkulasi.";
+                return;
+            }
+
+            // Hitung Rasio Pengeluaran Terhadap Pemasukan
+            const rasioBeban = (totalKeluar / totalMasuk) * 100;
+            let sisaPersenSaku = 100 - rasioBeban;
+            if (sisaPersenSaku < 0) sisaPersenSaku = 0; // Mengunci batas bawah 0%
+
+            progressBar.style.width = `${sisaPersenSaku}%`;
+            percentText.innerText = `${sisaPersenSaku.toFixed(0)}% Sisa Saldo`;
+
+            // Atur perubahan skema warna progress bar secara pintar/otomatis sesuai sisa keuangan
+            if (sisaPersenSaku >= 50) {
+                progressBar.className = "progress-bar-fill h-full bg-emerald-500";
+                indicatorText.innerText = "Kondisi Finansial: Aman & Surplus Luar Biasa ✅";
+            } else if (sisaPersenSaku > 15 && sisaPersenSaku < 50) {
+                progressBar.className = "progress-bar-fill h-full bg-amber-500";
+                indicatorText.innerText = "Kondisi Finansial: Siaga, Pengeluaran Mulai Bengkak ⚠️";
+            } else {
+                progressBar.className = "progress-bar-fill h-full bg-rose-500 animate-pulse";
+                indicatorText.innerText = "Kondisi Finansial: Defisit / Kritis Dangkal! 🚨";
+            }
+        }
+
+        // 💾 OPERASI DATA LOGIKA UTAMA (SAMA DENGAN LOGIKA INTERNAL APLIKASI LAMA ANDA)
+        function simpanKeLocalStorage() {
+            localStorage.setItem('dataSensusAl', JSON.stringify(dataSensus));
+        }
+
+        function tambahData() {
+            playClickSound();
+            const nama = document.getElementById('inputNama').value.trim();
+            const masuk = parseFloat(document.getElementById('inputPemasukan').value) || 0;
+            const keluar = parseFloat(document.getElementById('inputPengeluaran').value) || 0;
+            const anggota = parseInt(document.getElementById('inputAnggota').value) || 0;
+
+            if (nama === "") {
+                alert("Harap isikan nama responden terlebih dahulu.");
+                return;
+            }
+
+            // Memasukkan objek data baru ke array tanpa merubah parameter lama
+            const dataBaru = { id: Date.now(), nama, masuk, keluar, anggota };
+            dataSensus.push(dataBaru);
+            simpanKeLocalStorage();
+            
+            // Reset input form lapangan
+            document.getElementById('inputNama').value = "";
+            document.getElementById('inputPemasukan').value = "";
+            document.getElementById('inputPengeluaran').value = "";
+            document.getElementById('inputAnggota').value = "";
+
+            tampilkanSemuaData();
+        }
+
+        function tampilkanSemuaData() {
+            const tbody = document.getElementById('tabelDataBody');
+            tbody.innerHTML = "";
+            
+            let hitungTotalMasuk = 0;
+            let hitungTotalKeluar = 0;
+
+            dataSensus.forEach((item) => {
+                hitungTotalMasuk += item.masuk;
+                hitungTotalKeluar += item.keluar;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-3 font-medium">${item.nama}</td>
+                    <td class="p-3 text-emerald-500 font-medium">Rp ${item.masuk.toLocaleString('id-ID')}</td>
+                    <td class="p-3 text-rose-500 font-medium">Rp ${item.keluar.toLocaleString('id-ID')}</td>
+                    <td class="p-3 opacity-80">${item.anggota} Jiwa</td>
+                    <td class="p-3 text-center">
+                        <button onclick="hapusDataSatu(${item.id})" class="p-1.5 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white rounded-lg transition" title="Hapus Baris Ini">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Hitung kalkulasi akhir akumulatif
+            const netto = hitungTotalMasuk - hitungTotalKeluar;
+
+            document.getElementById('totalPemasukan').innerText = `Rp ${hitungTotalMasuk.toLocaleString('id-ID')}`;
+            document.getElementById('totalPengeluaran').innerText = `Rp ${hitungTotalKeluar.toLocaleString('id-ID')}`;
+            
+            const saldoNettoElement = document.getElementById('saldoNetto');
+            saldoNettoElement.innerText = `Rp ${netto.toLocaleString('id-ID')}`;
+            
+            // Pewarnaan teks dinamis untuk saldo sisa
+            if (netto >= 0) {
+                saldoNettoElement.className = "text-lg font-bold text-blue-500 dark:text-cyan-400 mt-2";
+            } else {
+                saldoNettoElement.className = "text-lg font-bold text-rose-500 mt-2";
+            }
+
+            // Perbarui visual grafis batang progres
+            updateFinancialVisuals(hitungTotalMasuk, hitungTotalKeluar);
+        }
+
+        function hapusDataSatu(id) {
+            playClickSound();
+            if (confirm("Apakah Anda yakin ingin menghapus catatan sensus ini?")) {
+                dataSensus = dataSensus.filter(item => item.id !== id);
+                simpanKeLocalStorage();
+                tampilkanSemuaData();
+            }
+        }
+
+        function hapusSemuaData() {
+            playClickSound();
+            if (confirm("PERINGATAN! Tindakan ini akan mengosongkan seluruh database sensus Anda. Lanjutkan?")) {
+                dataSensus = [];
+                simpanKeLocalStorage();
+                tampilkanSemuaData();
+            }
+        }
+    </script>
+</body>
+</html>
