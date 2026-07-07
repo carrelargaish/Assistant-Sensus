@@ -633,7 +633,8 @@
         }
     </style>
 </head>
-<body class="hidden"> <div id="password-gate-overlay">
+<body> <div id="password-gate-overlay">
+    <div id="main-content" class="hidden">
         <div class="bg-white max-w-sm w-full rounded-2xl p-6 shadow-2xl border border-gray-100 text-center transform scale-100 transition-all duration-300">
             <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 animate-bounce">
                 🔐
@@ -956,7 +957,7 @@
             if (inputVal === "mumet") {
                 playSuccessSound(); // Bunyi sukses terbuka pintu
                 document.getElementById('password-gate-overlay').style.display = 'none';
-                document.body.classList.remove('hidden'); // Tampilkan isi aplikasi utama
+                document.getElementById('main-content').classList.remove('hidden');; // Tampilkan isi aplikasi utama
             } else {
                 playErrorSound(); // Bunyi kegagalan
                 document.getElementById('gate_error_msg').classList.remove('hidden');
