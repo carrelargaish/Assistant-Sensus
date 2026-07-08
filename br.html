@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KangSensus Assistant v2.0</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --border: #e2e8f0;
+            --bulanan-row: #f0fdf4; /* Aksen hijau tipis */
+            --tahunan-row: #fffbeb;  /* Aksen kuning tipis */
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 1.25rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .grid-dynamic {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button.btn-danger {
+            background-color: #ef4444;
+        }
+        button.btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .row-bulanan { background-color: var(--bulanan-row); }
+        .row-tahunan { background-color: var(--tahunan-row); }
+
+        .dynamic-list {
+            margin-bottom: 15px;
+        }
+
+        .dynamic-item {
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .summary-box {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .summary-item.total {
+            font-weight: bold;
+            border-top: 1px dashed #cbd5e1;
+            padding-top: 8px;
+            margin-top: 8px;
+            color: var(--primary);
+        }
+
+        .narasi-box {
+            background: #fafafa;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            font-style: italic;
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>KangSensus Assistant 🚀</h1>
+
+    <!-- MODUL 1: INFO DASAR -->
+    <div class="card">
+        <h2>Modul 1 & 2: Identitas & Anggota Keluarga</h2>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Nomor Bangunan Rumah</label>
+                <input type="text" id="no_bangunan" value="024B" oninput="prosesSemua()">
+            </div>
+            <div class="form-group">
+                <label>Jumlah Anggota Keluarga</label>
+                <input type="number" id="jml_anggota" value="2" min="1" oninput="prosesSemua(); updateDropdownAnggota();">
+            </div>
+        </div>
+    </div>
+
+    <!-- MODUL 3: PEKERJAAN & GAJI ANGGOTA -->
+    <div class="card">
+        <h2>Modul 3: Pekerjaan & Gaji Anggota Keluarga</h2>
+        <div id="pekerjaan_list" class="dynamic-list"></div>
+        <button type="button" onclick="tambahPekerja()">+ Tambah Anggota Bekerja</button>
+    </div>
+
+    <!-- MODUL 4: USAHA PRODUKTIF -->
+    <div class="card">
+        <h2>Modul 4: Usaha Produktif Keluarga</h2>
+        <div id="usaha_list" class="dynamic-list"></div>
+        <button type="button" onclick="tambahUsaha()">+ Tambah Komponen Usaha</button>
+    </div>
+
+    <!-- MODUL 5: PENDAPATAN LAINNYA -->
+    <div class="card">
+        <h2>Modul 5: Pendapatan Lainnya / Tambahan</h2>
+        <div id="pendapatan_lain_list" class="dynamic-list"></div>
+        <button type="button" onclick="tambahPendapatanLain()">+ Tambah Pendapatan Lainnya</button>
+    </div>
+
+    <!-- MODUL 6: KALKULATOR PENGELUARAN MAKAN -->
+    <div class="card">
+        <h2>Modul 6: Kalkulator Pengeluaran Makan</h2>
+        <div class="grid-3">
+            <div class="form-group">
+                <label>Input Uang Makan (Rp)</label>
+                <input type="number" id="input_makan" value="300000" oninput="prosesSemua()">
+            </div>
+            <div class="form-group">
+                <label>Skala Periode Pilihan</label>
+                <select id="periode_makan" onchange="prosesSemua()">
+                    <option value="harian">Harian</option>
+                    <option value="mingguan" selected>Mingguan</option>
+                    <option value="bulanan">Bulanan</option>
+                </select>
+            </div>
+        </div>
+        <div class="summary-box">
+            <strong>Estimasi Konversi Pengeluaran Makan:</strong>
+            <div class="summary-item"><span>Estimasi Harian:</span> <span id="est_makan_harian">Rp 0</span></div>
+            <div class="summary-item"><span>Estimasi Mingguan:</span> <span id="est_makan_mingguan">Rp 0</span></div>
+            <div class="summary-item"><span>Estimasi Bulanan:</span> <span id="est_makan_bulanan">Rp 0</span></div>
+        </div>
+    </div>
+
+    <!-- MODUL 7: PENGELUARAN NON-MAKANAN -->
+    <div class="card">
+        <h2>Modul 7: Pengeluaran Non-Makanan</h2>
+        <div class="grid-2">
+            <div class="form-group">
+                <label>Biaya Listrik per Bulan (Rp)</label>
+                <input type="number" id="biaya_listrik" value="150000" oninput="prosesSemua()">
+            </div>
+            <div class="form-group">
+                <label>Biaya Internet per Bulan (Rp)</label>
+                <input type="number" id="biaya_internet" value="50000" oninput="prosesSemua()">
+            </div>
+        </div>
+        
+        <label>Pengeluaran Non-Makanan Tambahan (Auto-Sort Bulanan ↑ Tahunan ↓)</label>
+        <div id="pengeluaran_tambahan_list" class="dynamic-list"></div>
+        <button type="button" onclick="tambahPengeluaranTambahan()">+ Tambah Pengeluaran Tambahan</button>
+
+        <div class="summary-box">
+            <strong>Ringkasan Kelompok Pengeluaran:</strong>
+            <div class="summary-item"><span>1. Ringkasan Pengeluaran Makan Per Bulan:</span> <span id="ringkasan_makan_bulan" style="font-weight: 600;">Rp 0</span></div>
+            <div class="summary-item"><span>2. Total Pengeluaran Skala Bulanan (Non-Makanan):</span> <span id="total_pengeluaran_bulanan" style="font-weight: 600;">Rp 0</span></div>
+            <div class="summary-item"><span>3. Total Pengeluaran Skala Tahunan:</span> <span id="total_pengeluaran_tahunan" style="font-weight: 600;">Rp 0</span></div>
+        </div>
+    </div>
+
+    <!-- MODUL 8: KALKULATOR ASET DETAIL -->
+    <div class="card">
+        <h2>Modul 8: Kalkulator Kriteria Aset</h2>
+        <div id="aset_list" class="dynamic-list"></div>
+        <button type="button" onclick="tambahAset()">+ Tambah Aset</button>
+    </div>
+
+    <!-- HASIL AKHIR VALIDASI & NARASI -->
+    <div class="card" style="border-color: var(--primary); background: #f0f7ff;">
+        <h2>📊 Interaksi Hasil Akhir & Catatan Narasi</h2>
+        <div class="summary-box" style="background: #fff; margin-bottom: 15px;">
+            <div class="summary-item total"><span id="label_validasi">Hasil Validasi Finansial Akhir (Per Bulan):</span> <span id="nilai_validasi">Rp 0</span></div>
+        </div>
+        <label>Catatan Narasi Otomatis Keseluruhan:</label>
+        <div class="narasi-box" id="narasi_keseluruhan">Hasil narasi akan muncul di sini...</div>
+    </div>
+</div>
+
+<script>
+    // Inisialisasi Data Awal saat Halaman Dimuat
+    window.onload = function() {
+        // Data default agar langsung tampil simulasi keren seperti diskusi kita
+        tambahPekerjaData("Ahmad", "buruh_lepas", 1500000);
+        tambahPekerjaData("Aminah", "pegawai_tetap", 3000000);
+        tambahUsahaData(2000000);
+        tambahPendapatanLainData(0, "Hasil Sewa", 500000); // Index 0 = Ahmad
+        tambahPendapatanLainData(1, "Tunjangan", 400000);  // Index 1 = Aminah
+        
+        tambahPengeluaranTambahanData("Arisan", 100000, "bulanan");
+        tambahPengeluaranTambahanData("Pajak Kendaraan", 350000, "tahunan");
+        tambahPengeluaranTambahanData("Cicilan Motor", 500000, "bulanan");
+        tambahPengeluaranTambahanData("Pajak Bumi dan Bangunan (PBB)", 120000, "tahunan");
+
+        tambahAsetData("Sepeda Motor", "bergerak", 1, 12000000);
+        tambahAsetData("Pohon Jati", "tidak_bergerak", 5, 500000);
+        tambahAsetData("Pohon Sengon", "tidak_bergerak", 10, 100000);
+        tambahAsetData("Tanah", "tidak_bergerak", 100, 150000);
+
+        prosesSemua();
+    };
+
+    function formatRupiah(angka) {
+        return "Rp " + Math.round(angka).toLocaleString('id-ID');
+    }
+
+    function updateDropdownAnggota() {
+        const selects = document.querySelectorAll('.dropdown-anggota');
+        const jml = parseInt(document.getElementById('jml_anggota').value) || 1;
+        
+        selects.forEach(select => {
+            const valSkg = select.value;
+            select.innerHTML = '';
+            for(let i = 0; i < jml; i++) {
+                const namaPekerjaInput = document.getElementById(`nama_pekerja_${i}`);
+                const namaDisplay = namaPekerjaInput && namaPekerjaInput.value.trim() !== "" ? namaPekerjaInput.value : `Anggota ${i+1}`;
+                let opt = document.createElement('option');
+                opt.value = i;
+                opt.text = namaDisplay;
+                if(valSkg == i) opt.selected = true;
+                select.appendChild(opt);
+            }
+        });
+    }
+
+    // --- MANAJEMEN DOM MODUL 3 (PEKERJAAN) ---
+    function tambahPekerja() { tambahPekerjaData("", "buruh_lepas", 0); }
+    function tambahPekerjaData(nama, status, gaji) {
+        const list = document.getElementById('pekerjaan_list');
+        const idx = list.children.length;
+        const div = document.createElement('div');
+        div.className = 'dynamic-item form-group';
+        div.id = `pekerja_row_${idx}`;
+        div.innerHTML = `
+            <div class="grid-3">
+                <input type="text" id="nama_pekerja_${idx}" placeholder="Nama Anggota" value="${nama}" oninput="updateDropdownAnggota(); prosesSemua();">
+                <select id="status_pekerja_${idx}" onchange="prosesSemua()">
+                    <option value="buruh_lepas" ${status==='buruh_lepas'?'selected':''}>Buruh Lepas</option>
+                    <option value="pegawai_tetap" ${status==='pegawai_tetap'?'selected':''}>Pegawai Tetap</option>
+                </select>
+                <input type="number" id="gaji_pekerja_${idx}" placeholder="Gaji 1 Bulan" value="${gaji}" oninput="prosesSemua()">
+            </div>
+        `;
+        list.appendChild(div);
+        updateDropdownAnggota();
+    }
+
+    // --- MANAJEMEN DOM MODUL 4 (USAHA) ---
+    function tambahUsaha() { tambahUsahaData(0); }
+    function tambahUsahaData(laba) {
+        const list = document.getElementById('usaha_list');
+        const div = document.createElement('div');
+        div.className = 'dynamic-item grid-2';
+        div.innerHTML = `
+            <input type="number" class="laba-usaha" placeholder="Keuntungan/Laba Bersih Per Bulan" value="${laba}" oninput="prosesSemua()">
+            <button type="button" class="btn-danger" onclick="this.parentElement.remove(); prosesSemua();">Hapus</button>
+        `;
+        list.appendChild(div);
+    }
+
+    // --- MANAJEMEN DOM MODUL 5 (PENDAPATAN LAINNYA) ---
+    function tambahPendapatanLain() { tambahPendapatanLainData(0, "", 0); }
+    function tambahPendapatanLainData(anggotaIdx, sumber, nominal) {
+        const list = document.getElementById('pendapatan_lain_list');
+        const div = document.createElement('div');
+        div.className = 'dynamic-item grid-4';
+        div.innerHTML = `
+            <select class="dropdown-anggota pemilik-pendapatan" data-val="${anggotaIdx}" onchange="prosesSemua()"></select>
+            <input type="text" class="sumber-pendapatan" placeholder="Sumber (ex: Bansos)" value="${sumber}" oninput="prosesSemua()">
+            <input type="number" class="nominal-pendapatan" placeholder="Nominal" value="${nominal}" oninput="prosesSemua()">
+            <button type="button" class="btn-danger" onclick="this.parentElement.remove(); prosesSemua();">Hapus</button>
+        `;
+        list.appendChild(div);
+        updateDropdownAnggota();
+    }
+
+    // --- MANAJEMEN DOM MODUL 7 (PENGELUARAN TAMBAHAN + AUTO SORT LOGIC) ---
+    function tambahPengeluaranTambahan() { tambahPengeluaranTambahanData("", 0, "bulanan"); }
+    function tambahPengeluaranTambahanData(nama, jumlah, periode) {
+        const list = document.getElementById('pengeluaran_tambahan_list');
+        const div = document.createElement('div');
+        div.className = `dynamic-item grid-4 row-${periode}`;
+        div.innerHTML = `
+            <input type="text" class="nama-peng-tambahan" placeholder="Nama Pengeluaran (ex: Arisan)" value="${nama}" oninput="prosesSemua()">
+            <input type="number" class="jumlah-peng-tambahan" placeholder="Jumlah (Rp)" value="${jumlah}" oninput="prosesSemua()">
+            <select class="periode-peng-tambahan" onchange="handlePeriodeChange(this)">
+                <option value="bulanan" ${periode==='bulanan'?'selected':''}>Bulanan</option>
+                <option value="tahunan" ${periode==='tahunan'?'selected':''}>Tahunan</option>
+            </select>
+            <button type="button" class="btn-danger" onclick="this.parentElement.remove(); prosesSemua();">Hapus</button>
+        `;
+        list.appendChild(div);
+        prosesSemua();
+    }
+
+    function handlePeriodeChange(selectEl) {
+        const row = selectEl.parentElement;
+        if(selectEl.value === 'bulanan') {
+            row.className = "dynamic-item grid-4 row-bulanan";
+        } else {
+            row.className = "dynamic-item grid-4 row-tahunan";
+        }
+        sortPengeluaranTambahanDOM();
+        prosesSemua();
+    }
+
+    function sortPengeluaranTambahanDOM() {
+        const list = document.getElementById('pengeluaran_tambahan_list');
+        const items = Array.from(list.children);
+        
+        items.sort((a, b) => {
+            const pA = a.querySelector('.periode-peng-tambahan').value;
+            const pB = b.querySelector('.periode-peng-tambahan').value;
+            if (pA === 'bulanan' && pB === 'tahunan') return -1;
+            if (pA === 'tahunan' && pB === 'bulanan') return 1;
+            return 0;
+        });
+        
+        items.forEach(item => list.appendChild(item));
+    }
+
+    // --- MANAJEMEN DOM MODUL 8 (KALKULATOR ASET DETAIL) ---
+    function tambahAset() { tambahAsetData("", "bergerak", 0, 0); }
+    function tambahAsetData(nama, jenis, volume, harga) {
+        const list = document.getElementById('aset_list');
+        const div = document.createElement('div');
+        div.className = 'dynamic-item grid-dynamic';
+        div.innerHTML = `
+            <input type="text" class="nama-aset" placeholder="Nama Aset (ex: Sepeda Motor / Pohon Jati)" value="${nama}" oninput="prosesSemua()">
+            <select class="jenis-aset" onchange="prosesSemua()">
+                <option value="bergerak" ${jenis==='bergerak'?'selected':''}>Bergerak</option>
+                <option value="tidak_bergerak" ${jenis==='tidak_bergerak'?'selected':''}>Tidak Bergerak</option>
+            </select>
+            <input type="number" class="vol-aset" placeholder="Banyaknya (Volume)" value="${volume}" oninput="prosesSemua()">
+            <input type="number" class="harga-aset" placeholder="Harga Satuan" value="${harga}" oninput="prosesSemua()">
+            <button type="button" class="btn-danger" onclick="this.parentElement.remove(); prosesSemua();">Hapus</button>
+        `;
+        list.appendChild(div);
+    }
+
+
+    // ================= PROSES UTAMA KALKULASI & NARASI =================
+    function prosesSemua() {
+        // --- 1. KALKULASI PENGELUARAN MAKAN (TIMBAL BALIK ACUAN 30 HARI) ---
+        const inputMakan = parseFloat(document.getElementById('input_makan').value) || 0;
+        const periodeMakan = document.getElementById('periode_makan').value;
+        let makanHarian = 0, makanMingguan = 0, makanBulanan = 0;
+
+        if (periodeMakan === 'harian') {
+            makanHarian = inputMakan;
+            makanMingguan = inputMakan * 7;
+            makanBulanan = inputMakan * 30;
+        } else if (periodeMakan === 'mingguan') {
+            makanHarian = inputMakan / 7;
+            makanMingguan = inputMakan;
+            makanBulanan = (inputMakan * 30) / 7; // Rumus Akurat Al!
+        } else if (periodeMakan === 'bulanan') {
+            makanHarian = inputMakan / 30;
+            makanMingguan = (inputMakan * 7) / 30; // Fitur Baru Pencarian Mingguan Al!
+            makanBulanan = inputMakan;
+        }
+
+        document.getElementById('est_makan_harian').innerText = formatRupiah(makanHarian);
+        document.getElementById('est_makan_mingguan').innerText = formatRupiah(makanMingguan);
+        document.getElementById('est_makan_bulanan').innerText = formatRupiah(makanBulanan);
+        document.getElementById('ringkasan_makan_bulan').innerText = formatRupiah(makanBulanan);
+
+        // --- 2. KALKULASI TOTAL PENGELUARAN NON-MAKANAN (TAMBAHAN TERURUT) ---
+        const listrik = parseFloat(document.getElementById('biaya_listrik').value) || 0;
+        const internet = parseFloat(document.getElementById('biaya_internet').value) || 0;
+        
+        let tambahanBulanan = 0;
+        let tambahanTahunan = 0;
+
+        const tambahanRows = document.getElementById('pengeluaran_tambahan_list').children;
+        for (let row of tambahanRows) {
+            const jml = parseFloat(row.querySelector('.jumlah-peng-tambahan').value) || 0;
+            const per = row.querySelector('.periode-peng-tambahan').value;
+            if (per === 'bulanan') tambahanBulanan += jml;
+            if (per === 'tahunan') tambahanTahunan += jml;
+        }
+
+        const totalBulanNonMakan = listrik + internet + tambahanBulanan;
+        document.getElementById('total_pengeluaran_bulanan').innerText = formatRupiah(totalBulanNonMakan);
+        document.getElementById('total_pengeluaran_tahunan').innerText = formatRupiah(tambahanTahunan); // Murni tampil skala tahunan terpilih saja tanpa x12!
+
+
+        // --- 3. PENGUMPULAN PENDAPATAN (MULTI-PEKERJA, LABA GABUNGAN, LAINNYA) ---
+        let totalGajiKeluarga = 0;
+        let totalLabaUsahaKeluarga = 0;
+        let totalPendapatanLainKeluarga = 0;
+        
+        let teksPekerjaArr = [];
+        const pekerjaRows = document.getElementById('pekerjaan_list').children;
+        for(let i=0; i<pekerjaRows.length; i++) {
+            const nama = document.getElementById(`nama_pekerja_${i}`)?.value || `Anggota ${i+1}`;
+            const status = document.getElementById(`status_pekerja_${i}`)?.value;
+            const gaji = parseFloat(document.getElementById(`gaji_pekerja_${i}`)?.value) || 0;
+            
+            totalGajiKeluarga += gaji;
+            
+            let statusTeks = status === 'buruh_lepas' ? 'buruh lepas dengan perkiraan gaji dalam 1 bulan' : 'pegawai tetap dengan gaji dalam 1 bulan';
+            teksPekerjaArr.push(`Sdr/i **${nama}** bekerja sebagai ${statusTeks} sebesar ${formatRupiah(gaji)}`);
+        }
+
+        // Laba Gabungan Komponen Usaha
+        const labaInputs = document.querySelectorAll('.laba-usaha');
+        let jumlahUsaha = 0;
+        labaInputs.forEach(input => {
+            const laba = parseFloat(input.value) || 0;
+            totalLabaUsahaKeluarga += laba;
+            jumlahUsaha++;
+        });
+
+        // Pendapatan Lain-lain Detail
+        let teksPendapatanLainArr = [];
+        const lainRows = document.getElementById('pendapatan_lain_list').children;
+        for(let row of lainRows) {
+            const idxAnggota = row.querySelector('.pemilik-pendapatan').value;
+            const namaInput = document.getElementById(`nama_pekerja_${idxAnggota}`);
+            const namaPemilik = namaInput && namaInput.value.trim() !== "" ? namaInput.value : `Anggota ${parseInt(idxAnggota)+1}`;
+            
+            const sumber = row.querySelector('.sumber-pendapatan').value || "Sumber Lainnya";
+            const nominal = parseFloat(row.querySelector('.nominal-pendapatan').value) || 0;
+            
+            totalPendapatanLainKeluarga += nominal;
+            teksPendapatanLainArr.push(`Sdr/i **${namaPemilik}** mendapatkan pendapatan lainnya dari ${sumber} sebesar ${formatRupiah(nominal)} per bulan`);
+        }
+
+
+        // --- 4. VALIDASI FINANSIAL NYATA (DI BELAKANG LAYAR) ---
+        const totalPemasukanBulanan = totalGajiKeluarga + totalLabaUsahaKeluarga + totalPendapatanLainKeluarga;
+        // Adil di belakang layar: tahunan ditarik ke bulan (/12)
+        const totalPengeluaranBulananKomplit = makanBulanan + totalBulanNonMakan + (tambahanTahunan / 12);
+        const sisaFinansial = totalPemasukanBulanan - totalPengeluaranBulananKomplit;
+
+        const nilaiValidasiEl = document.getElementById('nilai_validasi');
+        nilaiValidasiEl.innerText = formatRupiah(sisaFinansial);
+        if(sisaFinansial < 0) {
+            nilaiValidasiEl.style.color = '#ef4444';
+            document.getElementById('label_validasi').innerText = "Hasil Validasi Finansial Akhir (Defisit Per Bulan):";
+        } else {
+            nilaiValidasiEl.style.color = '#10b981';
+            document.getElementById('label_validasi').innerText = "Hasil Validasi Finansial Akhir (Surplus/Sisa Per Bulan):";
+        }
+
+
+        // --- 5. RANCANG TOTAL KALKULATOR ASET DETAIL ---
+        let totalAsetBergerak = 0;
+        let totalAsetTidakBergerak = 0;
+        let rincianBergerakArr = [];
+        let rincianTidakBergerakArr = [];
+
+        const asetRows = document.getElementById('aset_list').children;
+        for(let row of asetRows) {
+            const nama = row.querySelector('.nama-aset').value || "Aset Tanpa Nama";
+            const jenis = row.querySelector('.jenis-aset').value;
+            const vol = parseFloat(row.querySelector('.vol-aset').value) || 0;
+            const harga = parseFloat(row.querySelector('.harga-aset').value) || 0;
+            const totalNilaiAset = vol * harga;
+
+            let satuan = "Unit"; // Default
+            const namaLower = nama.toLowerCase();
+            if(namaLower.includes("pohon") || namaLower.includes("batang")) satuan = "Batang";
+            if(namaLower.includes("tanah") || namaLower.includes("meter") || namaLower.includes("m2")) satuan = "Meter Persegi";
+
+            const teksDetail = `${nama} sebanyak ${vol} ${satuan} dengan harga ${formatRupiah(harga)} per ${satuan.toLowerCase().replace("meter persegi", "meter persegi")}`;
+
+            if(jenis === 'bergerak') {
+                totalAsetBergerak += totalNilaiAset;
+                rincianBergerakArr.push(teksDetail);
+            } else {
+                totalAsetTidakBergerak += totalNilaiAset;
+                rincianTidakBergerakArr.push(teksDetail);
+            }
+        }
+
+
+        // --- 6. FORMULASI CATATAN NARASI KESELURUHAN SEUTUHNYA ---
+        const noBangunan = document.getElementById('no_bangunan').value;
+        const jmlAnggota = document.getElementById('jml_anggota').value;
+
+        // Paragraf 1: Identitas & Pemasukan Lengkap
+        let narasi = `Hasil pencacahan pada keluarga di rumah nomor bangunan **${noBangunan}**. Keluarga ini memiliki **${jmlAnggota}** orang anggota keluarga. `;
+        
+        if(teksPekerjaArr.length > 0) {
+            if(teksPekerjaArr.length === 1) {
+                narasi += `${teksPekerjaArr[0]}. `;
+            } else {
+                let lastPekerja = teksPekerjaArr.pop();
+                narasi += `Di dalam keluarga ini, ${teksPekerjaArr.join(', ')}, dan ${lastPekerja}. `;
+            }
+        } else {
+            narasi += `Keluarga ini tidak mencatatkan anggota yang bekerja tetap/buruh. `;
+        }
+
+        // Integrasi Usaha Komplit Ringkas Al
+        if(jumlahUsaha > 0) {
+            narasi += `Selain itu, keluarga ini mengelola **${jumlahUsaha}** usaha produktif dengan total perkiraan keuntungan/laba bersih keseluruhan sebesar **${formatRupiah(totalLabaUsahaKeluarga)} per bulan**`;
+        } else {
+            narasi += `Selain itu, keluarga ini memang tidak memiliki usaha produktif`;
+        }
+
+        // Sambungan Pendapatan Lain Singkat Al
+        if(teksPendapatanLainArr.length > 0) {
+            if(jumlahUsaha > 0) {
+                narasi += `, serta ${teksPendapatanLainArr.join(', dan ')}.`;
+            } else {
+                narasi += `, namun ${teksPendapatanLainArr.join(', dan ')}.`;
+            }
+        } else {
+            narasi += `.`;
+        }
+
+        // Paragraf 2: Pengeluaran Makanan & Non-Makanan Auto-Sort
+        narasi += `\n\nDari sektor pengeluaran, pengeluaran konsumsi makanan keluarga ini diperkirakan sebesar **${formatRupiah(makanBulanan)} per bulan**. Selain itu, terdapat pengeluaran non-makanan rutin meliputi **Listrik sebesar ${formatRupiah(listrik)}/bulan, Internet sebesar ${formatRupiah(internet)}/bulan**`;
+
+        // Tampilkan pengeluaran tambahan yang sudah urut otomatis di DOM
+        let teksTambahanBulananArr = [];
+        let teksTambahanTahunanArr = [];
+        
+        for (let row of tambahanRows) {
+            const nama = row.querySelector('.nama-peng-tambahan').value || "Lainnya";
+            const jml = parseFloat(row.querySelector('.jumlah-peng-tambahan').value) || 0;
+            const per = row.querySelector('.periode-peng-tambahan').value;
+            if(per === 'bulanan') teksTambahanBulananArr.push(`${nama} sebesar ${formatRupiah(jml)}/bulan`);
+            if(per === 'tahunan') teksTambahanTahunanArr.push(`${nama} sebesar ${formatRupiah(jml)}/tahun`);
+        }
+
+        if(teksTambahanBulananArr.length > 0) {
+            narasi += `, serta pengeluaran tambahan bulanan berupa **${teksTambahanBulananArr.join(', ')}**`;
+        }
+        if(teksTambahanTahunanArr.length > 0) {
+            narasi += `. Keluarga ini juga mencatatkan pengeluaran berkala skala tahunan yaitu **${teksTambahanTahunanArr.join(', ')}**`;
+        }
+        narasi += `.`;
+
+        // Paragraf 3: Aset Detail Rupiah + Unit/Batang/Meter Persegi
+        narasi += `\n\nDalam hal kepemilikan aset, `;
+        let komponenAsetTeks = [];
+        
+        if(rincianBergerakArr.length > 0) {
+            komponenAsetTeks.push(`memiliki **aset bergerak dengan total perkiraan nilai jual sebesar ${formatRupiah(totalAsetBergerak)} (${rincianBergerakArr.join(', ')})**`);
+        }
+        if(rincianTidakBergerakArr.length > 0) {
+            komponenAsetTeks.push(`memiliki **aset tidak bergerak dengan total perkiraan harga jual sebesar ${formatRupiah(totalAsetTidakBergerak)}, dengan rincian: ${rincianTidakBergerakArr.join(', ')}**`);
+        }
+
+        if(komponenAsetTeks.length > 0) {
+            narasi += `keluarga ini ${komponenAsetTeks.join(', serta ')}.`;
+        } else {
+            narasi += `keluarga ini tidak mencatatkan kepemilikan aset berharga utama.`;
+        }
+
+        // Tampilkan ke Box Narasi
+        document.getElementById('narasi_keseluruhan').innerHTML = narasi;
+    }
+</script>
+
+</body>
+</html>
