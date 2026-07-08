@@ -590,7 +590,6 @@
                         <div id="m3_usaha_container"></div>
                         <button type="button" class="btn-add" onclick="addUsahaRow()">➕ Tambah Unit Usaha Baru</button>
 
-                        <!-- REVISI AL: MULTI-ASET DINAMIS DENGAN SUB-TOTAL INDIVIDU & ESTIMASI DUA SKALA -->
                         <div class="mt-6 p-4 bg-slate-50 border border-gray-200 rounded-2xl">
                             <div class="text-xs font-bold text-blue-900 uppercase tracking-wider mb-3">🌳 Kategori Taksiran Aset Lapangan Potensial</div>
                             
@@ -610,7 +609,7 @@
                                 <div class="text-[11px] text-right text-blue-800 font-bold mt-2">Total Seluruh Kayu Pohon: <span id="sub_total_asset_pohon">Rp 0</span></div>
                             </div>
 
-                            <!-- Sub-Modul Multi Hortikultura (Dua Skala Bulanan & Tahunan) -->
+                            <!-- Sub-Modul Multi Hortikultura -->
                             <div class="mb-4 border-b border-gray-200 pb-3">
                                 <label class="block text-xs font-bold text-gray-700 mb-1">Aset Hortikultura (Hasil Buah / Tani):</label>
                                 <div id="asset_buah_container"></div>
@@ -674,7 +673,7 @@
                         <button type="button" class="btn-add" onclick="addNonMakanRow()">➕ Tambah Baris Non-Makanan</button>
 
                         <div class="metric-group mt-4">
-                            <div style="font-size:11px; font-weight:bold; margin-bottom:4px;">📊 Ringkasan Kelompok Pengeluaran (Revisi Makanan Terpisah):</div>
+                            <div style="font-size:11px; font-weight:bold; margin-bottom:4px;">📊 Ringkasan Kelompok Pengeluaran:</div>
                             <div class="metric-row"><span>Total Pengeluaran Konsumsi Makanan:</span><span id="mod4_makan_bulanan_screen" style="font-weight:bold; color: #10B981;">Rp 0 / Bulan</span></div>
                             <div class="metric-row"><span>Total Pengeluaran Skala Bulanan:</span><span id="mod4_total_bulanan_screen" style="font-weight:bold; color: #1E3A8A;">Rp 0 / Bulan</span></div>
                             <div class="metric-row"><span>Total Pengeluaran Skala Tahunan:</span><span id="mod4_total_tahunan_screen" style="font-weight:bold; color: #1E3A8A;">Rp 0 / Tahun</span></div>
@@ -691,7 +690,6 @@
                     <div class="card">
                         <div class="card-title">Sistem Analisis Validasi Finansial</div>
                         
-                        <!-- PREVIEW MENTAH POIN DETAIL BULANAN/TAHUNAN & HASIL PANEN REVISI AL -->
                         <div class="bg-slate-800 text-slate-200 p-4 rounded-xl text-xs space-y-2 mb-4 font-mono shadow-inner">
                             <div class="text-sky-400 font-bold border-b border-slate-700 pb-1 text-[11px] uppercase tracking-wider">📁 Preview Rekapan Mentah Parameter Lapangan</div>
                             <div class="flex justify-between"><span>• Total Pendapatan Gaji ART:</span><span id="preview_gaji_art" class="text-white">Rp 0</span></div>
@@ -804,7 +802,7 @@
             document.getElementById('bubble-speech').innerText = sapaan + " Semangat SE2026!";
         }
 
-        const kbliOptions = ["Pertanian, Kehutanan, Perikanan (A)", "Pertambangan & Penggalian (B)", "Industri Pengolahan / Craft (C)", "Pengadaan Listrik, Gas, Uap (D)", "Pengelolaan Air, Sampah, Limbah (E)", "Konstruksi / Bangunan (F)", "Perdagangan Besar & Eceran (G)", "Transportasi & Pergudangan (H)", "Penyediaan Akomodasi & Makan Minum / Warung (I)", "Informasi & Komunikasi (J)", "Jasa Lainnya / Salon, Bengkel, Cuci (S)"];
+        const kbliOptions = ["Pertanian, Kehutanan, Perikanan (A)", "Pertambangan & Aggalian (B)", "Industri Pengolahan / Craft (C)", "Pengadaan Listrik, Gas, Uap (D)", "Pengelolaan Air, Sampah, Limbah (E)", "Konstruksi / Bangunan (F)", "Perdagangan Besar & Eceran (G)", "Transportasi & Pergudangan (H)", "Penyediaan Akomodasi & Makan Minum / Warung (I)", "Informasi & Komunikasi (J)", "Jasa Lainnya / Salon, Bengkel, Cuci (S)"];
 
         window.addEventListener('DOMContentLoaded', () => { 
             const cached = localStorage.getItem('se2026_nama_petugas');
@@ -838,7 +836,7 @@
             document.querySelectorAll('.modul-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.modul-section').forEach(sec => sec.classList.remove('show-tab'));
             const k = 'm' + step;
-            if(document.getElementById(`nav_btn_${k}`)) document.getElementById(`nav_btn_${k}`).add('active');
+            if(document.getElementById(`nav_btn_${k}`)) document.getElementById(`nav_btn_${k}`).classList.add('active');
             if(document.getElementById(`sec_modul_${k}`)) document.getElementById(`sec_modul_${k}`).classList.add('show-tab');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -974,7 +972,6 @@
             }
         }
 
-        // LOGIKA BARU REVISI AL: MULTI INPUT ASET DINAMIS BER-SUBTOTAL
         function addAssetTanahRow(saved=null) {
             assetTanahCount++; const id = assetTanahCount;
             const html = `<div class="grid grid-cols-2 gap-2 mb-2 bg-white p-2 border border-gray-200 rounded" id="as_tanah_${id}"><input type="number" placeholder="Luas (m²)" class="as-t-luas" oninput="calculateAll()"><input type="number" placeholder="Harga/m²" class="as-t-harga" oninput="calculateAll()"></div>`;
@@ -1038,7 +1035,13 @@
             });
         }
 
-        // ENGINE PERHITUNGAN DAN VALIDASI BARU (REVISI MURNI TAHUNAN & PENGURAIAN MULTI-ASET)
+        function getMonthlyFactorValue(period, val) {
+            const v = parseFloat(val)||0;
+            return period === 'Harian' ? v * 22 : period === 'Mingguan' ? v * 4.3 : period === 'Tahunan' ? v / 12 : v;
+        }
+
+        function formatRupiah(num) { return 'Rp ' + Math.round(num).toLocaleString('id-ID'); }
+
         function calculateAll() {
             let totalArtSalaries = 0;
             const artDataList = [];
@@ -1076,7 +1079,6 @@
                 aggregateNetBusinessProfit += laba; aggregateGrossBusinessOmzet += omzet; aggregateBusinessCosts += costs;
             });
 
-            // HITUNG DINAMIS SUB-TOTAL ASSETS (REVISI AL)
             let totTanah = 0; document.querySelectorAll('.as-t-luas').forEach((el, idx) => { totTanah += (parseFloat(el.value)||0)*(parseFloat(document.querySelectorAll('.as-t-harga')[idx].value)||0); });
             let totPohon = 0; document.querySelectorAll('.as-p-qty').forEach((el, idx) => { totPohon += (parseInt(el.value)||0)*(parseFloat(document.querySelectorAll('.as-p-price')[idx].value)||0); });
             let totBuahThn = 0; document.querySelectorAll('.as-b-qty').forEach((el, idx) => { totBuahThn += (parseFloat(el.value)||0)*(parseFloat(document.querySelectorAll('.as-b-price')[idx].value)||0)*(parseInt(document.querySelectorAll('.as-b-cycle')[idx].value)||1); });
@@ -1085,10 +1087,9 @@
             document.getElementById('sub_total_asset_tanah').innerText = formatRupiah(totTanah);
             document.getElementById('sub_total_asset_pohon').innerText = formatRupiah(totPohon);
             document.getElementById('sub_total_asset_buah_bln').innerText = formatRupiah(totBuahThn / 12) + " / Bulan";
-            document.getElementById('sub_total_asset_buah_thn').innerText = formatRupiah(totBuahThn) + " / Tahun";
+            document.getElementById('sub_total_asset_buah_thn').innerText = formatRupiah(totBuahThn);
             document.getElementById('sub_total_asset_kendaraan').innerText = formatRupiah(totKendaraan);
 
-            // PENGELUARAN SCREEN (REVISI AL: MAKANAN TIDAK DILIBATKAN PADA SCREEN BULANAN/TAHUNAN MURNI)
             const valListrik = parseFloat(document.getElementById('m5_listrik_bulanan').value)||0;
             const valInternet = parseFloat(document.getElementById('m5_internet_bulanan').value)||0;
             document.getElementById('tr_listrik_warning').style.display = (valListrik < 45000) ? 'table-row' : 'none';
@@ -1121,7 +1122,6 @@
             document.getElementById('validation_badge_container').innerHTML = delta < 0 ? `<div id="status_badge" class="badge-status status-danger">🔴 Perlu Konfirmasi (Defisit)</div>` : `<div id="status_badge" class="badge-status status-consistent">🟢 Data Consistent</div>`;
             document.getElementById('validation_alerts').innerHTML = delta < 0 ? `<div class="alert-danger-box">🔴 Anomali Defisit Finansial: Total pengeluaran bulanan melebihi pendapatan.</div>` : '';
 
-            // RENDER DASHBOARD PREVIEW REKAPAN MENTAH (REVISI AL)
             document.getElementById('preview_gaji_art').innerText = formatRupiah(totalArtSalaries);
             document.getElementById('preview_sekunder').innerText = formatRupiah(totalOtherIncomes);
             document.getElementById('preview_u_kotor_bln').innerText = formatRupiah(aggregateGrossBusinessOmzet);
@@ -1136,7 +1136,7 @@
             document.getElementById('preview_asset_tanah').innerText = formatRupiah(totTanah);
             document.getElementById('preview_asset_pohon').innerText = formatRupiah(totPohon);
             document.getElementById('preview_asset_buah_bln').innerText = formatRupiah(totBuahThn / 12) + " / Bulan";
-            document.getElementById('preview_asset_buah_thn').innerText = formatRupiah(totBuahThn) + " / Tahun";
+            document.getElementById('preview_asset_buah_thn').innerText = formatRupiah(totBuahThn);
             document.getElementById('preview_asset_kendaraan').innerText = formatRupiah(totKendaraan);
 
             generateNarrativeText(artDataList, totalOtherIncomes, aggregateNetBusinessProfit, nonFoodList, delta, valListrik, valInternet, totTanah, totPohon, totBuahThn, totKendaraan);
@@ -1154,7 +1154,7 @@
                 t += `Keluarga memiliki aset potensial berupa `;
                 if(tTanah > 0) t += `tanah bernilai ${formatRupiah(tTanah)}, `;
                 if(tPohon > 0) t += `pohon tegakan senilai ${formatRupiah(tPohon)}, `;
-                if(tBuah > 0) t += `hasil panen pertanian sebilai ${formatRupiah(tBuah)}/tahun, `;
+                if(tBuah > 0) t += `hasil panen pertanian senilai ${formatRupiah(tBuah)}/tahun, `;
                 if(tKen > 0) t += `kendaraan operasional seharga ${formatRupiah(tKen)}. `;
             }
             if(delta < 0) t += `Defisit keuangan ditutup via: ${document.getElementById('v_sumber_defisit').value||'Bantuan/Tabungan'}. `;
