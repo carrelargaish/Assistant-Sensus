@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KangSensus Assistant - SE2026 Toolkit (Modern Professional Edition)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -169,6 +169,9 @@
             margin-bottom: 16px;
             border-left: 4px solid #3B82F6;
             padding-left: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .form-group {
@@ -590,42 +593,48 @@
                         <div id="m3_usaha_container"></div>
                         <button type="button" class="btn-add" onclick="addUsahaRow()">➕ Tambah Unit Usaha Baru</button>
 
+                        <!-- REVISI MASTER AL: MULTI-ASET DINAMIS BER-HAPUS + FITUR ACORDEON MINIMIZE -->
                         <div class="mt-6 p-4 bg-slate-50 border border-gray-200 rounded-2xl">
-                            <div class="text-xs font-bold text-blue-900 uppercase tracking-wider mb-3">🌳 Kategori Taksiran Aset Lapangan Potensial</div>
+                            <div class="card-title !mb-2 !border-none !p-0">
+                                <span class="text-xs font-bold text-blue-900 uppercase tracking-wider">🌳 Kategori Taksiran Aset Lapangan Potensial</span>
+                                <button type="button" id="btn_toggle_assets" onclick="toggleAssetSectionBlock()" class="text-xs text-blue-600 bg-white border border-blue-200 px-3 py-1 rounded-lg font-bold shadow-sm select-none hover:bg-slate-50">[ 🔼 Sembunyikan ]</button>
+                            </div>
                             
-                            <!-- Sub-Modul Multi Tanah -->
-                            <div class="mb-4 border-b border-gray-200 pb-3">
-                                <label class="block text-xs font-bold text-gray-700 mb-1">Aset Tanah / Pekarangan:</label>
-                                <div id="asset_tanah_container"></div>
-                                <button type="button" class="text-xs text-blue-600 font-bold underline mt-1" onclick="addAssetTanahRow()">➕ Tambah Aset Tanah</button>
-                                <div class="text-[11px] text-right text-blue-800 font-bold mt-2">Total Seluruh Aset Tanah: <span id="sub_total_asset_tanah">Rp 0</span></div>
-                            </div>
-
-                            <!-- Sub-Modul Multi Pohon -->
-                            <div class="mb-4 border-b border-gray-200 pb-3">
-                                <label class="block text-xs font-bold text-gray-700 mb-1">Aset Kayu / Pohon Tegakan:</label>
-                                <div id="asset_pohon_container"></div>
-                                <button type="button" class="text-xs text-blue-600 font-bold underline mt-1" onclick="addAssetPohonRow()">➕ Tambah Aset Pohon</button>
-                                <div class="text-[11px] text-right text-blue-800 font-bold mt-2">Total Seluruh Kayu Pohon: <span id="sub_total_asset_pohon">Rp 0</span></div>
-                            </div>
-
-                            <!-- Sub-Modul Multi Hortikultura -->
-                            <div class="mb-4 border-b border-gray-200 pb-3">
-                                <label class="block text-xs font-bold text-gray-700 mb-1">Aset Hortikultura (Hasil Buah / Tani):</label>
-                                <div id="asset_buah_container"></div>
-                                <button type="button" class="text-xs text-blue-600 font-bold underline mt-1" onclick="addAssetBuahRow()">➕ Tambah Aset Panen Buah/Tani</button>
-                                <div class="text-[11px] text-right text-blue-800 font-bold mt-2 space-y-0.5">
-                                    <div>Estimasi Total Panen (Bln): <span id="sub_total_asset_buah_bln" class="text-emerald-600">Rp 0 / Bulan</span></div>
-                                    <div>Estimasi Total Panen (Thn): <span id="sub_total_asset_buah_thn">Rp 0 / Tahun</span></div>
+                            <div id="collapsible_asset_wrapper_box">
+                                <!-- Sub-Modul Multi Tanah -->
+                                <div class="mb-4 border-b border-gray-200 pb-3 mt-2">
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">Aset Tanah / Pekarangan:</label>
+                                    <div id="asset_tanah_container"></div>
+                                    <button type="button" class="text-xs text-blue-600 font-bold underline mt-1" onclick="addAssetTanahRow()">➕ Tambah Aset Tanah</button>
+                                    <div class="text-[11px] text-right text-blue-800 font-bold mt-2">Total Seluruh Aset Tanah: <span id="sub_total_asset_tanah">Rp 0</span></div>
                                 </div>
-                            </div>
 
-                            <!-- Sub-Modul Multi Kendaraan -->
-                            <div>
-                                <label class="block text-xs font-bold text-gray-700 mb-1">Aset Bergerak (Vehikel/Kendaraan):</label>
-                                <div id="asset_kendaraan_container"></div>
-                                <button type="button" class="text-xs text-blue-600 font-bold underline mt-1" onclick="addAssetKendaraanRow()">➕ Tambah Aset Kendaraan</button>
-                                <div class="text-[11px] text-right text-blue-800 font-bold mt-2">Total Seluruh Nilai Kendaraan: <span id="sub_total_asset_kendaraan">Rp 0</span></div>
+                                <!-- Sub-Modul Multi Pohon -->
+                                <div class="mb-4 border-b border-gray-200 pb-3">
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">Aset Kayu / Pohon Tegakan:</label>
+                                    <div id="asset_pohon_container"></div>
+                                    <button type="button" class="text-xs text-blue-600 font-bold underline mt-1" onclick="addAssetPohonRow()">➕ Tambah Aset Pohon</button>
+                                    <div class="text-[11px] text-right text-blue-800 font-bold mt-2">Total Seluruh Kayu Pohon: <span id="sub_total_asset_pohon">Rp 0</span></div>
+                                </div>
+
+                                <!-- Sub-Modul Multi Hortikultura -->
+                                <div class="mb-4 border-b border-gray-200 pb-3">
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">Aset Hortikultura (Hasil Buah / Tani):</label>
+                                    <div id="asset_buah_container"></div>
+                                    <button type="button" class="text-xs text-blue-600 font-bold underline mt-1" onclick="addAssetBuahRow()">➕ Tambah Aset Panen Buah/Tani</button>
+                                    <div class="text-[11px] text-right text-blue-800 font-bold mt-2 space-y-0.5">
+                                        <div>Estimasi Total Panen (Bln): <span id="sub_total_asset_buah_bln" class="text-emerald-600">Rp 0 / Bulan</span></div>
+                                        <div>Estimasi Total Panen (Thn): <span id="sub_total_asset_buah_thn">Rp 0 / Tahun</span></div>
+                                    </div>
+                                </div>
+
+                                <!-- Sub-Modul Multi Kendaraan -->
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">Aset Bergerak (Vehikel/Kendaraan):</label>
+                                    <div id="asset_kendaraan_container"></div>
+                                    <button type="button" class="text-xs text-blue-600 font-bold underline mt-1" onclick="addAssetKendaraanRow()">➕ Tambah Aset Kendaraan</button>
+                                    <div class="text-[11px] text-right text-blue-800 font-bold mt-2">Total Seluruh Nilai Kendaraan: <span id="sub_total_asset_kendaraan">Rp 0</span></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -769,7 +778,7 @@
     <script>
         let artCount = 0, pendapatanCount = 0, usahaCount = 0, nonMakanCount = 0;
         let assetTanahCount = 0, assetPohonCount = 0, assetBuahCount = 0, assetKendaraanCount = 0;
-        let currentEditingId = null, globalMakanBulanan = 0, isViewAllModeActive = false;
+        let currentEditingId = null, globalMakanBulanan = 0, isViewAllModeActive = false, isAssetSectionMinimized = false;
 
         const soundClick = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav'); 
         const soundSuccess = new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav'); 
@@ -972,28 +981,57 @@
             }
         }
 
-        function addAssetTanahRow(saved=null) {
+        // REVISI AL: INTEGRASI MULTI ASET DENGAN TOMBOL HAPUS (X) INSTAN & MINIMIZE SAKLAR
+        function toggleAssetSectionBlock() {
+            isAssetSectionMinimized = !isAssetSectionMinimized;
+            const wrapper = document.getElementById('collapsible_asset_wrapper_box');
+            const btn = document.getElementById('btn_toggle_assets');
+            if(isAssetSectionMinimized) {
+                wrapper.classList.add('hidden'); btn.innerText = "[ 🔽 Tampilkan ]";
+            } else {
+                wrapper.classList.remove('hidden'); btn.innerText = "[ 🔼 Sembunyikan ]";
+            }
+        }
+
+        function addAssetTanahRow() {
             assetTanahCount++; const id = assetTanahCount;
-            const html = `<div class="grid grid-cols-2 gap-2 mb-2 bg-white p-2 border border-gray-200 rounded" id="as_tanah_${id}"><input type="number" placeholder="Luas (m²)" class="as-t-luas" oninput="calculateAll()"><input type="number" placeholder="Harga/m²" class="as-t-harga" oninput="calculateAll()"></div>`;
+            const html = `
+                <div class="flex items-center gap-2 mb-2 bg-white p-2 border border-gray-200 rounded animate-fade-in" id="as_tanah_row_${id}">
+                    <input type="number" placeholder="Luas (m²)" class="as-t-luas" oninput="calculateAll()">
+                    <input type="number" placeholder="Harga/m²" class="as-t-harga" oninput="calculateAll()">
+                    <button type="button" onclick="this.parentElement.remove(); calculateAll();" class="text-xs font-bold text-red-600 px-2 py-1 bg-red-50 rounded border border-red-200 shadow-sm hover:bg-red-500 hover:text-white transition-all">X</button>
+                </div>`;
             document.getElementById('asset_tanah_container').insertAdjacentHTML('beforeend', html);
         }
-        function addAssetPohonRow(saved=null) {
+        function addAssetPohonRow() {
             assetPohonCount++; const id = assetPohonCount;
-            const html = `<div class="grid grid-cols-3 gap-1 mb-2 bg-white p-2 border border-gray-200 rounded" id="as_pohon_${id}"><input type="text" placeholder="Jenis Pohon" class="col-span-1"><input type="number" placeholder="Batang" class="as-p-qty col-span-1" oninput="calculateAll()"><input type="number" placeholder="Harga/Btg" class="as-p-price col-span-1" oninput="calculateAll()"></div>`;
+            const html = `
+                <div class="flex items-center gap-1 mb-2 bg-white p-2 border border-gray-200 rounded animate-fade-in" id="as_pohon_row_${id}">
+                    <input type="text" placeholder="Jenis Pohon" class="as-p-jenis w-24">
+                    <input type="number" placeholder="Btg" class="as-p-qty w-14" oninput="calculateAll()">
+                    <input type="number" placeholder="Harga" class="as-p-price w-20" oninput="calculateAll()">
+                    <button type="button" onclick="this.parentElement.remove(); calculateAll();" class="text-xs font-bold text-red-600 px-2 py-1 bg-red-50 rounded border border-red-200 shadow-sm hover:bg-red-500 hover:text-white transition-all">X</button>
+                </div>`;
             document.getElementById('asset_pohon_container').insertAdjacentHTML('beforeend', html);
         }
-        function addAssetBuahRow(saved=null) {
+        function addAssetBuahRow() {
             assetBuahCount++; const id = assetBuahCount;
             const html = `
-                <div class="bg-white p-2 border border-gray-200 rounded mb-2" id="as_buah_${id}">
-                    <div class="grid grid-cols-2 gap-1 mb-1"><input type="text" placeholder="Komoditas" class="col-span-1"><input type="number" placeholder="Harga/kg" class="as-b-price col-span-1" oninput="calculateAll()"></div>
+                <div class="bg-white p-2 border border-gray-200 rounded mb-2 relative animate-fade-in" id="as_buah_row_${id}">
+                    <button type="button" onclick="this.parentElement.remove(); calculateAll();" class="absolute top-2 right-2 text-[10px] font-bold text-red-600 px-2 py-0.5 bg-red-50 rounded border border-red-200 shadow-sm hover:bg-red-500 hover:text-white transition-all">X</button>
+                    <div class="grid grid-cols-2 gap-1 mb-1 pr-6"><input type="text" placeholder="Komoditas (misal: Mangga)" class="as-b-jenis"><input type="number" placeholder="Harga/kg" class="as-b-price" oninput="calculateAll()"></div>
                     <div class="grid grid-cols-3 gap-1"><input type="number" placeholder="Kg Panen" class="as-b-qty" oninput="calculateAll()"><select class="as-b-cycle col-span-2 !py-[8px]" onchange="calculateAll()"><option value="12">1 Kali Sebulan</option><option value="24">2 Kali Sebulan</option><option value="1">1 Kali Setahun</option><option value="2">2 Kali Setahun</option><option value="3">3 Kali Setahun</option></select></div>
                 </div>`;
             document.getElementById('asset_buah_container').insertAdjacentHTML('beforeend', html);
         }
-        function addAssetKendaraanRow(saved=null) {
+        function addAssetKendaraanRow() {
             assetKendaraanCount++; const id = assetKendaraanCount;
-            const html = `<div class="grid grid-cols-2 gap-2 mb-2 bg-white p-2 border border-gray-200 rounded" id="as_kendaraan_${id}"><input type="text" placeholder="Seri Motor/Mobil"><input type="number" placeholder="Harga Jual" class="as-k-price" oninput="calculateAll()"></div>`;
+            const html = `
+                <div class="flex items-center gap-2 mb-2 bg-white p-2 border border-gray-200 rounded animate-fade-in" id="as_k_row_${id}">
+                    <input type="text" placeholder="Seri (misal: Beat/Supra)" class="as-k-seri">
+                    <input type="number" placeholder="Harga Jual" class="as-k-price" oninput="calculateAll()">
+                    <button type="button" onclick="this.parentElement.remove(); calculateAll();" class="text-xs font-bold text-red-600 px-2 py-1 bg-red-50 rounded border border-red-200 shadow-sm hover:bg-red-500 hover:text-white transition-all">X</button>
+                </div>`;
             document.getElementById('asset_kendaraan_container').insertAdjacentHTML('beforeend', html);
         }
 
@@ -1079,10 +1117,46 @@
                 aggregateNetBusinessProfit += laba; aggregateGrossBusinessOmzet += omzet; aggregateBusinessCosts += costs;
             });
 
-            let totTanah = 0; document.querySelectorAll('.as-t-luas').forEach((el, idx) => { totTanah += (parseFloat(el.value)||0)*(parseFloat(document.querySelectorAll('.as-t-harga')[idx].value)||0); });
-            let totPohon = 0; document.querySelectorAll('.as-p-qty').forEach((el, idx) => { totPohon += (parseInt(el.value)||0)*(parseFloat(document.querySelectorAll('.as-p-price')[idx].value)||0); });
-            let totBuahThn = 0; document.querySelectorAll('.as-b-qty').forEach((el, idx) => { totBuahThn += (parseFloat(el.value)||0)*(parseFloat(document.querySelectorAll('.as-b-price')[idx].value)||0)*(parseInt(document.querySelectorAll('.as-b-cycle')[idx].value)||1); });
-            let totKendaraan = 0; document.querySelectorAll('.as-k-price').forEach(el => { totKendaraan += parseFloat(el.value)||0; });
+            // LOGIKA HITUNG DINAMIS KOREKSI MULTI-ASET BARU (AL)
+            let totTanah = 0; 
+            const tanahDetailsArray = [];
+            document.querySelectorAll('#asset_tanah_container .flex').forEach((el, idx) => { 
+                const luas = parseFloat(el.querySelector('.as-t-luas').value)||0;
+                const harga = parseFloat(el.querySelector('.as-t-harga').value)||0;
+                totTanah += luas * harga;
+                if(luas > 0) tanahDetailsArray.push(`tanah seluas ${luas} m²`);
+            });
+            
+            let totPohon = 0; 
+            const pohonDetailsArray = [];
+            document.querySelectorAll('#asset_pohon_container .flex').forEach((el, idx) => { 
+                const qty = parseInt(el.querySelector('.as-p-qty').value)||0;
+                const price = parseFloat(el.querySelector('.as-p-price').value)||0;
+                const jenis = el.querySelector('.as-p-jenis').value.trim() || 'kayu';
+                totPohon += qty * price; 
+                if(qty > 0) pohonDetailsArray.push(`${qty} batang pohon ${jenis}`);
+            });
+            
+            let totBuahThn = 0; 
+            const buahDetailsArray = [];
+            document.querySelectorAll('#asset_buah_container .relative').forEach((el, idx) => { 
+                const qty = parseFloat(el.querySelector('.as-b-qty').value)||0;
+                const price = parseFloat(el.querySelector('.as-b-price').value)||0;
+                const cycle = parseInt(el.querySelector('.as-b-cycle').value)||1;
+                const jenis = el.querySelector('.as-b-jenis').value.trim() || 'buah/tani';
+                const annualKg = qty * cycle;
+                totBuahThn += annualKg * price; 
+                if(annualKg > 0) buahDetailsArray.push(`panen ${jenis} sebanyak ${annualKg} kg/tahun`);
+            });
+            
+            let totKendaraan = 0; 
+            const kendaraanDetailsArray = [];
+            document.querySelectorAll('#asset_kendaraan_container .flex').forEach((el, idx) => { 
+                const price = parseFloat(el.querySelector('.as-k-price').value)||0;
+                const seri = el.querySelector('.as-k-seri').value.trim() || 'kendaraan';
+                totKendaraan += price; 
+                if(price > 0) kendaraanDetailsArray.push(`${seri}`);
+            });
 
             document.getElementById('sub_total_asset_tanah').innerText = formatRupiah(totTanah);
             document.getElementById('sub_total_asset_pohon').innerText = formatRupiah(totPohon);
@@ -1139,10 +1213,11 @@
             document.getElementById('preview_asset_buah_thn').innerText = formatRupiah(totBuahThn);
             document.getElementById('preview_asset_kendaraan').innerText = formatRupiah(totKendaraan);
 
-            generateNarrativeText(artDataList, totalOtherIncomes, aggregateNetBusinessProfit, nonFoodList, delta, valListrik, valInternet, totTanah, totPohon, totBuahThn, totKendaraan);
+            generateNarrativeText(artDataList, totalOtherIncomes, aggregateNetBusinessProfit, nonFoodList, delta, valListrik, valInternet, totTanah, totPohon, totBuahThn, totKendaraan, tanahDetailsArray, pohonDetailsArray, buahDetailsArray, kendaraanDetailsArray);
         }
 
-        function generateNarrativeText(art, sec, labaU, nonF, delta, lis, net, tTanah, tPohon, tBuah, tKen) {
+        // REVISI AL: GENERATOR TEKS NARASI DENGAN PERINCIAN DETAIL NAMA DAN SPESIFIKASI ITEM ASET
+        function generateNarrativeText(art, sec, labaU, nonF, delta, lis, net, tTanah, tPohon, tBuah, tKen, tArr, pArr, bArr, kArr) {
             const nr = document.getElementById('m1_no_rumah').value.trim();
             if(!nr) { document.getElementById('narrative_output').innerText = "Menunggu data bangunan..."; return; }
             let t = `Hasil pencacahan pada keluarga di rumah nomor bangunan ${nr}. `;
@@ -1150,14 +1225,15 @@
             art.forEach(p => { if(p.kerja) t += `Sdr/i ${p.nama} bekerja sebagai ${p.kerja} dengan pendapatan sebulan ${formatRupiah(p.gaji)}. `; });
             if(labaU > 0) t += `Keluarga memiliki unit usaha dengan keuntungan bersih ${formatRupiah(labaU)}/bulan. `;
             t += `Pengeluaran listrik ${formatRupiah(lis)}/bulan, internet ${formatRupiah(net)}/bulan. `;
-            if(tTanah > 0 || tPohon > 0 || tBuah > 0 || tKen > 0) {
-                t += `Keluarga memiliki aset potensial berupa `;
-                if(tTanah > 0) t += `tanah bernilai ${formatRupiah(tTanah)}, `;
-                if(tPohon > 0) t += `pohon tegakan senilai ${formatRupiah(tPohon)}, `;
-                if(tBuah > 0) t += `hasil panen pertanian senilai ${formatRupiah(tBuah)}/tahun, `;
-                if(tKen > 0) t += `kendaraan operasional seharga ${formatRupiah(tKen)}. `;
+            
+            if(tTanah > 0 || pArr.length > 0 || bArr.length > 0 || kArr.length > 0) {
+                t += `\n\nKeluarga ini memiliki rincian aset potensial di lapangan meliputi: `;
+                if(tArr.length > 0) t += `aset tanah berupa ${tArr.join(' dan ')} dengan akumulasi nilai pasar ${formatRupiah(tTanah)}, `;
+                if(pArr.length > 0) t += `aset tegakan pohon berupa ${pArr.join(' serta ')} (total taksiran ${formatRupiah(tPohon)}), `;
+                if(bArr.length > 0) t += `aset hortikultura produktif berupa ${bArr.join(' serta ')} dengan nilai estimasi ${formatRupiah(tBuah)}/tahun, `;
+                if(kArr.length > 0) t += `serta aset bergerak berupa kendaraan ${kArr.join(', ')} dengan taksiran nilai pasar ${formatRupiah(tKen)}.`;
             }
-            if(delta < 0) t += `Defisit keuangan ditutup via: ${document.getElementById('v_sumber_defisit').value||'Bantuan/Tabungan'}. `;
+            if(delta < 0) t += `\n\nDefisit neraca keuangan ditutup via: ${document.getElementById('v_sumber_defisit').value||'Bantuan/Tabungan'}. `;
             document.getElementById('narrative_output').innerText = t;
         }
 
