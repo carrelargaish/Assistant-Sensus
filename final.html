@@ -742,25 +742,27 @@
                         <div id="m3_usaha_container"></div>
                         <button type="button" class="btn-add" onclick="addUsahaRow()">➕ Tambah Unit Usaha Baru</button>
 
-                        <!-- SUB-MODUL KEPEMILIKAN ASET LAPANGAN (REVISI AL) -->
+                        <!-- SUB-MODUL KEPEMILIKAN ASET LAPANGAN (REVISI AL: SUB-TOTAL VISUAL INSTAN) -->
                         <div class="mt-6 p-4 bg-slate-50 border border-gray-200 rounded-2xl">
                             <div class="text-xs font-bold text-blue-900 uppercase tracking-wider mb-3">🌳 Kategori Taksiran Aset Lapangan Potensial</div>
                             
                             <div class="mb-4 border-b border-gray-200 pb-3">
                                 <label class="block text-xs font-semibold text-gray-600 mb-1">Aset Tidak Bergerak (Pekarangan / Tanah):</label>
-                                <div class="grid grid-cols-2 gap-2">
+                                <div class="grid grid-cols-2 gap-2 mb-1">
                                     <input type="number" id="asset_luas_tanah" placeholder="Luas Tanah (m²)" oninput="calculateAll()">
                                     <input type="number" id="asset_harga_tanah" placeholder="Harga Jual / m² (Rp)" oninput="calculateAll()">
                                 </div>
+                                <div class="text-[11px] text-right text-blue-800 font-bold">Total Taksiran Nilai Tanah: <span id="sub_total_asset_tanah">Rp 0</span></div>
                             </div>
 
                             <div class="mb-4 border-b border-gray-200 pb-3">
                                 <label class="block text-xs font-semibold text-gray-600 mb-1">Aset Biologis (Kayu Keras / Pohon Tegakan):</label>
-                                <div class="grid grid-cols-3 gap-2">
+                                <div class="grid grid-cols-3 gap-2 mb-1">
                                     <input type="text" id="asset_jenis_pohon" placeholder="Jenis Pohon (e.g. Sengon)" oninput="calculateAll()">
                                     <input type="number" id="asset_jml_pohon" placeholder="Jumlah Batang" oninput="calculateAll()">
                                     <input type="number" id="asset_harga_pohon" placeholder="Harga / Batang (Rp)" oninput="calculateAll()">
                                 </div>
+                                <div class="text-[11px] text-right text-blue-800 font-bold">Total Taksiran Nilai Kayu Pohon: <span id="sub_total_asset_pohon">Rp 0</span></div>
                             </div>
 
                             <!-- INPUT FREKUENSI PANEN DINAMIS REVISI AGRO AL -->
@@ -770,7 +772,7 @@
                                     <input type="text" id="asset_jenis_buah" placeholder="Jenis Komoditas (e.g. Cabai / Mangga)" oninput="calculateAll()">
                                     <input type="number" id="asset_harga_buah" placeholder="Harga Jual / kg (Rp)" oninput="calculateAll()">
                                 </div>
-                                <div class="grid grid-cols-3 gap-2">
+                                <div class="grid grid-cols-3 gap-2 mb-1">
                                     <input type="number" id="asset_berat_buah" placeholder="Hasil Sekali Panen (kg)" oninput="calculateAll()" class="col-span-1">
                                     <select id="asset_siklus_panen" onchange="calculateAll()" class="col-span-2 !py-[9px]">
                                         <option value="SEBULAN_1">Panen 1 Kali Sebulan</option>
@@ -780,14 +782,16 @@
                                         <option value="SETAHUN_3">Panen 3 Kali Setahun</option>
                                     </select>
                                 </div>
+                                <div class="text-[11px] text-right text-blue-800 font-bold">Estimasi Nilai Hasil Panen: <span id="sub_total_asset_buah">Rp 0 / Tahun</span></div>
                             </div>
 
                             <div>
                                 <label class="block text-xs font-semibold text-gray-600 mb-1">Aset Bergerak (Kendaraan Operasional):</label>
-                                <div class="grid grid-cols-2 gap-2">
+                                <div class="grid grid-cols-2 gap-2 mb-1">
                                     <input type="text" id="asset_nama_kendaraan" placeholder="Seri Motor (e.g. Beat 2021)" oninput="calculateAll()">
                                     <input type="number" id="asset_harga_kendaraan" placeholder="Harga Jual Sekarang (Rp)" oninput="calculateAll()">
                                 </div>
+                                <div class="text-[11px] text-right text-blue-800 font-bold">Total Nilai Jual Kendaraan: <span id="sub_total_asset_kendaraan">Rp 0</span></div>
                             </div>
                         </div>
                     </div>
@@ -901,7 +905,7 @@
                     <div class="card">
                         <div class="card-title">Sistem Analisis Validasi Finansial</div>
                         
-                        <!-- REVISI AL: DASHBOARD REKAPAN PARAMETER MENTAH SEBELUM DIJUMLAH -->
+                        <!-- REVISI AL: DASHBOARD REKAPAN PARAMETER MENTAH SEBELUM DIJUMLAH (PECAH BULANAN/TAHUNAN) -->
                         <div class="bg-slate-800 text-slate-200 p-4 rounded-xl text-xs space-y-2 mb-4 font-mono shadow-inner">
                             <div class="text-sky-400 font-bold border-b border-slate-700 pb-1 text-[11px] uppercase tracking-wider">📁 Preview Rekapan Mentah Parameter Lapangan</div>
                             <div class="flex justify-between"><span>• Total Pendapatan Gaji ART:</span><span id="preview_gaji_art" class="text-white">Rp 0</span></div>
@@ -922,10 +926,12 @@
                             <div class="flex justify-between pl-2"><span>- Pengeluaran Bulanan Murni:</span><span id="preview_exp_bulanan">Rp 0 / Bulan</span></div>
                             <div class="flex justify-between pl-2"><span>- Pengeluaran Tahunan Murni:</span><span id="preview_exp_tahunan">Rp 0 / Tahun</span></div>
 
+                            <!-- REVISI LAPORAN PANEN BUAH/TANI BULANAN + TAHUNAN AL -->
                             <div class="text-purple-400 font-bold border-t border-slate-700 pt-1 mt-1 text-[10px]">Kekayaan Aset Lapangan:</div>
                             <div class="flex justify-between pl-2"><span>- Nilai Pasar Tanah:</span><span id="preview_asset_tanah">Rp 0</span></div>
                             <div class="flex justify-between pl-2"><span>- Nilai Pohon Tegakan:</span><span id="preview_asset_pohon">Rp 0</span></div>
-                            <div class="flex justify-between pl-2"><span>- Nilai Produksi Buah/Tani:</span><span id="preview_asset_buah">Rp 0 / Tahun</span></div>
+                            <div class="flex justify-between pl-2"><span>- Nilai Hasil Panen Buah atau Tani (Bln):</span><span id="preview_asset_buah_bln" class="text-purple-300">Rp 0 / Bulan</span></div>
+                            <div class="flex justify-between pl-2"><span>- Nilai Hasil Panen Buah atau Tani (Thn):</span><span id="preview_asset_buah_thn" class="text-purple-300">Rp 0 / Tahun</span></div>
                             <div class="flex justify-between pl-2"><span>- Nilai Jual Kendaraan:</span><span id="preview_asset_kendaraan">Rp 0</span></div>
                         </div>
 
@@ -1757,7 +1763,7 @@
 
             document.getElementById('validation_alerts').innerHTML = (absoluteFinancialDelta < 0) ? `<div class="alert-danger-box">🔴 Anomali Defisit Finansial: Pengeluaran sebulan lebih besar dari total pendapatan. Pilih sumber penutup.</div>` : '';
 
-            // LOGIKA HITUNG FREKUENSI PANEN DINAMIS AGRO AL
+            // REVISI AL: LOGIKA HITUNG FREKUENSI PANEN DINAMIS AGRO 
             const sPanen = document.getElementById('asset_siklus_panen').value;
             const bBuah = parseFloat(document.getElementById('asset_berat_buah').value) || 0;
             const hBuah = parseFloat(document.getElementById('asset_harga_buah').value) || 0;
@@ -1770,6 +1776,7 @@
             else if(sPanen === 'SETAHUN_3') totalKgTahunanAsetBuah = bBuah * 3;
 
             const totalRupiahTahunanAsetBuah = totalKgTahunanAsetBuah * hBuah;
+            const totalRupiahBulananAsetBuah = totalRupiahTahunanAsetBuah / 12;
 
             const lTanah = parseFloat(document.getElementById('asset_luas_tanah').value) || 0;
             const hTanah = parseFloat(document.getElementById('asset_harga_tanah').value) || 0;
@@ -1778,6 +1785,12 @@
             const vPohon = parseFloat(document.getElementById('asset_harga_pohon').value) || 0;
             const nMotor = document.getElementById('asset_nama_kendaraan').value;
             const vMotor = parseFloat(document.getElementById('asset_harga_kendaraan').value) || 0;
+
+            // RENDER REVISI SUB-TOTAL MANDIRI DI BAWAH MASING-MASING INPUT FIELD (AL)
+            document.getElementById('sub_total_asset_tanah').innerText = formatRupiah(lTanah * hTanah);
+            document.getElementById('sub_total_asset_pohon').innerText = formatRupiah(qPohon * vPohon);
+            document.getElementById('sub_total_asset_buah').innerText = formatRupiah(totalRupiahTahunanAsetBuah) + " / Tahun";
+            document.getElementById('sub_total_asset_kendaraan').innerText = formatRupiah(vMotor);
 
             // RENDER REKAPAN PREVIEW MENTAH DI BAGIAN ATAS MODUL 5 (AL)
             document.getElementById('preview_gaji_art').innerText = formatRupiah(totalArtSalaries);
@@ -1797,7 +1810,10 @@
 
             document.getElementById('preview_asset_tanah').innerText = formatRupiah(lTanah * hTanah);
             document.getElementById('preview_asset_pohon').innerText = formatRupiah(qPohon * vPohon);
-            document.getElementById('preview_asset_buah').innerText = formatRupiah(totalRupiahTahunanAsetBuah);
+            
+            // REVISI LABEL & PEMECAHAN BULANAN + TAHUNAN AKURAT PADA PREVIEW MENTAH (AL)
+            document.getElementById('preview_asset_buah_bln').innerText = formatRupiah(totalRupiahBulananAsetBuah) + " / Bulan";
+            document.getElementById('preview_asset_buah_thn').innerText = formatRupiah(totalRupiahTahunanAsetBuah) + " / Tahun";
             document.getElementById('preview_asset_kendaraan').innerText = formatRupiah(vMotor);
 
             generateNarrativeOutputText(artDataList, otherIncomesList, totalUsahaDitemukan, aggregateNetBusinessProfit, nonFoodList, absoluteFinancialDelta, valListrik, valInternet, inputListrikRaw, usahaDataList, totalKgTahunanAsetBuah, totalRupiahTahunanAsetBuah);
@@ -1828,7 +1844,7 @@
                         if (p.status_kerja === 'BURUH_LEPAS') {
                             text += `Sdr/i ${namaStr} bekerja sebagai Buruh Lepas dengan estimasi pendapatan harian sekitar ${formatRupiah(p.gaji_harian)} (rata-rata bekerja ${p.hari_kerja} hari sebulan), sehingga total pendapatan bulanan berfluktuasi di kisaran ${formatRupiah(p.gaji)}. `;
                         } else {
-                            text += `Sdr/i ${namaStr} bekerja sebagai ${p.kerja} dengan pendapatan utama sebulan sebesar ${formatRupiah(p.gaji)}. `;
+                            text += `Sdr/i ${namaStr} bekerja as ${p.kerja} dengan pendapatan utama sebulan sebesar ${formatRupiah(p.gaji)}. `;
                         }
                     }
                 });
@@ -1896,8 +1912,11 @@
             const sPanen = document.getElementById('asset_siklus_panen').value;
             
             let labelSiklus = "";
-            if(sPanen.startsWith("SEBULAN")) labelSiklus = sPanen.replace("SEBULAN_", "") + " kali sebulan";
-            else labelSiklus = sPanen.replace("SETAHUN_", "") + " kali setahun";
+            if(sPanen === 'SEBULAN_1') labelSiklus = "1 kali sebulan";
+            else if(sPanen === 'SEBULAN_2') labelSiklus = "2 kali sebulan";
+            else if(sPanen === 'SETAHUN_1') labelSiklus = "1 kali setahun";
+            else if(sPanen === 'SETAHUN_2') labelSiklus = "2 kali setahun";
+            else if(sPanen === 'SETAHUN_3') labelSiklus = "3 kali setahun";
 
             if(jmlPohon > 0 || totalKgTahunanAsetBuah > 0) {
                 dataAsetTercetak = true;
