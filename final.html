@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KangSensus Assistant - SE2026 Toolkit (Modern Professional Edition)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -756,9 +756,9 @@
         let assetTanahCount = 0, assetPohonCount = 0, assetBuahCount = 0, assetKendaraanCount = 0;
         let currentEditingId = null, isViewAllModeActive = false, isAssetSectionMinimized = false;
         
-        // GLOBAL TRANSIT STATE UNTUK LOGIKA MAKAN REVISI REKAN AL
+        // REVISI AL: VARIABEL STATE BACKEND PERHITUNGAN JUJUR (TETAP MENYIMPAN DESIMAL ASLI)
         let globalMakanMingguanTransit = 0;
-        let globalMakanBulananFinal = 0;
+        let globalMakanBulananFinalAsli = 0;
 
         const soundClick = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav'); 
         const soundSuccess = new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav'); 
@@ -1014,31 +1014,31 @@
             document.getElementById('asset_kendaraan_container').insertAdjacentHTML('beforeend', html);
         }
 
-        // REVISI LOGIKA UTAMA AL: JEMBATAN TRANSIT MINGGUAN KEMUDIAN DIKALI 30 / 7
+        // KOREKSI MUTLAK AL: JEMBATAN TRANSIT MINGGU ASLI (DATA FINANSIAL TETAP PRESISI, VISUAL BULAT TANPA KOMA KEPANJANGAN)
         function calculateMakanProjections() {
             const skala = document.getElementById('m4_makan_skala').value;
             const nilai = parseFloat(document.getElementById('m4_makan_nilai').value) || 0;
             
-            // 1. TAHAP TRANSIT: Apapun isiannya, konversi paksa ke skala MINGGUAN murni dulu
+            // 1. TAHAP TRANSIT BACKEND: Simpan desimal murni apa adanya di memori tanpa pembulatan awal
             if (skala === "Harian") {
                 globalMakanMingguanTransit = nilai * 7;
             } else if (skala === "Mingguan") {
                 globalMakanMingguanTransit = nilai;
             } else if (skala === "Bulanan") {
-                globalMakanMingguanTransit = nilai * 7 / 30;
+                globalMakanMingguanTransit = (nilai * 7) / 30;
             }
 
-            // 2. TAHAP BULANAN FINAL: Dari nilai transit mingguan, tembak ke bulanan via rumus murni (x 30 / 7)
-            globalMakanBulananFinal = Math.round(globalMakanMingguanTransit * 30 / 7);
+            // 2. TEMBAK KE BULANAN ASLI VIA RUMUS AL (x 30 / 7) -> Tetap mempertahankan nilai pecahan asli untuk kalkulasi internal
+            globalMakanBulananFinalAsli = (globalMakanMingguanTransit * 30) / 7;
 
-            // 3. TAMPILKAN ESTIMASI PREVIEW DI LAYAR SECARA PROPORSIONAL
+            // 3. CETAK PREVIEW LAYAR: Potong paksa visual ekor desimalnya menggunakan Math.trunc() agar mata pengguna melihat angka bulat bersih
             document.getElementById('row_proj_makan_hari').style.display = 'none'; 
             document.getElementById('row_proj_makan_minggu').style.display = 'none'; 
             document.getElementById('row_proj_makan_bulan').style.display = 'none';
             
-            document.getElementById('proj_makan_hari_val').innerText = formatRupiah(globalMakanMingguanTransit / 7);
-            document.getElementById('proj_makan_minggu_val').innerText = formatRupiah(globalMakanMingguanTransit);
-            document.getElementById('proj_makan_bulan_val').innerText = formatRupiah(globalMakanBulananFinal);
+            document.getElementById('proj_makan_hari_val').innerText = formatRupiahVisualBulat(globalMakanMingguanTransit / 7);
+            document.getElementById('proj_makan_minggu_val').innerText = formatRupiahVisualBulat(globalMakanMingguanTransit);
+            document.getElementById('proj_makan_bulan_val').innerText = formatRupiahVisualBulat(globalMakanBulananFinalAsli);
 
             if (skala === 'Harian') {
                 document.getElementById('row_proj_makan_minggu').style.display = 'flex';
@@ -1085,7 +1085,10 @@
             return period === 'Harian' ? v * 22 : period === 'Mingguan' ? v * 4.3 : period === 'Tahunan' ? v / 12 : v;
         }
 
-        function formatRupiah(num) { return 'Rp ' + Math.round(num).toLocaleString('id-ID'); }
+        // FUNGSI VISUAL BARU: Memotong ekor desimal tanpa melakukan Math.round pembulatan naik, agar tampilan mata 100% bulat bersih
+        function formatRupiahVisualBulat(num) { 
+            return 'Rp ' + Math.trunc(num).toLocaleString('id-ID'); 
+        }
 
         function calculateAll() {
             let totalArtSalaries = 0;
@@ -1120,7 +1123,7 @@
                 if(document.getElementById(`u_jenis_laba_${id}`).value === 'KOTOR') { omzet = oVal; laba = omzet - costs; }
                 else { laba = oVal; omzet = laba + costs; }
 
-                document.getElementById(`u_calc_laba_${id}`).innerText = formatRupiah(laba);
+                document.getElementById(`u_calc_laba_${id}`).innerText = formatRupiahVisualBulat(laba);
                 aggregateNetBusinessProfit += laba; aggregateGrossBusinessOmzet += omzet; aggregateBusinessCosts += costs;
             });
 
@@ -1164,11 +1167,11 @@
                 if(price > 0) kendaraanDetailsArray.push(`${seri}`);
             });
 
-            document.getElementById('sub_total_asset_tanah').innerText = formatRupiah(totTanah);
+            document.getElementById('sub_total_asset_tanah').innerText = formatRupiahVisualBulat(totTanah);
             document.getElementById('sub_total_asset_pohon').innerText = formatRupiah(totPohon);
-            document.getElementById('sub_total_asset_buah_bln').innerText = formatRupiah(totBuahThn / 12) + " / Bulan";
-            document.getElementById('sub_total_asset_buah_thn').innerText = formatRupiah(totBuahThn);
-            document.getElementById('sub_total_asset_kendaraan').innerText = formatRupiah(totKendaraan);
+            document.getElementById('sub_total_asset_buah_bln').innerText = formatRupiahVisualBulat(totBuahThn / 12) + " / Bulan";
+            document.getElementById('sub_total_asset_buah_thn').innerText = formatRupiahVisualBulat(totBuahThn);
+            document.getElementById('sub_total_asset_kendaraan').innerText = formatRupiahVisualBulat(totKendaraan);
 
             const valListrik = parseFloat(document.getElementById('m5_listrik_bulanan').value)||0;
             const valInternet = parseFloat(document.getElementById('m5_internet_bulanan').value)||0;
@@ -1185,43 +1188,43 @@
                 nonFoodList.push({ nama:n, periode:p, nominal:v });
             });
 
-            // SINKRONISASI UPDATE NILAI TRANSIT BULANAN FINAL KE LAYAR PREVIEW SENSUS
-            document.getElementById('mod4_makan_bulanan_screen').innerText = formatRupiah(globalMakanBulananFinal) + " / Bulan";
-            document.getElementById('mod4_total_bulanan_screen').innerText = formatRupiah(screenSumBulanan) + " / Bulan";
-            document.getElementById('mod4_total_tahunan_screen').innerText = formatRupiah(screenSumTahunan) + " / Tahun";
+            // OUTPUT INTERFACE: MENGGUNAKAN FORMAT VISUAL BULAT REVISI AL
+            document.getElementById('mod4_makan_bulanan_screen').innerText = formatRupiahVisualBulat(globalMakanBulananFinalAsli) + " / Bulan";
+            document.getElementById('mod4_total_bulanan_screen').innerText = formatRupiahVisualBulat(screenSumBulanan) + " / Bulan";
+            document.getElementById('mod4_total_tahunan_screen').innerText = formatRupiahVisualBulat(screenSumTahunan) + " / Tahun";
 
-            // TOTAL EXPENSES MEMAKAI NILAI MAKAN TRANSIT YANG KONSISTEN BEBAS KOMA
-            const validatorExpenses = globalMakanBulananFinal + internalValidatorNonFoodMonthly;
+            // PERHITUNGAN NERACA: Tetap menggunakan nilai bulanan asli (termasuk desimal tak terlihat) agar penjumlahan akurat
+            const validatorExpenses = globalMakanBulananFinalAsli + internalValidatorNonFoodMonthly;
             const totalRevenue = totalArtSalaries + totalOtherIncomes + aggregateNetBusinessProfit;
             const delta = totalRevenue - validatorExpenses;
 
-            document.getElementById('v_tot_pendapatan').innerText = formatRupiah(totalArtSalaries + totalOtherIncomes);
-            document.getElementById('v_tot_laba_usaha').innerText = formatRupiah(aggregateNetBusinessProfit);
-            document.getElementById('v_tot_pengeluaran').innerText = formatRupiah(validatorExpenses);
-            document.getElementById('v_selisih').innerText = formatRupiah(delta);
+            document.getElementById('v_tot_pendapatan').innerText = formatRupiahVisualBulat(totalArtSalaries + totalOtherIncomes);
+            document.getElementById('v_tot_laba_usaha').innerText = formatRupiahVisualBulat(aggregateNetBusinessProfit);
+            document.getElementById('v_tot_pengeluaran').innerText = formatRupiahVisualBulat(validatorExpenses);
+            document.getElementById('v_selisih').innerText = formatRupiahVisualBulat(delta);
 
             document.getElementById('sumber_penutup_group').style.display = delta < 0 ? 'block' : 'none';
             document.getElementById('validation_badge_container').innerHTML = delta < 0 ? `<div id="status_badge" class="badge-status status-danger">🔴 Perlu Konfirmasi (Defisit)</div>` : `<div id="status_badge" class="badge-status status-consistent">🟢 Data Consistent</div>`;
             document.getElementById('validation_alerts').innerHTML = delta < 0 ? `<div class="alert-danger-box">🔴 Anomali Defisit Finansial: Total pengeluaran bulanan melebihi pendapatan.</div>` : '';
 
-            document.getElementById('preview_gaji_art').innerText = formatRupiah(totalArtSalaries);
-            document.getElementById('preview_sekunder').innerText = formatRupiah(totalOtherIncomes);
-            document.getElementById('preview_u_kotor_bln').innerText = formatRupiah(aggregateGrossBusinessOmzet);
-            document.getElementById('preview_u_biaya_bln').innerText = formatRupiah(aggregateBusinessCosts);
-            document.getElementById('preview_u_bersih_bln').innerText = formatRupiah(aggregateNetBusinessProfit);
-            document.getElementById('preview_u_kotor_thn').innerText = formatRupiah(aggregateGrossBusinessOmzet * 12);
-            document.getElementById('preview_u_biaya_thn').innerText = formatRupiah(aggregateBusinessCosts * 12);
-            document.getElementById('preview_u_bersih_thn').innerText = formatRupiah(aggregateNetBusinessProfit * 12);
-            document.getElementById('preview_exp_makan').innerText = formatRupiah(globalMakanBulananFinal);
-            document.getElementById('preview_exp_bulanan').innerText = formatRupiah(screenSumBulanan);
-            document.getElementById('preview_exp_tahunan').innerText = formatRupiah(screenSumTahunan);
-            document.getElementById('preview_asset_tanah').innerText = formatRupiah(totTanah);
-            document.getElementById('preview_asset_pohon').innerText = formatRupiah(totPohon);
-            document.getElementById('preview_asset_buah_bln').innerText = formatRupiah(totBuahThn / 12) + " / Bulan";
-            document.getElementById('preview_asset_buah_thn').innerText = formatRupiah(totBuahThn);
-            document.getElementById('preview_asset_kendaraan').innerText = formatRupiah(totKendaraan);
+            document.getElementById('preview_gaji_art').innerText = formatRupiahVisualBulat(totalArtSalaries);
+            document.getElementById('preview_sekunder').innerText = formatRupiahVisualBulat(totalOtherIncomes);
+            document.getElementById('preview_u_kotor_bln').innerText = formatRupiahVisualBulat(aggregateGrossBusinessOmzet);
+            document.getElementById('preview_u_biaya_bln').innerText = formatRupiahVisualBulat(aggregateBusinessCosts);
+            document.getElementById('preview_u_bersih_bln').innerText = formatRupiahVisualBulat(aggregateNetBusinessProfit);
+            document.getElementById('preview_u_kotor_thn').innerText = formatRupiahVisualBulat(aggregateGrossBusinessOmzet * 12);
+            document.getElementById('preview_u_biaya_thn').innerText = formatRupiahVisualBulat(aggregateBusinessCosts * 12);
+            document.getElementById('preview_u_bersih_thn').innerText = formatRupiahVisualBulat(aggregateNetBusinessProfit * 12);
+            document.getElementById('preview_exp_makan').innerText = formatRupiahVisualBulat(globalMakanBulananFinalAsli);
+            document.getElementById('preview_exp_bulanan').innerText = formatRupiahVisualBulat(screenSumBulanan);
+            document.getElementById('preview_exp_tahunan').innerText = formatRupiahVisualBulat(screenSumTahunan);
+            document.getElementById('preview_asset_tanah').innerText = formatRupiahVisualBulat(totTanah);
+            document.getElementById('preview_asset_pohon').innerText = formatRupiahVisualBulat(totPohon);
+            document.getElementById('preview_asset_buah_bln').innerText = formatRupiahVisualBulat(totBuahThn / 12) + " / Bulan";
+            document.getElementById('preview_asset_buah_thn').innerText = formatRupiahVisualBulat(totBuahThn);
+            document.getElementById('preview_asset_kendaraan').innerText = formatRupiahVisualBulat(totKendaraan);
 
-            generateNarrativeText(artDataList, totalOtherIncomes, aggregateNetBusinessProfit, nonFoodList, delta, valListrik, valInternet, totTanah, totPohon, totBuahThn, totKendaraan, tanahDetailsArray, pohonDetailsArray, buahDetailsArray, kendaraanDetailsArray, globalMakanBulananFinal, screenSumBulanan, screenSumTahunan);
+            generateNarrativeText(artDataList, totalOtherIncomes, aggregateNetBusinessProfit, nonFoodList, delta, valListrik, valInternet, totTanah, totPohon, totBuahThn, totKendaraan, tanahDetailsArray, pohonDetailsArray, buahDetailsArray, kendaraanDetailsArray, globalMakanBulananFinalAsli, screenSumBulanan, screenSumTahunan);
         }
 
         function generateNarrativeText(art, sec, labaU, nonF, delta, lis, net, tTanah, tPohon, tBuah, tKen, tArr, pArr, bArr, kArr, makanBln, nonMakanBln, nonMakanThn) {
@@ -1229,17 +1232,18 @@
             if(!nr) { document.getElementById('narrative_output').innerText = "Menunggu data bangunan..."; return; }
             let t = `Hasil pencacahan pada keluarga di rumah nomor bangunan ${nr}. `;
             if(document.getElementById('m3_usaha_container').children.length === 0) t += `Keluarga memang tidak memiliki usaha. `;
-            art.forEach(p => { if(p.kerja) t += `Sdr/i ${p.nama} bekerja sebagai ${p.kerja} dengan pendapatan sebulan ${formatRupiah(p.gaji)}. `; });
-            if(labaU > 0) t += `Keluarga memiliki unit usaha dengan keuntungan bersih ${formatRupiah(labaU)}/bulan. `;
+            art.forEach(p => { if(p.kerja) t += `Sdr/i ${p.nama} bekerja sebagai ${p.kerja} dengan pendapatan sebulan ${formatRupiahVisualBulat(p.gaji)}. `; });
+            if(labaU > 0) t += `Keluarga memiliki unit usaha dengan keuntungan bersih ${formatRupiahVisualBulat(labaU)}/bulan. `;
             
-            t += `Pengeluaran konsumsi makanan tercatat ${formatRupiah(makanBln)}/bulan, biaya operasional bulanan rutin (listrik, internet, dll) sebesar ${formatRupiah(nonMakanBln)}/bulan, serta total pengeluaran non-makanan skala berkala/tahunan sebesar ${formatRupiah(nonMakanThn)}/tahun. `;
+            // NARASI OUTPUT: JEMBATAN TRANSIT MURNI TANPA DESIMAL KEPANJANGAN DI LAYAR
+            t += `Pengeluaran konsumsi makanan tercatat ${formatRupiahVisualBulat(makanBln)}/bulan, biaya operasional bulanan rutin (listrik, internet, dll) sebesar ${formatRupiahVisualBulat(nonMakanBln)}/bulan, serta total pengeluaran non-makanan skala berkala/tahunan sebesar ${formatRupiahVisualBulat(nonMakanThn)}/tahun. `;
             
             if(tTanah > 0 || pArr.length > 0 || bArr.length > 0 || kArr.length > 0) {
                 t += `\n\nKeluarga ini memiliki rincian aset potensial di lapangan meliputi: `;
-                if(tArr.length > 0) t += `aset tanah berupa ${tArr.join(' dan ')} dengan akumulasi nilai pasar ${formatRupiah(tTanah)}, `;
-                if(pArr.length > 0) t += `aset tegakan pohon berupa ${pArr.join(' serta ')} (total taksiran ${formatRupiah(tPohon)}), `;
-                if(bArr.length > 0) t += `aset hortikultura produktif berupa ${bArr.join(' serta ')} dengan nilai estimasi hasil panen ${formatRupiah(tBuah / 12)}/bulan atau sepadan dengan ${formatRupiah(tBuah)}/tahun, `;
-                if(kArr.length > 0) t += `serta aset bergerak berupa kendaraan ${kArr.join(', ')} dengan taksiran nilai pasar ${formatRupiah(tKen)}.`;
+                if(tArr.length > 0) t += `aset tanah berupa ${tArr.join(' dan ')} dengan akumulasi nilai pasar ${formatRupiahVisualBulat(tTanah)}, `;
+                if(pArr.length > 0) t += `aset tegakan pohon berupa ${pArr.join(' serta ')} (total taksiran ${formatRupiahVisualBulat(tPohon)}), `;
+                if(bArr.length > 0) t += `aset hortikultura produktif berupa ${bArr.join(' serta ')} dengan nilai estimasi hasil panen ${formatRupiahVisualBulat(tBuah / 12)}/bulan atau sepadan dengan ${formatRupiahVisualBulat(tBuah)}/tahun, `;
+                if(kArr.length > 0) t += `serta aset bergerak berupa kendaraan ${kArr.join(', ')} dengan taksiran nilai pasar ${formatRupiahVisualBulat(tKen)}.`;
             }
             if(delta < 0) t += `\n\nDefisit neraca keuangan ditutup via: ${document.getElementById('v_sumber_defisit').value||'Bantuan/Tabungan'}. `;
             document.getElementById('narrative_output').innerText = t;
