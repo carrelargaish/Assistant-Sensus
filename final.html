@@ -455,29 +455,6 @@
             margin-bottom: 6px;
         }
 
-        .btn-edit {
-            background: #E0F2FE;
-            color: #0369A1;
-            border: 1px solid #BAE6FD;
-            padding: 4px 10px;
-            font-size: 11px;
-            font-weight: 600;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-right: 6px;
-        }
-
-        .btn-del-rec {
-            background: #FEE2E2;
-            color: #DC2626;
-            border: 1px solid #FCA5A5;
-            padding: 4px 10px;
-            font-size: 11px;
-            font-weight: 600;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
         .btn-backup {
             background: #1E3A8A;
             color: #ffffff;
@@ -593,7 +570,6 @@
                         <div id="m3_usaha_container"></div>
                         <button type="button" class="btn-add" onclick="addUsahaRow()">➕ Tambah Unit Usaha Baru</button>
 
-                        <!-- REVISI MASTER AL: MULTI-ASET DINAMIS BER-HAPUS + FITUR ACORDEON MINIMIZE -->
                         <div class="mt-6 p-4 bg-slate-50 border border-gray-200 rounded-2xl">
                             <div class="card-title !mb-2 !border-none !p-0">
                                 <span class="text-xs font-bold text-blue-900 uppercase tracking-wider">🌳 Kategori Taksiran Aset Lapangan Potensial</span>
@@ -656,7 +632,7 @@
                                 <tr>
                                     <td class="font-bold">A. Konsumsi Makanan *</td>
                                     <td>
-                                        <select id="m4_makan_skala" onchange="handleMakanSkalaChange(); calculateAll();">
+                                        <select id="m4_makan_skala" onchange="calculateMakanProjections(); calculateAll();">
                                             <option value="Harian">Harian</option><option value="Mingguan">Mingguan</option><option value="Bulanan" selected>Bulanan</option>
                                         </select>
                                     </td>
@@ -715,7 +691,7 @@
                             <div class="flex justify-between pl-2"><span>- Laba Bersih Tahunan:</span><span id="preview_u_bersih_thn">Rp 0</span></div>
 
                             <div class="text-emerald-400 font-bold border-t border-slate-700 pt-1 mt-1 text-[10px]">Komponen Pengeluaran Lapangan:</div>
-                            <div class="flex justify-between pl-2"><span>- Pengeluaran Makanan:</span><span id="preview_exp_makan">Rp 0 / Bulan</span></div>
+                            <div class="flex justify-between pl-2"><span>- Pengeluaran Makanan (Transit):</span><span id="preview_exp_makan" class="text-emerald-300">Rp 0 / Bulan</span></div>
                             <div class="flex justify-between pl-2"><span>- Pengeluaran Bulanan Murni:</span><span id="preview_exp_bulanan">Rp 0 / Bulan</span></div>
                             <div class="flex justify-between pl-2"><span>- Pengeluaran Tahunan Murni:</span><span id="preview_exp_tahunan">Rp 0 / Tahun</span></div>
 
@@ -778,7 +754,11 @@
     <script>
         let artCount = 0, pendapatanCount = 0, usahaCount = 0, nonMakanCount = 0;
         let assetTanahCount = 0, assetPohonCount = 0, assetBuahCount = 0, assetKendaraanCount = 0;
-        let currentEditingId = null, globalMakanBulanan = 0, isViewAllModeActive = false, isAssetSectionMinimized = false;
+        let currentEditingId = null, isViewAllModeActive = false, isAssetSectionMinimized = false;
+        
+        // GLOBAL TRANSIT STATE UNTUK LOGIKA MAKAN REVISI REKAN AL
+        let globalMakanMingguanTransit = 0;
+        let globalMakanBulananFinal = 0;
 
         const soundClick = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav'); 
         const soundSuccess = new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav'); 
@@ -822,7 +802,7 @@
         function initDefaultSetup() {
             addARTRow(); addNonMakanRow();
             addAssetTanahRow(); addAssetPohonRow(); addAssetBuahRow(); addAssetKendaraanRow();
-            handleMakanSkalaChange(); calculateAll(); loadRecordsDashboard(); navigateWizard(1); 
+            calculateMakanProjections(); calculateAll(); loadRecordsDashboard(); navigateWizard(1); 
         }
 
         function switchMasterTab(tabId) {
@@ -930,7 +910,7 @@
                     <div class="form-group"><label>Komoditas Utama</label><input type="text" id="u_komoditas_${id}" oninput="calculateAll()"></div>
                     
                     <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl mb-3">
-                        <label class="block text-xs font-bold text-amber-900 mb-1">Kalkulator Karyawan Dinamis (Revisi AL):</label>
+                        <label class="block text-xs font-bold text-amber-900 mb-1">Kalkulator Karyawan Dinamis:</label>
                         <div class="grid grid-cols-2 gap-2">
                             <input type="number" id="u_jml_karyawan_${id}" placeholder="Jumlah Orang" oninput="handleKaryawanBox(${id}); calculateAll();">
                             <div id="u_salary_box_${id}"><input type="number" id="u_c_gaji_v_${id}" placeholder="Total Gaji (Rp)" oninput="calculateAll()"></div>
@@ -981,7 +961,6 @@
             }
         }
 
-        // REVISI AL: INTEGRASI MULTI ASET DENGAN TOMBOL HAPUS (X) INSTAN & MINIMIZE SAKLAR
         function toggleAssetSectionBlock() {
             isAssetSectionMinimized = !isAssetSectionMinimized;
             const wrapper = document.getElementById('collapsible_asset_wrapper_box');
@@ -996,7 +975,7 @@
         function addAssetTanahRow() {
             assetTanahCount++; const id = assetTanahCount;
             const html = `
-                <div class="flex items-center gap-2 mb-2 bg-white p-2 border border-gray-200 rounded animate-fade-in" id="as_tanah_row_${id}">
+                <div class="flex items-center gap-2 mb-2 bg-white p-2 border border-gray-200 rounded" id="as_tanah_row_${id}">
                     <input type="number" placeholder="Luas (m²)" class="as-t-luas" oninput="calculateAll()">
                     <input type="number" placeholder="Harga/m²" class="as-t-harga" oninput="calculateAll()">
                     <button type="button" onclick="this.parentElement.remove(); calculateAll();" class="text-xs font-bold text-red-600 px-2 py-1 bg-red-50 rounded border border-red-200 shadow-sm hover:bg-red-500 hover:text-white transition-all">X</button>
@@ -1006,7 +985,7 @@
         function addAssetPohonRow() {
             assetPohonCount++; const id = assetPohonCount;
             const html = `
-                <div class="flex items-center gap-1 mb-2 bg-white p-2 border border-gray-200 rounded animate-fade-in" id="as_pohon_row_${id}">
+                <div class="flex items-center gap-1 mb-2 bg-white p-2 border border-gray-200 rounded" id="as_pohon_row_${id}">
                     <input type="text" placeholder="Jenis Pohon" class="as-p-jenis w-24">
                     <input type="number" placeholder="Btg" class="as-p-qty w-14" oninput="calculateAll()">
                     <input type="number" placeholder="Harga" class="as-p-price w-20" oninput="calculateAll()">
@@ -1017,7 +996,7 @@
         function addAssetBuahRow() {
             assetBuahCount++; const id = assetBuahCount;
             const html = `
-                <div class="bg-white p-2 border border-gray-200 rounded mb-2 relative animate-fade-in" id="as_buah_row_${id}">
+                <div class="bg-white p-2 border border-gray-200 rounded mb-2 relative" id="as_buah_row_${id}">
                     <button type="button" onclick="this.parentElement.remove(); calculateAll();" class="absolute top-2 right-2 text-[10px] font-bold text-red-600 px-2 py-0.5 bg-red-50 rounded border border-red-200 shadow-sm hover:bg-red-500 hover:text-white transition-all">X</button>
                     <div class="grid grid-cols-2 gap-1 mb-1 pr-6"><input type="text" placeholder="Komoditas (misal: Mangga)" class="as-b-jenis"><input type="number" placeholder="Harga/kg" class="as-b-price" oninput="calculateAll()"></div>
                     <div class="grid grid-cols-3 gap-1"><input type="number" placeholder="Kg Panen" class="as-b-qty" oninput="calculateAll()"><select class="as-b-cycle col-span-2 !py-[8px]" onchange="calculateAll()"><option value="12">1 Kali Sebulan</option><option value="24">2 Kali Sebulan</option><option value="1">1 Kali Setahun</option><option value="2">2 Kali Setahun</option><option value="3">3 Kali Setahun</option></select></div>
@@ -1027,7 +1006,7 @@
         function addAssetKendaraanRow() {
             assetKendaraanCount++; const id = assetKendaraanCount;
             const html = `
-                <div class="flex items-center gap-2 mb-2 bg-white p-2 border border-gray-200 rounded animate-fade-in" id="as_k_row_${id}">
+                <div class="flex items-center gap-2 mb-2 bg-white p-2 border border-gray-200 rounded" id="as_k_row_${id}">
                     <input type="text" placeholder="Seri (misal: Beat/Supra)" class="as-k-seri">
                     <input type="number" placeholder="Harga Jual" class="as-k-price" oninput="calculateAll()">
                     <button type="button" onclick="this.parentElement.remove(); calculateAll();" class="text-xs font-bold text-red-600 px-2 py-1 bg-red-50 rounded border border-red-200 shadow-sm hover:bg-red-500 hover:text-white transition-all">X</button>
@@ -1035,14 +1014,42 @@
             document.getElementById('asset_kendaraan_container').insertAdjacentHTML('beforeend', html);
         }
 
-        function handleMakanSkalaChange() { calculateMakanProjections(); }
+        // REVISI LOGIKA UTAMA AL: JEMBATAN TRANSIT MINGGUAN KEMUDIAN DIKALI 30 / 7
         function calculateMakanProjections() {
             const skala = document.getElementById('m4_makan_skala').value;
-            const nilai = parseFloat(document.getElementById('m4_makan_nilai').value)||0;
-            document.getElementById('row_proj_makan_hari').style.display='none'; document.getElementById('row_proj_makan_minggu').style.display='none'; document.getElementById('row_proj_makan_bulan').style.display='none';
-            if(skala === 'Harian') { globalMakanBulanan = nilai * 30; document.getElementById('proj_makan_minggu_val').innerText = formatRupiah(nilai * 7); document.getElementById('proj_makan_bulan_val').innerText = formatRupiah(globalMakanBulanan); document.getElementById('row_proj_makan_minggu').style.display='flex'; document.getElementById('row_proj_makan_bulan').style.display='flex'; }
-            else if(skala === 'Mingguan') { globalMakanBulanan = (nilai * 30)/7; document.getElementById('proj_makan_hari_val').innerText = formatRupiah(nilai / 7); document.getElementById('proj_makan_bulan_val').innerText = formatRupiah(globalMakanBulanan); document.getElementById('row_proj_makan_hari').style.display='flex'; document.getElementById('row_proj_makan_bulan').style.display='flex'; }
-            else { globalMakanBulanan = nilai; document.getElementById('proj_makan_hari_val').innerText = formatRupiah(nilai / 30); document.getElementById('proj_makan_minggu_val').innerText = formatRupiah((nilai*7)/30); document.getElementById('row_proj_makan_hari').style.display='flex'; document.getElementById('row_proj_makan_minggu').style.display='flex'; }
+            const nilai = parseFloat(document.getElementById('m4_makan_nilai').value) || 0;
+            
+            // 1. TAHAP TRANSIT: Apapun isiannya, konversi paksa ke skala MINGGUAN murni dulu
+            if (skala === "Harian") {
+                globalMakanMingguanTransit = nilai * 7;
+            } else if (skala === "Mingguan") {
+                globalMakanMingguanTransit = nilai;
+            } else if (skala === "Bulanan") {
+                globalMakanMingguanTransit = nilai * 7 / 30;
+            }
+
+            // 2. TAHAP BULANAN FINAL: Dari nilai transit mingguan, tembak ke bulanan via rumus murni (x 30 / 7)
+            globalMakanBulananFinal = Math.round(globalMakanMingguanTransit * 30 / 7);
+
+            // 3. TAMPILKAN ESTIMASI PREVIEW DI LAYAR SECARA PROPORSIONAL
+            document.getElementById('row_proj_makan_hari').style.display = 'none'; 
+            document.getElementById('row_proj_makan_minggu').style.display = 'none'; 
+            document.getElementById('row_proj_makan_bulan').style.display = 'none';
+            
+            document.getElementById('proj_makan_hari_val').innerText = formatRupiah(globalMakanMingguanTransit / 7);
+            document.getElementById('proj_makan_minggu_val').innerText = formatRupiah(globalMakanMingguanTransit);
+            document.getElementById('proj_makan_bulan_val').innerText = formatRupiah(globalMakanBulananFinal);
+
+            if (skala === 'Harian') {
+                document.getElementById('row_proj_makan_minggu').style.display = 'flex';
+                document.getElementById('row_proj_makan_bulan').style.display = 'flex';
+            } else if (skala === 'Mingguan') {
+                document.getElementById('row_proj_makan_hari').style.display = 'flex';
+                document.getElementById('row_proj_makan_bulan').style.display = 'flex';
+            } else {
+                document.getElementById('row_proj_makan_hari').style.display = 'flex';
+                document.getElementById('row_proj_makan_minggu').style.display = 'flex';
+            }
         }
 
         function addNonMakanRow(saved = null) {
@@ -1117,10 +1124,9 @@
                 aggregateNetBusinessProfit += laba; aggregateGrossBusinessOmzet += omzet; aggregateBusinessCosts += costs;
             });
 
-            // LOGIKA HITUNG DINAMIS KOREKSI MULTI-ASET BARU (AL)
             let totTanah = 0; 
             const tanahDetailsArray = [];
-            document.querySelectorAll('#asset_tanah_container .flex').forEach((el, idx) => { 
+            document.querySelectorAll('#asset_tanah_container .flex').forEach((el) => { 
                 const luas = parseFloat(el.querySelector('.as-t-luas').value)||0;
                 const harga = parseFloat(el.querySelector('.as-t-harga').value)||0;
                 totTanah += luas * harga;
@@ -1129,7 +1135,7 @@
             
             let totPohon = 0; 
             const pohonDetailsArray = [];
-            document.querySelectorAll('#asset_pohon_container .flex').forEach((el, idx) => { 
+            document.querySelectorAll('#asset_pohon_container .flex').forEach((el) => { 
                 const qty = parseInt(el.querySelector('.as-p-qty').value)||0;
                 const price = parseFloat(el.querySelector('.as-p-price').value)||0;
                 const jenis = el.querySelector('.as-p-jenis').value.trim() || 'kayu';
@@ -1139,7 +1145,7 @@
             
             let totBuahThn = 0; 
             const buahDetailsArray = [];
-            document.querySelectorAll('#asset_buah_container .relative').forEach((el, idx) => { 
+            document.querySelectorAll('#asset_buah_container .relative').forEach((el) => { 
                 const qty = parseFloat(el.querySelector('.as-b-qty').value)||0;
                 const price = parseFloat(el.querySelector('.as-b-price').value)||0;
                 const cycle = parseInt(el.querySelector('.as-b-cycle').value)||1;
@@ -1151,7 +1157,7 @@
             
             let totKendaraan = 0; 
             const kendaraanDetailsArray = [];
-            document.querySelectorAll('#asset_kendaraan_container .flex').forEach((el, idx) => { 
+            document.querySelectorAll('#asset_kendaraan_container .flex').forEach((el) => { 
                 const price = parseFloat(el.querySelector('.as-k-price').value)||0;
                 const seri = el.querySelector('.as-k-seri').value.trim() || 'kendaraan';
                 totKendaraan += price; 
@@ -1179,11 +1185,13 @@
                 nonFoodList.push({ nama:n, periode:p, nominal:v });
             });
 
-            document.getElementById('mod4_makan_bulanan_screen').innerText = formatRupiah(globalMakanBulanan) + " / Bulan";
+            // SINKRONISASI UPDATE NILAI TRANSIT BULANAN FINAL KE LAYAR PREVIEW SENSUS
+            document.getElementById('mod4_makan_bulanan_screen').innerText = formatRupiah(globalMakanBulananFinal) + " / Bulan";
             document.getElementById('mod4_total_bulanan_screen').innerText = formatRupiah(screenSumBulanan) + " / Bulan";
             document.getElementById('mod4_total_tahunan_screen').innerText = formatRupiah(screenSumTahunan) + " / Tahun";
 
-            const validatorExpenses = globalMakanBulanan + internalValidatorNonFoodMonthly;
+            // TOTAL EXPENSES MEMAKAI NILAI MAKAN TRANSIT YANG KONSISTEN BEBAS KOMA
+            const validatorExpenses = globalMakanBulananFinal + internalValidatorNonFoodMonthly;
             const totalRevenue = totalArtSalaries + totalOtherIncomes + aggregateNetBusinessProfit;
             const delta = totalRevenue - validatorExpenses;
 
@@ -1204,7 +1212,7 @@
             document.getElementById('preview_u_kotor_thn').innerText = formatRupiah(aggregateGrossBusinessOmzet * 12);
             document.getElementById('preview_u_biaya_thn').innerText = formatRupiah(aggregateBusinessCosts * 12);
             document.getElementById('preview_u_bersih_thn').innerText = formatRupiah(aggregateNetBusinessProfit * 12);
-            document.getElementById('preview_exp_makan').innerText = formatRupiah(globalMakanBulanan);
+            document.getElementById('preview_exp_makan').innerText = formatRupiah(globalMakanBulananFinal);
             document.getElementById('preview_exp_bulanan').innerText = formatRupiah(screenSumBulanan);
             document.getElementById('preview_exp_tahunan').innerText = formatRupiah(screenSumTahunan);
             document.getElementById('preview_asset_tanah').innerText = formatRupiah(totTanah);
@@ -1213,24 +1221,24 @@
             document.getElementById('preview_asset_buah_thn').innerText = formatRupiah(totBuahThn);
             document.getElementById('preview_asset_kendaraan').innerText = formatRupiah(totKendaraan);
 
-            generateNarrativeText(artDataList, totalOtherIncomes, aggregateNetBusinessProfit, nonFoodList, delta, valListrik, valInternet, totTanah, totPohon, totBuahThn, totKendaraan, tanahDetailsArray, pohonDetailsArray, buahDetailsArray, kendaraanDetailsArray);
+            generateNarrativeText(artDataList, totalOtherIncomes, aggregateNetBusinessProfit, nonFoodList, delta, valListrik, valInternet, totTanah, totPohon, totBuahThn, totKendaraan, tanahDetailsArray, pohonDetailsArray, buahDetailsArray, kendaraanDetailsArray, globalMakanBulananFinal, screenSumBulanan, screenSumTahunan);
         }
 
-        // REVISI AL: GENERATOR TEKS NARASI DENGAN PERINCIAN DETAIL NAMA DAN SPESIFIKASI ITEM ASET
-        function generateNarrativeText(art, sec, labaU, nonF, delta, lis, net, tTanah, tPohon, tBuah, tKen, tArr, pArr, bArr, kArr) {
+        function generateNarrativeText(art, sec, labaU, nonF, delta, lis, net, tTanah, tPohon, tBuah, tKen, tArr, pArr, bArr, kArr, makanBln, nonMakanBln, nonMakanThn) {
             const nr = document.getElementById('m1_no_rumah').value.trim();
             if(!nr) { document.getElementById('narrative_output').innerText = "Menunggu data bangunan..."; return; }
             let t = `Hasil pencacahan pada keluarga di rumah nomor bangunan ${nr}. `;
             if(document.getElementById('m3_usaha_container').children.length === 0) t += `Keluarga memang tidak memiliki usaha. `;
             art.forEach(p => { if(p.kerja) t += `Sdr/i ${p.nama} bekerja sebagai ${p.kerja} dengan pendapatan sebulan ${formatRupiah(p.gaji)}. `; });
             if(labaU > 0) t += `Keluarga memiliki unit usaha dengan keuntungan bersih ${formatRupiah(labaU)}/bulan. `;
-            t += `Pengeluaran listrik ${formatRupiah(lis)}/bulan, internet ${formatRupiah(net)}/bulan. `;
+            
+            t += `Pengeluaran konsumsi makanan tercatat ${formatRupiah(makanBln)}/bulan, biaya operasional bulanan rutin (listrik, internet, dll) sebesar ${formatRupiah(nonMakanBln)}/bulan, serta total pengeluaran non-makanan skala berkala/tahunan sebesar ${formatRupiah(nonMakanThn)}/tahun. `;
             
             if(tTanah > 0 || pArr.length > 0 || bArr.length > 0 || kArr.length > 0) {
                 t += `\n\nKeluarga ini memiliki rincian aset potensial di lapangan meliputi: `;
                 if(tArr.length > 0) t += `aset tanah berupa ${tArr.join(' dan ')} dengan akumulasi nilai pasar ${formatRupiah(tTanah)}, `;
                 if(pArr.length > 0) t += `aset tegakan pohon berupa ${pArr.join(' serta ')} (total taksiran ${formatRupiah(tPohon)}), `;
-                if(bArr.length > 0) t += `aset hortikultura produktif berupa ${bArr.join(' serta ')} dengan nilai estimasi ${formatRupiah(tBuah)}/tahun, `;
+                if(bArr.length > 0) t += `aset hortikultura produktif berupa ${bArr.join(' serta ')} dengan nilai estimasi hasil panen ${formatRupiah(tBuah / 12)}/bulan atau sepadan dengan ${formatRupiah(tBuah)}/tahun, `;
                 if(kArr.length > 0) t += `serta aset bergerak berupa kendaraan ${kArr.join(', ')} dengan taksiran nilai pasar ${formatRupiah(tKen)}.`;
             }
             if(delta < 0) t += `\n\nDefisit neraca keuangan ditutup via: ${document.getElementById('v_sumber_defisit').value||'Bantuan/Tabungan'}. `;
@@ -1245,7 +1253,7 @@
         function saveDataToStorage() {
             let records = JSON.parse(localStorage.getItem('se2026_records')||'[]');
             const nr = document.getElementById('m1_no_rumah').value;
-            const payload = { id: currentEditingId || 'se_id_' + Date.now(), timestamp: new Date().toLocaleString('id-ID'), no_rumah: nr, narrative: document.getElementById('narrative_output').innerText };
+            const payload = { id: 'se_id_' + Date.now(), timestamp: new Date().toLocaleString('id-ID'), no_rumah: nr, narrative: document.getElementById('narrative_output').innerText };
             records.push(payload); localStorage.setItem('se2026_records', JSON.stringify(records));
             playSuccessSound(); showToast("💾 Berhasil disimpan!"); cleanFormAll();
         }
