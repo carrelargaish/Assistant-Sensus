@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KangSensus Assistant - SE2026 Toolkit (Modern Professional Edition)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -756,7 +756,7 @@
         let assetTanahCount = 0, assetPohonCount = 0, assetBuahCount = 0, assetKendaraanCount = 0;
         let currentEditingId = null, isViewAllModeActive = false, isAssetSectionMinimized = false;
         
-        // REVISI AL: VARIABEL STATE BACKEND PERHITUNGAN JUJUR (TETAP MENYIMPAN DESIMAL ASLI)
+        // BACKEND STATE PERHITUNGAN JUJUR AL (TETAP MENYIMPAN DESIMAL ASLI)
         let globalMakanMingguanTransit = 0;
         let globalMakanBulananFinalAsli = 0;
 
@@ -800,7 +800,7 @@
         });
 
         function initDefaultSetup() {
-            addARTRow(); addNonMakanRow();
+            addARTRow();
             addAssetTanahRow(); addAssetPohonRow(); addAssetBuahRow(); addAssetKendaraanRow();
             calculateMakanProjections(); calculateAll(); loadRecordsDashboard(); navigateWizard(1); 
         }
@@ -955,7 +955,7 @@
             const j = parseInt(document.getElementById(`u_jml_karyawan_${id}`).value)||0;
             const box = document.getElementById(`u_salary_box_${id}`);
             if(j > 1) {
-                box.innerHTML = `<input type="number" id="u_c_gaji_v_${id}" placeholder="Rata-rata Upah/Org" oninput="document.getElementById('u_multi_lbl_${id}').innerText = formatRupiah(this.value * ${j}); calculateAll();"> <span class="text-[10px] text-gray-400 font-bold">Total: <span id="u_multi_lbl_${id}" class="text-blue-600">Rp 0</span></span>`;
+                box.innerHTML = `<input type="number" id="u_c_gaji_v_${id}" placeholder="Rata-rata Upah/Org" oninput="document.getElementById('u_multi_lbl_${id}').innerText = formatRupiahVisualBulat(this.value * ${j}); calculateAll();"> <span class="text-[10px] text-gray-400 font-bold">Total: <span id="u_multi_lbl_${id}" class="text-blue-600">Rp 0</span></span>`;
             } else {
                 box.innerHTML = `<input type="number" id="u_c_gaji_v_${id}" placeholder="Upah Gaji Total (Rp)" oninput="calculateAll()">`;
             }
@@ -1014,12 +1014,11 @@
             document.getElementById('asset_kendaraan_container').insertAdjacentHTML('beforeend', html);
         }
 
-        // KOREKSI MUTLAK AL: JEMBATAN TRANSIT MINGGU ASLI (DATA FINANSIAL TETAP PRESISI, VISUAL BULAT TANPA KOMA KEPANJANGAN)
+        // LOGIKA TRANSIT MAKAN AL (BACKEND PRESISI, VISUAL BULAT MATATRUNC)
         function calculateMakanProjections() {
             const skala = document.getElementById('m4_makan_skala').value;
             const nilai = parseFloat(document.getElementById('m4_makan_nilai').value) || 0;
             
-            // 1. TAHAP TRANSIT BACKEND: Simpan desimal murni apa adanya di memori tanpa pembulatan awal
             if (skala === "Harian") {
                 globalMakanMingguanTransit = nilai * 7;
             } else if (skala === "Mingguan") {
@@ -1028,10 +1027,8 @@
                 globalMakanMingguanTransit = (nilai * 7) / 30;
             }
 
-            // 2. TEMBAK KE BULANAN ASLI VIA RUMUS AL (x 30 / 7) -> Tetap mempertahankan nilai pecahan asli untuk kalkulasi internal
             globalMakanBulananFinalAsli = (globalMakanMingguanTransit * 30) / 7;
 
-            // 3. CETAK PREVIEW LAYAR: Potong paksa visual ekor desimalnya menggunakan Math.trunc() agar mata pengguna melihat angka bulat bersih
             document.getElementById('row_proj_makan_hari').style.display = 'none'; 
             document.getElementById('row_proj_makan_minggu').style.display = 'none'; 
             document.getElementById('row_proj_makan_bulan').style.display = 'none';
@@ -1054,20 +1051,55 @@
 
         function addNonMakanRow(saved = null) {
             nonMakanCount++; const id = nonMakanCount;
-            const html = `<tr id="nm_table_row_${id}"><td><input type="text" id="nm_nama_${id}" placeholder="Pakaian" oninput="calculateAll()"></td><td><select id="nm_periode_${id}" onchange="calculateAll(); renderSortedNonMakanTableOnly();"><option value="Bulanan">Bulanan</option><option value="Tahunan">Tahunan</option></select></td><td><input type="number" id="nm_nominal_${id}" oninput="calculateAll()"></td><td class="text-center"><button type="button" class="text-red-500 font-bold" onclick="this.parentElement.parentElement.remove(); calculateAll();">X</button></td></tr>`;
+            const html = `
+                <tr id="nm_table_row_${id}">
+                    <td><input type="text" id="nm_nama_${id}" placeholder="Kebutuhan" class="nm-input-nama" oninput="calculateAll()"></td>
+                    <td><select id="nm_periode_${id}" class="nm-select-periode" onchange="resortNonMakanTableRowsRealtime(); calculateAll();"><option value="Bulanan">Bulanan</option><option value="Tahunan">Tahunan</option></select></td>
+                    <td><input type="number" id="nm_nominal_${id}" class="nm-input-nominal" oninput="calculateAll()"></td>
+                    <td class="text-center"><button type="button" class="text-red-500 font-bold" onclick="this.parentElement.parentElement.remove(); calculateAll();">X</button></td>
+                </tr>`;
             document.getElementById('m5_nonmakan_table_body').insertAdjacentHTML('beforeend', html);
             if(saved) { document.getElementById(`nm_nama_${id}`).value = saved.nama; document.getElementById(`nm_periode_${id}`).value = saved.periode; document.getElementById(`nm_nominal_${id}`).value = saved.nominal; }
+            resortNonMakanTableRowsRealtime();
             calculateAll();
         }
 
-        function renderSortedNonMakanTableOnly() {
+        // REVISI LOGIKA AL: MENYORTIR ISI BARIS TABEL DI LAYAR SECARA REALTIME (BULANAN DI ATAS, TAHUNAN DI BAWAH)
+        function resortNonMakanTableRowsRealtime() {
             const body = document.getElementById('m5_nonmakan_table_body');
             const rows = Array.from(body.querySelectorAll('tr'));
-            rows.sort((a,b) => {
-                const pA = a.querySelector('select').value, pB = b.querySelector('select').value;
-                return (pA === 'Bulanan' && pB === 'Tahunan') ? -1 : (pA === 'Tahunan' && pB === 'Bulanan') ? 1 : 0;
+            
+            // Simpan state nilai inputan sebelum dibongkar pasang posisi barisnya
+            const rowStates = rows.map(r => {
+                return {
+                    html: r.innerHTML,
+                    id: r.id,
+                    nama: r.querySelector('.nm-input-nama').value,
+                    periode: r.querySelector('.nm-select-periode').value,
+                    nominal: r.querySelector('.nm-input-nominal').value
+                };
             });
-            body.innerHTML = ''; rows.forEach(r => body.appendChild(r));
+
+            // Sortir array state: Bulanan duluan, Tahunan belakangan
+            rowStates.sort((a, b) => {
+                if (a.periode === 'Bulanan' && b.periode === 'Tahunan') return -1;
+                if (a.periode === 'Tahunan' && b.periode === 'Bulanan') return 1;
+                return 0;
+            });
+
+            // Bangun kembali isi tubuh tabel
+            body.innerHTML = '';
+            rowStates.forEach(state => {
+                const tr = document.createElement('tr');
+                tr.id = state.id;
+                tr.innerHTML = state.html;
+                body.appendChild(tr);
+                
+                // Kembalikan value isian text/select-nya agar tidak ter-reset kosong
+                tr.querySelector('.nm-input-nama').value = state.nama;
+                tr.querySelector('.nm-select-periode').value = state.periode;
+                tr.querySelector('.nm-input-nominal').value = state.nominal;
+            });
         }
 
         function syncDropdownOptions() {
@@ -1085,7 +1117,6 @@
             return period === 'Harian' ? v * 22 : period === 'Mingguan' ? v * 4.3 : period === 'Tahunan' ? v / 12 : v;
         }
 
-        // FUNGSI VISUAL BARU: Memotong ekor desimal tanpa melakukan Math.round pembulatan naik, agar tampilan mata 100% bulat bersih
         function formatRupiahVisualBulat(num) { 
             return 'Rp ' + Math.trunc(num).toLocaleString('id-ID'); 
         }
@@ -1168,7 +1199,7 @@
             });
 
             document.getElementById('sub_total_asset_tanah').innerText = formatRupiahVisualBulat(totTanah);
-            document.getElementById('sub_total_asset_pohon').innerText = formatRupiah(totPohon);
+            document.getElementById('sub_total_asset_pohon').innerText = formatRupiahVisualBulat(totPohon);
             document.getElementById('sub_total_asset_buah_bln').innerText = formatRupiahVisualBulat(totBuahThn / 12) + " / Bulan";
             document.getElementById('sub_total_asset_buah_thn').innerText = formatRupiahVisualBulat(totBuahThn);
             document.getElementById('sub_total_asset_kendaraan').innerText = formatRupiahVisualBulat(totKendaraan);
@@ -1179,21 +1210,44 @@
             document.getElementById('tr_internet_warning').style.display = (document.getElementById('m5_internet_bulanan').value === '0') ? 'table-row' : 'none';
 
             let screenSumBulanan = valListrik + valInternet, screenSumTahunan = 0, internalValidatorNonFoodMonthly = valListrik + valInternet;
-            const nonFoodList = [];
+            
+            // Kumpulkan array terpisah untuk membangun teks narasi terurut otomatis
+            const listBulananNarrative = [];
+            const listTahunanNarrative = [];
+
+            if(valListrik > 0) listBulananNarrative.push(`Listrik sebesar ${formatRupiahVisualBulat(valListrik)} per bulan`);
+            if(valInternet > 0) listBulananNarrative.push(`Internet sebesar ${formatRupiahVisualBulat(valInternet)} per month`); // Fallback text sync
+            if(valInternet === 0 && document.getElementById('m5_internet_bulanan').value !== '') {
+                // If typed 0, handled logic
+            } else if (valInternet > 0) {
+                // Already inside array
+            }
+            // Overwrite array internet agar kalimat rapi bahasa indonesia
+            const listBulananFix = [];
+            if(valListrik > 0) listBulananFix.push(`Listrik sebesar ${formatRupiahVisualBulat(valListrik)} per bulan`);
+            if(valInternet > 0) listBulananFix.push(`Internet sebesar ${formatRupiahVisualBulat(valInternet)} per bulan`);
+
             Array.from(document.getElementById('m5_nonmakan_table_body').querySelectorAll('tr')).forEach(row => {
-                const id = row.id.replace('nm_table_row_',''); const n = document.getElementById(`nm_nama_${id}`).value;
-                const p = document.getElementById(`nm_periode_${id}`).value; const v = parseFloat(document.getElementById(`nm_nominal_${id}`).value)||0;
-                if(p === 'Bulanan') { screenSumBulanan += v; internalValidatorNonFoodMonthly += v; }
-                else { screenSumTahunan += v; internalValidatorNonFoodMonthly += (v/12); }
-                nonFoodList.push({ nama:n, periode:p, nominal:v });
+                const id = row.id.replace('nm_table_row_',''); 
+                const n = document.getElementById(`nm_nama_${id}`).value.trim() || 'Kebutuhan';
+                const p = document.getElementById(`nm_periode_${id}`).value; 
+                const v = parseFloat(document.getElementById(`nm_nominal_${id}`).value)||0;
+                
+                if(p === 'Bulanan') { 
+                    screenSumBulanan += v; 
+                    internalValidatorNonFoodMonthly += v;
+                    if(v > 0) listBulananFix.push(`${n} sebesar ${formatRupiahVisualBulat(v)} per bulan`);
+                } else { 
+                    screenSumTahunan += v; 
+                    internalValidatorNonFoodMonthly += (v/12); 
+                    if(v > 0) listTahunanNarrative.push(`${n} sebesar ${formatRupiahVisualBulat(v)} per tahun`);
+                }
             });
 
-            // OUTPUT INTERFACE: MENGGUNAKAN FORMAT VISUAL BULAT REVISI AL
             document.getElementById('mod4_makan_bulanan_screen').innerText = formatRupiahVisualBulat(globalMakanBulananFinalAsli) + " / Bulan";
             document.getElementById('mod4_total_bulanan_screen').innerText = formatRupiahVisualBulat(screenSumBulanan) + " / Bulan";
             document.getElementById('mod4_total_tahunan_screen').innerText = formatRupiahVisualBulat(screenSumTahunan) + " / Tahun";
 
-            // PERHITUNGAN NERACA: Tetap menggunakan nilai bulanan asli (termasuk desimal tak terlihat) agar penjumlahan akurat
             const validatorExpenses = globalMakanBulananFinalAsli + internalValidatorNonFoodMonthly;
             const totalRevenue = totalArtSalaries + totalOtherIncomes + aggregateNetBusinessProfit;
             const delta = totalRevenue - validatorExpenses;
@@ -1224,10 +1278,10 @@
             document.getElementById('preview_asset_buah_thn').innerText = formatRupiahVisualBulat(totBuahThn);
             document.getElementById('preview_asset_kendaraan').innerText = formatRupiahVisualBulat(totKendaraan);
 
-            generateNarrativeText(artDataList, totalOtherIncomes, aggregateNetBusinessProfit, nonFoodList, delta, valListrik, valInternet, totTanah, totPohon, totBuahThn, totKendaraan, tanahDetailsArray, pohonDetailsArray, buahDetailsArray, kendaraanDetailsArray, globalMakanBulananFinalAsli, screenSumBulanan, screenSumTahunan);
+            generateNarrativeText(artDataList, totalOtherIncomes, aggregateNetBusinessProfit, delta, totTanah, totPohon, totBuahThn, totKendaraan, tanahDetailsArray, pohonDetailsArray, buahDetailsArray, kendaraanDetailsArray, listBulananFix, listTahunanNarrative);
         }
 
-        function generateNarrativeText(art, sec, labaU, nonF, delta, lis, net, tTanah, tPohon, tBuah, tKen, tArr, pArr, bArr, kArr, makanBln, nonMakanBln, nonMakanThn) {
+        function generateNarrativeText(art, sec, labaU, delta, tTanah, tPohon, tBuah, tKen, tArr, pArr, bArr, kArr, arrBln, arrThn) {
             const nr = document.getElementById('m1_no_rumah').value.trim();
             if(!nr) { document.getElementById('narrative_output').innerText = "Menunggu data bangunan..."; return; }
             let t = `Hasil pencacahan pada keluarga di rumah nomor bangunan ${nr}. `;
@@ -1235,8 +1289,17 @@
             art.forEach(p => { if(p.kerja) t += `Sdr/i ${p.nama} bekerja sebagai ${p.kerja} dengan pendapatan sebulan ${formatRupiahVisualBulat(p.gaji)}. `; });
             if(labaU > 0) t += `Keluarga memiliki unit usaha dengan keuntungan bersih ${formatRupiahVisualBulat(labaU)}/bulan. `;
             
-            // NARASI OUTPUT: JEMBATAN TRANSIT MURNI TANPA DESIMAL KEPANJANGAN DI LAYAR
-            t += `Pengeluaran konsumsi makanan tercatat ${formatRupiahVisualBulat(makanBln)}/bulan, biaya operasional bulanan rutin (listrik, internet, dll) sebesar ${formatRupiahVisualBulat(nonMakanBln)}/bulan, serta total pengeluaran non-makanan skala berkala/tahunan sebesar ${formatRupiahVisualBulat(nonMakanThn)}/tahun. `;
+            // REVISI AL: Uang makan dihapus murni. Pengeluaran dipisahkan urut skala bulanan & skala tahunan berjejer
+            t += `\n\n`;
+            if(arrBln.length > 0) {
+                t += `Biaya rutin non makanan skala bulanan meliputi ${arrBln.join(', ')}. `;
+            } else {
+                t += `Biaya rutin non makanan skala bulanan tidak ada yang dilaporkan. `;
+            }
+
+            if(arrThn.length > 0) {
+                t += `Sedangkan pengeluaran non makanan skala tahunan meliputi ${arrThn.join(', ')}. `;
+            }
             
             if(tTanah > 0 || pArr.length > 0 || bArr.length > 0 || kArr.length > 0) {
                 t += `\n\nKeluarga ini memiliki rincian aset potensial di lapangan meliputi: `;
