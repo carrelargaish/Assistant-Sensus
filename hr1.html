@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KangSensus Assistant - SE2026 Toolkit (Modern Professional Edition)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #1E3A8A;
+            --primary-light: #3B82F6;
+            --secondary: #F0F9FF;
+            --accent: #E0F2FE;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --text-main: #1F2937;
+            --text-muted: #4B5563;
+            --bg-body: #F9FAFB;
+            --bg-card: #ffffff;
+            --border-color: #E5E7EB;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding-bottom: 40px;
+        }
+
+        .font-cartoon {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+        }
+
+        .comic-border {
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        header {
+            background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+            color: #ffffff;
+        }
+
+        .master-nav {
+            display: flex;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .master-tab {
+            flex: 1;
+            text-align: center;
+            padding: 14px 5px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .master-tab.active {
+            color: #1E3A8A;
+            background-color: var(--secondary);
+            font-weight: 700;
+        }
+
+        .sticky-modul-menu {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            background: #ffffff;
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 12px 8px;
+            border-bottom: 1px solid var(--border-color);
+            gap: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .sticky-modul-menu::-webkit-scrollbar {
+            display: none;
+        }
+
+        .modul-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 20px;
+            background: #F3F4F6;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modul-btn.active {
+            background: #1E3A8A;
+            color: #ffffff;
+        }
+
+        .sticky-modul-menu.all-mode-active .modul-btn:not(.btn-all) {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #E5E7EB;
+            color: #9CA3AF;
+        }
+
+        .modul-btn.btn-all {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .modul-btn.btn-all.active {
+            background: #F59E0B;
+            color: #ffffff;
+        }
+
+        .container {
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .app-panel {
+            display: none;
+        }
+
+        .app-panel.active {
+            display: block;
+        }
+
+        .modul-section {
+            display: none;
+        }
+
+        .modul-section.show-tab {
+            display: block;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 16px;
+            color: #1E3A8A;
+            margin-bottom: 16px;
+            border-left: 4px solid #3B82F6;
+            padding-left: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 10px 14px;
+            font-size: 13px;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            background-color: #FAFAFA;
+            color: var(--text-main);
+            outline: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            background-color: #ffffff;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .dynamic-row {
+            background: #F9FAFB;
+            border: 1px dashed #9CA3AF;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 14px;
+            position: relative;
+        }
+
+        .btn-remove {
+            background: #FEE2E2;
+            color: #DC2626;
+            border: 1px solid #FCA5A5;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            float: right;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+        .btn-remove:hover {
+            background: #DC2626;
+            color: #ffffff;
+        }
+
+        .btn-add {
+            background: #ffffff;
+            color: #3B82F6;
+            border: 1px dashed #3B82F6;
+            padding: 12px;
+            width: 100%;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .btn-add:hover {
+            background: var(--secondary);
+        }
+
+        .comic-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+        .comic-table th {
+            background-color: #F3F4F6;
+            border: 1px solid var(--border-color);
+            padding: 10px 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            color: var(--text-muted);
+        }
+        .comic-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px 8px;
+            font-size: 13px;
+            background-color: #ffffff;
+        }
+
+        .wizard-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            background: #fff;
+            padding: 16px;
+            border-radius: 14px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-wizard-back {
+            flex: 1;
+            background: #F3F4F6;
+            color: var(--text-main);
+            border: 1px solid #D1D5DB;
+            padding: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-wizard-next {
+            flex: 2;
+            background: #3B82F6;
+            color: #ffffff;
+            padding: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-wizard-save {
+            flex: 2;
+            background: #10B981;
+            color: #ffffff;
+            padding: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-form-clear {
+            background: #FFF1F2;
+            color: #E11D48;
+            border: 1px solid #FECDD3;
+            padding: 6px 14px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            float: right;
+            transition: all 0.2s;
+        }
+
+        .grid-2 {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .grid-col {
+            display: table-cell;
+            padding-right: 6px;
+        }
+
+        .grid-col:last-child {
+            padding-right: 0;
+            padding-left: 6px;
+        }
+
+        .badge-status {
+            display: inline-block;
+            padding: 6px 16px;
+            font-weight: 700;
+            font-size: 12px;
+            border-radius: 30px;
+            text-align: center;
+            margin-bottom: 14px;
+        }
+
+        .status-consistent {
+            background-color: #D1FAE5;
+            color: #065F46;
+        }
+
+        .status-danger {
+            background-color: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .alert-danger-box {
+            background-color: #FEE2E2;
+            border: 1px solid #FCA5A5;
+            padding: 12px;
+            font-size: 12px;
+            color: #991B1B;
+            border-radius: 8px;
+            margin-bottom: 14px;
+            font-weight: 600;
+        }
+
+        .alert-box {
+            background-color: #FEF3C7;
+            border: 1px dashed #F59E0B;
+            padding: 10px;
+            font-size: 11px;
+            color: #92400E;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            margin-top: 4px;
+        }
+
+        .metric-group {
+            background: #F9FAFB;
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 14px;
+            border: 1px solid var(--border-color);
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            padding: 8px 0;
+            border-bottom: 1px dashed #E5E7EB;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+            font-size: 14px;
+            color: var(--text-main);
+        }
+
+        .narrative-box {
+            background: #F3F4F6;
+            border: 1px solid var(--border-color);
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 13px;
+            color: var(--text-main);
+            min-height: 90px;
+            white-space: pre-wrap;
+            margin-bottom: 14px;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .btn-copy, .btn-share {
+            background: #3B82F6;
+            color: #ffffff;
+            padding: 12px;
+            font-size: 13px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .btn-share { background: #10B981; }
+
+        .record-item {
+            border: 1px solid var(--border-color);
+            background: #fff;
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 13px;
+            color: #1E3A8A;
+            margin-bottom: 6px;
+        }
+
+        .btn-backup {
+            background: #1E3A8A;
+            color: #ffffff;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            font-weight: 600;
+            margin-bottom: 16px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        #password-gate-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            z-index: 999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body> 
+
+    <!-- GERBANG KUNCI -->
+    <div id="password-gate-overlay">
+        <div class="bg-white max-w-sm w-full rounded-2xl p-6 shadow-2xl border border-gray-100 text-center">
+            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">🔑</div>
+            <h2 class="text-lg font-bold text-gray-900 tracking-tight">Verifikasi Akses Toolkit</h2>
+            <p class="text-xs text-gray-500 mt-1 mb-5 font-medium">Perasaan anda jadi kang sensus?</p>
+            <div class="text-left mb-4">
+                <input type="text" id="gate_password_input" placeholder="Ketik kata sandi di sini..." class="w-full !p-3 !text-sm !bg-gray-50 border border-gray-300 rounded-xl text-center font-semibold text-gray-800">
+                <p id="gate_error_msg" class="text-rose-500 text-[11px] font-bold mt-2 text-center hidden">⚠️ Kata sandi salah!</p>
+            </div>
+            <button type="button" onclick="periksaPasswordGerbang()" class="w-full bg-blue-600 text-white font-semibold text-sm p-3 rounded-xl shadow-md">Masuk Sistem Sensus 🚀</button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT UTAMA -->
+    <div id="main-content" class="hidden">
+        <header class="comic-border rounded-2xl p-5 m-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
+                <div class="bg-white/20 w-14 h-14 rounded-full flex items-center justify-center text-2xl shrink-0">🧑‍🏻</div>
+                <div>
+                    <h1 class="font-cartoon text-xl tracking-wide">KangSensus Assistant</h1>
+                    <p id="bubble-speech" class="text-xs font-medium text-blue-100 opacity-90">Yuk semangat data SE2026! 🎯</p>
+                </div>
+            </div>
+            <div class="w-full sm:w-auto bg-white/10 p-2 rounded-xl border border-white/20">
+                <label class="block text-[10px] uppercase tracking-wider font-bold text-blue-200 mb-1">Nama Petugas:</label>
+                <input type="text" id="nama_petugas_input" placeholder="Ketik namamu..." oninput="updateNamaDanSalam()" class="w-full sm:w-44 !text-xs !bg-white/20 !border-white/30 text-white placeholder-white/50 rounded-md">
+            </div>
+        </header>
+
+        <div class="master-nav">
+            <div id="m_tab_form" class="master-tab active" onclick="switchMasterTab('form-panel')">📝 Input Form Sensus</div>
+            <div id="m_tab_dash" class="master-tab" onclick="switchMasterTab('dash-panel')">📁 Dashboard Terdata</div>
+        </div>
+
+        <div id="toast" class="toast"></div>
+
+        <div id="panel_form_container" class="app-panel active">
+            <div id="sticky_nav_bar" class="sticky-modul-menu">
+                <div id="nav_btn_m1" class="modul-btn active" onclick="navigateWizard(1)">Identitas & ART</div>
+                <div id="nav_btn_m2" class="modul-btn" onclick="navigateWizard(2)">Dana Sekunder</div>
+                <div id="nav_btn_m3" class="modul-btn" onclick="navigateWizard(3)">Unit Usaha & Aset</div>
+                <div id="nav_btn_m4" class="modul-btn" onclick="navigateWizard(4)">Pengeluaran</div>
+                <div id="nav_btn_m5" class="modul-btn" onclick="navigateWizard(5)">Validasi Finansial</div>
+                <div id="nav_btn_m6" class="modul-btn" onclick="navigateWizard(6)">Teks Narasi</div>
+                <div id="nav_btn_all" class="modul-btn btn-all" onclick="toggleViewAllMode()">👀 Tampilkan Semua</div>
+            </div>
+
+            <div class="container">
+                <div style="margin-bottom: 10px; overflow: hidden;">
+                    <button type="button" class="btn-form-clear" onclick="triggerManualResetForm()">🧹 Reset Form Master</button>
+                </div>
+
+                <!-- MODUL 1 -->
+                <div id="sec_modul_m1" class="modul-section show-tab">
+                    <div class="card">
+                        <div class="card-title">Identitas Keluarga & Bangunan</div>
+                        <div class="grid-2">
+                            <div class="grid-col"><div class="form-group"><label>Nomor Bangunan *</label><input type="text" id="m1_no_rumah" placeholder="024B" oninput="calculateAll()"></div></div>
+                            <div class="grid-col"><div class="form-group"><label>No HP</label><input type="text" id="m1_no_hp" placeholder="08xxx"></div></div>
+                        </div>
+                        <div style="margin-top: 8px; font-size: 12px; font-weight: bold;">Daftar Anggota Keluarga</div>
+                        <div id="m1_art_container"></div>
+                        <button type="button" class="btn-add mt-2" onclick="addARTRow()">➕ Tambah Anggota Keluarga</button>
+                    </div>
+                    <div class="wizard-actions"><button type="button" class="btn-wizard-next" onclick="navigateWizard(2)">Selanjutnya Dana Sekunder ➡️</button></div>
+                </div>
+
+                <!-- MODUL 2 -->
+                <div id="sec_modul_m2" class="modul-section">
+                    <div class="card">
+                        <div class="card-title">Pendapatan Sekunder Keluarga</div>
+                        <div id="m2_pendapatan_container"></div>
+                        <button type="button" class="btn-add" onclick="addPendapatanRow()">➕ Tambah Pendapatan Sekunder</button>
+                    </div>
+                    <div class="wizard-actions">
+                        <button type="button" class="btn-wizard-back" onclick="navigateWizard(1)">⬅️ Kembali</button>
+                        <button type="button" class="btn-wizard-next" onclick="navigateWizard(3)">Selanjutnya Unit Usaha & Aset ➡️</button>
+                    </div>
+                </div>
+
+                <!-- MODUL 3 -->
+                <div id="sec_modul_m3" class="modul-section">
+                    <div class="card">
+                        <div class="card-title">Sektor Multi Usaha Keluarga</div>
+                        <div id="m3_usaha_container"></div>
+                        <button type="button" class="btn-add" onclick="addUsahaRow()">➕ Tambah Unit Usaha Baru</button>
+
+                        <div class="mt-6 p-4 bg-slate-50 border border-gray-200 rounded-2xl">
+                            <div class="card-title !mb-2 !border-none !p-0">
+                                <span class="text-xs font-bold text-blue-900 uppercase tracking-wider">🌳 Kategori Taksiran Aset Lapangan Potensial</span>
+                                <button type="button" id="btn_toggle_assets" onclick="toggleAssetSectionBlock()" class="text-xs text-blue-600 bg-white border border-blue-200 px-3 py-1 rounded-lg font-bold shadow-sm select-none hover:bg-slate-50">[ 🔼 Sembunyikan ]</button>
+                            </div>
+                            
+                            <div id="collapsible_asset_wrapper_box">
+                                <!-- Sub-Modul Multi Tanah -->
+                                <div class="mb-4 border-b border-gray-200 pb-3 mt-2">
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">Aset Tanah / Pekarangan:</label>
+                                    <div id="asset_tanah_container"></div>
+                                    <button type="button" class="text-xs text-blue-600 font-bold underline mt-1" onclick="addAssetTanahRow()">➕ Tambah Aset Tanah</button>
+                                    <div class="text-[11px] text-right text-blue-800 font-bold mt-2">Total Seluruh Aset Tanah: <span id="sub_total_asset_tanah">Rp 0</span></div>
+                                </div>
+
+                                <!-- Sub-Modul Multi Pohon -->
+                                <div class="mb-4 border-b border-gray-200 pb-3">
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">Aset Kayu / Pohon Tegakan:</label>
+                                    <div id="asset_pohon_container"></div>
+                                    <button type="button" class="text-xs text-blue-600 font-bold underline mt-1" onclick="addAssetPohonRow()">➕ Tambah Aset Pohon</button>
+                                    <div class="text-[11px] text-right text-blue-800 font-bold mt-2">Total Seluruh Kayu Pohon: <span id="sub_total_asset_pohon">Rp 0</span></div>
+                                </div>
+
+                                <!-- Sub-Modul Multi Hortikultura -->
+                                <div class="mb-4 border-b border-gray-200 pb-3">
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">Aset Hortikultura (Hasil Buah / Tani):</label>
+                                    <div id="asset_buah_container"></div>
+                                    <button type="button" class="text-xs text-blue-600 font-bold underline mt-1" onclick="addAssetBuahRow()">➕ Tambah Aset Panen Buah/Tani</button>
+                                    <div class="text-[11px] text-right text-blue-800 font-bold mt-2 space-y-0.5">
+                                        <div>Estimasi Total Panen (Bln): <span id="sub_total_asset_buah_bln" class="text-emerald-600">Rp 0 / Bulan</span></div>
+                                        <div>Estimasi Total Panen (Thn): <span id="sub_total_asset_buah_thn">Rp 0 / Tahun</span></div>
+                                    </div>
+                                </div>
+
+                                <!-- Sub-Modul Multi Kendaraan -->
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">Aset Bergerak (Vehikel/Kendaraan):</label>
+                                    <div id="asset_kendaraan_container"></div>
+                                    <button type="button" class="text-xs text-blue-600 font-bold underline mt-1" onclick="addAssetKendaraanRow()">➕ Tambah Aset Kendaraan</button>
+                                    <div class="text-[11px] text-right text-blue-800 font-bold mt-2">Total Seluruh Nilai Kendaraan: <span id="sub_total_asset_kendaraan">Rp 0</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wizard-actions">
+                        <button type="button" class="btn-wizard-back" onclick="navigateWizard(2)">⬅️ Kembali</button>
+                        <button type="button" class="btn-wizard-next" onclick="navigateWizard(4)">Selanjutnya Pengeluaran ➡️</button>
+                    </div>
+                </div>
+
+                <!-- MODUL 4 -->
+                <div id="sec_modul_m4" class="modul-section">
+                    <div class="card">
+                        <div class="card-title">Komponen Pengeluaran Keluarga</div>
+                        <table class="comic-table">
+                            <thead>
+                                <tr><th>Jenis Pengeluaran Utama</th><th style="width:25%;">Periode</th><th style="width:35%;">Nominal (Rp)</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="font-bold">A. Konsumsi Makanan *</td>
+                                    <td>
+                                        <select id="m4_makan_skala" onchange="calculateMakanProjections(); calculateAll();">
+                                            <option value="Harian">Harian</option><option value="Mingguan">Mingguan</option><option value="Bulanan" selected>Bulanan</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="number" id="m4_makan_nilai" placeholder="Nominal" oninput="calculateMakanProjections(); calculateAll();"></td>
+                                </tr>
+                                <tr style="background-color: #FAFAFA;"><td colspan="3">
+                                    <div id="row_proj_makan_hari" style="display:none; justify-content:space-between; font-size:10px;"><span>Est. Harian:</span><span id="proj_makan_hari_val">Rp 0</span></div>
+                                    <div id="row_proj_makan_minggu" style="display:none; justify-content:space-between; font-size:10px;"><span>Est. Mingguan:</span><span id="proj_makan_minggu_val">Rp 0</span></div>
+                                    <div id="row_proj_makan_bulan" style="display:none; justify-content:space-between; font-size:10px;"><span>Est. Bulanan:</span><span id="proj_makan_bulan_val">Rp 0</span></div>
+                                </td></tr>
+                                <tr><td class="font-bold">B. Biaya Listrik *</td><td class="text-center font-bold text-gray-400 text-xs">Bulanan</td><td><input type="number" id="m5_listrik_bulanan" placeholder="Nominal" oninput="calculateAll()"></td></tr>
+                                <tr id="tr_listrik_warning" style="display:none;"><td colspan="3"><div class="alert-box"><label style="font-size:10px;">Alasan Listrik Rendah/Nihil *</label><input type="text" id="m5_listrik_alasan" placeholder="Subsidi meteran bareng ortu" oninput="calculateAll()"></div></td></tr>
+                                <tr><td class="font-bold">C. Biaya Internet *</td><td class="text-center font-bold text-gray-400 text-xs">Bulanan</td><td><input type="number" id="m5_internet_bulanan" placeholder="0 jika tiada" oninput="calculateAll()"></td></tr>
+                                <tr id="tr_internet_warning" style="display:none;"><td colspan="3"><div class="alert-box"><label style="font-size:10px;">Alasan Internet Nihil *</label><input type="text" id="m5_internet_alasan" placeholder="Tidak menggunakan HP pintar" oninput="calculateAll()"></div></td></tr>
+                            </tbody>
+                        </table>
+                        
+                        <div style="font-size:12px; font-weight:bold; margin-top:14px;">D. Komponen Pengeluaran Non-Makanan Tambahan</div>
+                        <table class="comic-table mt-1">
+                            <thead><tr><th>Nama Pengeluaran</th><th style="width:25%;">Skala</th><th style="width:30%;">Nominal</th><th style="width:10%;">X</th></tr></thead>
+                            <tbody id="m5_nonmakan_table_body"></tbody>
+                        </table>
+                        <button type="button" class="btn-add" onclick="addNonMakanRow()">➕ Tambah Baris Non-Makanan</button>
+
+                        <div class="metric-group mt-4">
+                            <div style="font-size:11px; font-weight:bold; margin-bottom:4px;">📊 Ringkasan Kelompok Pengeluaran:</div>
+                            <div class="metric-row"><span>Total Pengeluaran Konsumsi Makanan:</span><span id="mod4_makan_bulanan_screen" style="font-weight:bold; color: #10B981;">Rp 0 / Bulan</span></div>
+                            <div class="metric-row"><span>Total Pengeluaran Skala Bulanan:</span><span id="mod4_total_bulanan_screen" style="font-weight:bold; color: #1E3A8A;">Rp 0 / Bulan</span></div>
+                            <div class="metric-row"><span>Total Pengeluaran Skala Tahunan:</span><span id="mod4_total_tahunan_screen" style="font-weight:bold; color: #1E3A8A;">Rp 0 / Tahun</span></div>
+                        </div>
+                    </div>
+                    <div class="wizard-actions">
+                        <button type="button" class="btn-wizard-back" onclick="navigateWizard(3)">⬅️ Kembali</button>
+                        <button type="button" class="btn-wizard-next" onclick="navigateWizard(5)">Selanjutnya Validasi Finansial ➡️</button>
+                    </div>
+                </div>
+
+                <!-- MODUL 5 -->
+                <div id="sec_modul_m5" class="modul-section">
+                    <div class="card">
+                        <div class="card-title">Sistem Analisis Validasi Finansial</div>
+                        
+                        <div class="bg-slate-800 text-slate-200 p-4 rounded-xl text-xs space-y-2 mb-4 font-mono shadow-inner">
+                            <div class="text-sky-400 font-bold border-b border-slate-700 pb-1 text-[11px] uppercase tracking-wider">📁 Preview Rekapan Mentah Parameter Lapangan</div>
+                            <div class="flex justify-between"><span>• Total Pendapatan Gaji ART:</span><span id="preview_gaji_art" class="text-white">Rp 0</span></div>
+                            <div class="flex justify-between"><span>• Total Pendapatan Sekunder:</span><span id="preview_sekunder" class="text-white">Rp 0</span></div>
+                            
+                            <div class="text-amber-400 font-bold border-t border-slate-700 pt-1 mt-1 text-[10px]">Sektor Usaha (Skala Bulanan):</div>
+                            <div class="flex justify-between pl-2"><span>- Laba Kotor Bulanan:</span><span id="preview_u_kotor_bln">Rp 0</span></div>
+                            <div class="flex justify-between pl-2"><span>- Biaya Operasional Bulanan:</span><span id="preview_u_biaya_bln">Rp 0</span></div>
+                            <div class="flex justify-between pl-2"><span>- Laba Bersih Bulanan:</span><span id="preview_u_bersih_bln">Rp 0</span></div>
+                            
+                            <div class="text-amber-400 font-bold text-[10px]">Sektor Usaha (Skala Tahunan):</div>
+                            <div class="flex justify-between pl-2"><span>- Laba Kotor Tahunan:</span><span id="preview_u_kotor_thn">Rp 0</span></div>
+                            <div class="flex justify-between pl-2"><span>- Biaya Operasional Tahunan:</span><span id="preview_u_biaya_thn">Rp 0</span></div>
+                            <div class="flex justify-between pl-2"><span>- Laba Bersih Tahunan:</span><span id="preview_u_bersih_thn">Rp 0</span></div>
+
+                            <div class="text-emerald-400 font-bold border-t border-slate-700 pt-1 mt-1 text-[10px]">Komponen Pengeluaran Lapangan:</div>
+                            <div class="flex justify-between pl-2"><span>- Pengeluaran Makanan (Transit):</span><span id="preview_exp_makan" class="text-emerald-300">Rp 0 / Bulan</span></div>
+                            <div class="flex justify-between pl-2"><span>- Pengeluaran Bulanan Murni:</span><span id="preview_exp_bulanan">Rp 0 / Bulan</span></div>
+                            <div class="flex justify-between pl-2"><span>- Pengeluaran Tahunan Murni:</span><span id="preview_exp_tahunan">Rp 0 / Tahun</span></div>
+
+                            <div class="text-purple-400 font-bold border-t border-slate-700 pt-1 mt-1 text-[10px]">Kekayaan Aset Lapangan:</div>
+                            <div class="flex justify-between pl-2"><span>- Nilai Pasar Tanah:</span><span id="preview_asset_tanah">Rp 0</span></div>
+                            <div class="flex justify-between pl-2"><span>- Nilai Pohon Tegakan:</span><span id="preview_asset_pohon">Rp 0</span></div>
+                            <div class="flex justify-between pl-2"><span>- Nilai Hasil Panen Buah atau Tani (Bln):</span><span id="preview_asset_buah_bln" class="text-purple-300">Rp 0 / Bulan</span></div>
+                            <div class="flex justify-between pl-2"><span>- Nilai Hasil Panen Buah atau Tani (Thn):</span><span id="preview_asset_buah_thn" class="text-purple-300">Rp 0 / Tahun</span></div>
+                            <div class="flex justify-between pl-2"><span>- Nilai Jual Kendaraan:</span><span id="preview_asset_kendaraan">Rp 0</span></div>
+                        </div>
+
+                        <div id="validation_badge_container"><div id="status_badge" class="badge-status status-consistent">🟢 Data Consistent</div></div>
+                        <div id="validation_alerts"></div>
+
+                        <div class="metric-group">
+                            <div class="metric-row"><span>Total Gaji Keluarga + Sekunder (Bulanan):</span><span id="v_tot_pendapatan">Rp 0</span></div>
+                            <div class="metric-row"><span>Total Laba Bersih Sektor Usaha (Bulanan):</span><span id="v_tot_laba_usaha">Rp 0</span></div>
+                            <div class="metric-row"><span>Total Pengeluaran Rumah Tangga (Est. Bulanan):</span><span id="v_tot_pengeluaran">Rp 0</span></div>
+                            <div class="metric-row font-bold border-t border-slate-200 pt-2 text-sm"><span>Selisih Neraca Lapangan (Sisa/Defisit):</span><span id="v_selisih">Rp 0</span></div>
+                        </div>
+
+                        <div class="form-group" id="sumber_penutup_group" style="display: none;">
+                            <label style="color: #EF4444; font-weight: bold;">⚠️ Sumber Penutup Defisit Finansial Lapangan *</label>
+                            <select id="v_sumber_defisit" onchange="calculateAll()">
+                                <option value="">-- Pilih Sumber Penutup --</option>
+                                <option value="Hutang / Pinjaman dari Kerabat atau Bank">Hutang / Pinjaman dari Kerabat atau Bank</option>
+                                <option value="Menggunakan Tabungan Sebelumnya">Menggunakan Tabungan Sebelumnya</option>
+                                <option value="Bantuan Sosial Terstruktur (Bansos / PKH)">Bantuan Sosial Terstruktur (Bansos / PKH)</option>
+                                <option value="Kiriman Regular Anak / Sanak Saudara diluar Keluarga">Kiriman Regular Anak / Sanak Saudara diluar Keluarga</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label>Catatan Tambahan Kondisi Lapangan (Opsional)</label><textarea id="v_catatan_tambahan" rows="2" placeholder="Keterangan..." oninput="calculateAll()"></textarea></div>
+                    </div>
+                    <div class="wizard-actions">
+                        <button type="button" class="btn-wizard-back" onclick="navigateWizard(4)">⬅️ Kembali</button>
+                        <button type="button" class="btn-wizard-next" onclick="navigateWizard(6)">Selanjutnya Teks Narasi ➡️</button>
+                    </div>
+                </div>
+
+                <!-- MODUL 6 -->
+                <div id="sec_modul_m6" class="modul-section">
+                    <div class="card">
+                        <div class="card-title">Narasi Teks Catatan Lapangan Otomatis</div>
+                        <div id="narrative_output" class="narrative-box">Menunggu data bangunan...</div>
+                        <div class="flex gap-2"><button type="button" class="btn-copy flex-1" onclick="copyNarrative()">📋 Salin Teks Narasi</button><button type="button" class="btn-share flex-1" onclick="shareNarrative()">🔗 Bagikan Narasi</button></div>
+                    </div>
+                    <div class="wizard-actions">
+                        <button type="button" class="btn-wizard-back" onclick="navigateWizard(5)">⬅️ Kembali</button>
+                        <button type="button" class="btn-wizard-save" onclick="saveDataToStorage()">💾 Simpan Responden</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="panel_dash_container" class="app-panel">
+            <div class="container"><div class="card"><div class="card-title">Daftar Keluarga Berhasil Terdata</div><button class="btn-backup" onclick="exportToCSV()">📊 Ekspor Data CSV Excel</button><div id="records_list_container"></div></div></div>
+        </div>
+    </div>
+
+    <script>
+        let artCount = 0, pendapatanCount = 0, usahaCount = 0, nonMakanCount = 0;
+        let assetTanahCount = 0, assetPohonCount = 0, assetBuahCount = 0, assetKendaraanCount = 0;
+        let currentEditingId = null, isViewAllModeActive = false, isAssetSectionMinimized = false;
+        
+        // BACKEND JEMBATAN TRANSIT TETAP PRESISI UNTUK MODUL 5
+        let globalMakanMingguanTransit = 0;
+        let globalMakanBulananFinalAsli = 0;
+
+        const soundClick = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav'); 
+        const soundSuccess = new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav'); 
+        const soundError = new Audio('https://assets.mixkit.co/active_storage/sfx/959/959-84.wav');
+        soundClick.volume = 0.85; soundSuccess.volume = 0.90; soundError.volume = 0.85;
+
+        function playClickSound() { soundClick.currentTime = 0; soundClick.play().catch(e => {}); }
+        function playSuccessSound() { soundSuccess.currentTime = 0; soundSuccess.play().catch(e => {}); }
+
+        function periksaPasswordGerbang() {
+            const inputVal = document.getElementById('gate_password_input').value.trim().toLowerCase();
+            if (['mumet', 'pusing', 'burung', 'sensus2026', 'kangsensus'].includes(inputVal)) {
+                playSuccessSound();
+                document.getElementById('password-gate-overlay').style.display = 'none';
+                document.getElementById('main-content').classList.remove('hidden');
+            } else {
+                soundError.currentTime = 0; soundError.play().catch(e => {});
+                document.getElementById('gate_error_msg').classList.remove('hidden');
+                document.getElementById('gate_password_input').value = '';
+            }
+        }
+
+        document.getElementById('gate_password_input').addEventListener('keyup', (e) => { if (e.key === 'Enter') periksaPasswordGerbang(); });
+        document.addEventListener('click', (e) => { if(e.target && (e.target.tagName === 'BUTTON' || e.target.closest('button') || e.target.classList.contains('master-tab') || e.target.classList.contains('modul-btn'))) playClickSound(); });
+
+        function updateNamaDanSalam() {
+            const nama = document.getElementById('nama_petugas_input').value.trim() || "Rekan Sensus";
+            const hr = new Date().getHours();
+            let sapaan = hr < 10 ? `Selamat Pagi, ${nama}! 🌅` : hr < 15 ? `Selamat Siang, ${nama}! ☀️` : hr < 18 ? `Selamat Sore, ${nama}! 🌤️` : `Selamat Malam, ${nama}! 🌙`;
+            document.getElementById('bubble-speech').innerText = sapaan + " Semangat SE2026!";
+        }
+
+        const kbliOptions = ["Pertanian, Kehutanan, Perikanan (A)", "Pertambangan & Aggalian (B)", "Industri Pengolahan / Craft (C)", "Pengadaan Listrik, Gas, Uap (D)", "Pengelolaan Air, Sampah, Limbah (E)", "Konstruksi / Bangunan (F)", "Perdagangan Besar & Eceran (G)", "Transportasi & Pergudangan (H)", "Penyediaan Akomodasi & Makan Minum / Warung (I)", "Informasi & Komunikasi (J)", "Jasa Lainnya / Salon, Bengkel, Cuci (S)"];
+
+        window.addEventListener('DOMContentLoaded', () => { 
+            const cached = localStorage.getItem('se2026_nama_petugas');
+            if (cached) document.getElementById('nama_petugas_input').value = cached;
+            updateNamaDanSalam(); initDefaultSetup(); 
+        });
+
+        function initDefaultSetup() {
+            addARTRow();
+            addAssetTanahRow(); addAssetPohonRow(); addAssetBuahRow(); addAssetKendaraanRow();
+            calculateMakanProjections(); calculateAll(); loadRecordsDashboard(); navigateWizard(1); 
+        }
+
+        function switchMasterTab(tabId) {
+            document.querySelectorAll('.app-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.master-tab').forEach(t => t.classList.remove('active'));
+            if(tabId === 'form-panel') {
+                document.getElementById('panel_form_container').classList.add('active');
+                document.getElementById('m_tab_form').classList.add('active');
+            } else {
+                document.getElementById('panel_dash_container').classList.add('active');
+                document.getElementById('m_tab_dash').classList.add('active');
+                loadRecordsDashboard();
+            }
+        }
+
+        function navigateWizard(step) {
+            isViewAllModeActive = false;
+            document.getElementById('nav_btn_all').classList.remove('active');
+            document.getElementById('sticky_nav_bar').classList.remove('all-mode-active');
+            document.querySelectorAll('.modul-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.modul-section').forEach(sec => sec.classList.remove('show-tab'));
+            const k = 'm' + step;
+            if(document.getElementById(`nav_btn_${k}`)) document.getElementById(`nav_btn_${k}`).classList.add('active');
+            if(document.getElementById(`sec_modul_${k}`)) document.getElementById(`sec_modul_${k}`).classList.add('show-tab');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleViewAllMode() {
+            isViewAllModeActive = !isViewAllModeActive;
+            if(isViewAllModeActive) {
+                document.getElementById('nav_btn_all').classList.add('active');
+                document.getElementById('sticky_nav_bar').classList.add('all-mode-active');
+                document.querySelectorAll('.modul-section').forEach(sec => sec.classList.add('show-tab'));
+            } else { navigateWizard(1); }
+        }
+
+        function showToast(msg) { const toast = document.getElementById('toast'); toast.innerText = msg; toast.style.display = 'block'; setTimeout(() => { toast.style.display = 'none'; }, 2000); }
+
+        function addARTRow(saved = null) {
+            artCount++; const id = artCount;
+            const html = `
+                <div class="dynamic-row" id="art_row_${id}">
+                    <button type="button" class="btn-remove" onclick="this.parentElement.remove(); syncDropdownOptions(); calculateAll();">Hapus</button>
+                    <div class="form-group"><label>Nama Anggota Keluarga #${id}</label><input type="text" id="art_nama_${id}" placeholder="Nama lengkap" oninput="syncDropdownOptions(); calculateAll();"></div>
+                    <div class="grid-2">
+                        <div class="grid-col"><div class="form-group"><label>Pekerjaan Utama</label><input type="text" id="art_kerja_${id}" placeholder="Pekerjaan / Kosongkan" oninput="calculateAll()"></div></div>
+                        <div class="grid-col"><div class="form-group"><label>Status Kerja</label><select id="art_status_kerja_${id}" onchange="toggleBuruhLepasInputs(${id}); calculateAll();" class="!py-[9px]"><option value="REGULAR">Regular</option><option value="BURUH_LEPAS">Buruh Lepas / Harian</option></select></div></div>
+                    </div>
+                    <div id="art_gaji_reg_box_${id}" class="form-group"><label>Gaji Sebulan (Rp)</label><input type="number" id="art_gaji_${id}" placeholder="0" oninput="calculateAll()"></div>
+                    <div id="art_gaji_lepas_box_${id}" class="grid-2 hidden mb-2 bg-white p-2 border border-gray-200 rounded-lg">
+                        <div class="grid-col"><div class="form-group !mb-0"><label>Pendapatan Harian (Rp)</label><input type="number" id="art_gaji_harian_${id}" oninput="calculateAll()"></div></div>
+                        <div class="grid-col"><div class="form-group !mb-0"><label>Hari Kerja / Bulan</label><input type="number" id="art_hari_kerja_${id}" oninput="calculateAll()"></div></div>
+                    </div>
+                </div>`;
+            document.getElementById('m1_art_container').insertAdjacentHTML('beforeend', html);
+            if(saved) {
+                document.getElementById(`art_nama_${id}`).value = saved.nama||'';
+                document.getElementById(`art_kerja_${id}`).value = saved.kerja||'';
+                document.getElementById(`art_status_kerja_${id}`).value = saved.status_kerja||'REGULAR';
+                document.getElementById(`art_gaji_${id}`).value = saved.gaji||'';
+                document.getElementById(`art_gaji_harian_${id}`).value = saved.gaji_harian||'';
+                document.getElementById(`art_hari_kerja_${id}`).value = saved.hari_kerja||'';
+            }
+            toggleBuruhLepasInputs(id); syncDropdownOptions();
+        }
+
+        function toggleBuruhLepasInputs(id) {
+            const mode = document.getElementById(`art_status_kerja_${id}`).value;
+            document.getElementById(`art_gaji_reg_box_${id}`).style.display = mode === 'BURUH_LEPAS' ? 'none' : 'block';
+            document.getElementById(`art_gaji_lepas_box_${id}`).style.display = mode === 'BURUH_LEPAS' ? 'table' : 'none';
+        }
+
+        function addPendapatanRow(saved = null) {
+            pendapatanCount++; const id = pendapatanCount;
+            const html = `
+                <div class="dynamic-row" id="p_row_${id}">
+                    <button type="button" class="btn-remove" onclick="this.parentElement.remove(); calculateAll();">Hapus</button>
+                    <div class="form-group"><label>Penerima Dana</label><select id="p_pemilik_${id}" class="art-dropdown-select" onchange="calculateAll()"></select></div>
+                    <div class="grid-2">
+                        <div class="grid-col"><div class="form-group"><label>Sumber Dana</label><input type="text" id="p_nama_${id}" placeholder="Pensiunan" oninput="calculateAll()"></div></div>
+                        <div class="grid-col"><div class="form-group"><label>Nominal / Bulan</label><input type="number" id="p_nominal_${id}" oninput="calculateAll()"></div></div>
+                    </div>
+                </div>`;
+            document.getElementById('m2_pendapatan_container').insertAdjacentHTML('beforeend', html);
+            syncDropdownOptions();
+            if(saved) {
+                document.getElementById(`p_pemilik_${id}`).value = saved.pemilik||'';
+                document.getElementById(`p_nama_${id}`).value = saved.nama||'';
+                document.getElementById(`p_nominal_${id}`).value = saved.nominal||'';
+            }
+        }
+
+        // REVISI SEKTOR USAHA: 4 SKALA PERIODE LENGKAP & INTEGRASI KOTAK CEKLIS HARI DINAMIS
+        function addUsahaRow(saved = null) {
+            usahaCount++; const id = usahaCount;
+            let kbliHtml = kbliOptions.map(o => `<option value="${o}">${o}</option>`).join('');
+            const html = `
+                <div class="dynamic-row" id="u_row_${id}" style="background:#fff; border:1px solid var(--border-color);">
+                    <button type="button" class="btn-remove" onclick="this.parentElement.remove(); calculateAll();">Hapus Usaha</button>
+                    <div style="font-weight:bold; font-size:12px; margin-bottom:4px;">Unit Usaha #${id}</div>
+                    <div class="grid-2">
+                        <div class="grid-col"><div class="form-group"><label>PJ Usaha</label><select id="u_pj_${id}" class="art-dropdown-select" onchange="calculateAll()"></select></div></div>
+                        <div class="grid-col"><div class="form-group"><label>Nama Usaha</label><input type="text" id="u_nama_${id}" oninput="calculateAll()"></div></div>
+                    </div>
+                    <div class="form-group"><label>Kategori KBLI</label><select id="u_kbli_${id}" onchange="calculateAll()">${kbliHtml}</select></div>
+                    <div class="form-group"><label>Komoditas Utama</label><input type="text" id="u_komoditas_${id}" oninput="calculateAll()"></div>
+                    
+                    <div class="p-3 bg-slate-50 border border-gray-200 rounded-xl mb-3">
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Karyawan Dibayar:</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="u_jml_karyawan_${id}" placeholder="Jumlah Orang" oninput="handleKaryawanBox(${id}); calculateAll();">
+                            <div id="u_salary_box_${id}"><input type="number" id="u_c_gaji_v_${id}" placeholder="Total Upah (Rp)" oninput="calculateAll()"></div>
+                        </div>
+                    </div>
+
+                    <!-- BIAYA BAHAN BAKU 4 SKALA + CEKLIS HARI -->
+                    <div class="cost-row-box bg-slate-50 p-2 rounded-lg mb-2 border border-gray-100">
+                        <div class="grid-2">
+                            <div class="grid-col"><label style="font-size:11px; font-weight:600;">Biaya Bahan Baku (Rp)</label><input type="number" id="u_c_bahan_v_${id}" oninput="calculateAll()"></div>
+                            <div class="grid-col"><label style="font-size:11px; font-weight:600;">Periode</label>
+                                <select id="u_c_bahan_p_${id}" onchange="toggleUsahaDayCheckboxes(${id}, 'bahan'); calculateAll();">
+                                    <option value="Harian">Harian</option><option value="Mingguan">Mingguan</option><option value="Bulanan" selected>Bulanan</option><option value="Tahunan">Tahunan</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="u_days_bahan_box_${id}" class="hidden mt-1 bg-white p-2 border rounded text-[11px]">
+                            <label class="block font-bold mb-1 text-amber-800">Hari Kerja Aktif Bahan Baku:</label>
+                            <div class="flex flex-wrap gap-2">
+                                <label><input type="checkbox" class="u-day-bahan-${id}" value="1" checked onchange="calculateAll()"> S</label>
+                                <label><input type="checkbox" class="u-day-bahan-${id}" value="2" checked onchange="calculateAll()"> S</label>
+                                <label><input type="checkbox" class="u-day-bahan-${id}" value="3" checked onchange="calculateAll()"> R</label>
+                                <label><input type="checkbox" class="u-day-bahan-${id}" value="4" checked onchange="calculateAll()"> K</label>
+                                <label><input type="checkbox" class="u-day-bahan-${id}" value="5" checked onchange="calculateAll()"> J</label>
+                                <label><input type="checkbox" class="u-day-bahan-${id}" value="6" onchange="calculateAll()"> S</label>
+                                <label><input type="checkbox" class="u-day-bahan-${id}" value="7" onchange="calculateAll()"> M</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BIAYA OPERASIONAL 4 SKALA + CEKLIS HARI -->
+                    <div class="cost-row-box bg-slate-50 p-2 rounded-lg mb-2 border border-gray-100">
+                        <div class="grid-2">
+                            <div class="grid-col"><label style="font-size:11px; font-weight:600;">Biaya Operasional (Rp)</label><input type="number" id="u_c_ops_v_${id}" oninput="calculateAll()"></div>
+                            <div class="grid-col"><label style="font-size:11px; font-weight:600;">Periode</label>
+                                <select id="u_c_ops_p_${id}" onchange="toggleUsahaDayCheckboxes(${id}, 'ops'); calculateAll();">
+                                    <option value="Harian">Harian</option><option value="Mingguan">Mingguan</option><option value="Bulanan" selected>Bulanan</option><option value="Tahunan">Tahunan</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="u_days_ops_box_${id}" class="hidden mt-1 bg-white p-2 border rounded text-[11px]">
+                            <label class="block font-bold mb-1 text-amber-800">Hari Kerja Aktif Ops:</label>
+                            <div class="flex flex-wrap gap-2">
+                                <label><input type="checkbox" class="u-day-ops-${id}" value="1" checked onchange="calculateAll()"> S</label>
+                                <label><input type="checkbox" class="u-day-ops-${id}" value="2" checked onchange="calculateAll()"> S</label>
+                                <label><input type="checkbox" class="u-day-ops-${id}" value="3" checked onchange="calculateAll()"> R</label>
+                                <label><input type="checkbox" class="u-day-ops-${id}" value="4" checked onchange="calculateAll()"> K</label>
+                                <label><input type="checkbox" class="u-day-ops-${id}" value="5" checked onchange="calculateAll()"> J</label>
+                                <label><input type="checkbox" class="u-day-ops-${id}" value="6" onchange="calculateAll()"> S</label>
+                                <label><input type="checkbox" class="u-day-ops-${id}" value="7" onchange="calculateAll()"> M</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- OMZET PENDAPATAN 4 SKALA + CEKLIS HARI -->
+                    <div class="form-group mt-2">
+                        <label>Kategori Input Keuangan</label>
+                        <select id="u_jenis_laba_${id}" onchange="calculateAll()"><option value="KOTOR">Laba Kotor (Omzet Pendapatan)</option><option value="BERSIH">Laba Bersih Terbuka</option></select>
+                    </div>
+                    <div class="grid-2 bg-amber-50/50 p-2 rounded-lg border border-amber-100">
+                        <div class="grid-col">
+                            <label style="font-size:11px; font-weight:600;">Periode Omzet</label>
+                            <select id="u_omzet_p_${id}" onchange="toggleUsahaDayCheckboxes(${id}, 'omzet'); calculateAll();">
+                                <option value="Harian">Harian</option><option value="Mingguan">Mingguan</option><option value="Bulanan" selected>Bulanan</option><option value="Tahunan">Tahunan</option>
+                            </select>
+                        </div>
+                        <div class="grid-col"><label style="font-size:11px; font-weight:600;">Nominal Nilai (Rp)</label><input type="number" id="u_omzet_v_${id}" placeholder="Nominal" oninput="calculateAll()"></div>
+                    </div>
+                    <div id="u_days_omzet_box_${id}" class="hidden mt-1 bg-white p-2 border rounded text-[11px] mb-2">
+                        <label class="block font-bold mb-1 text-blue-800">Hari Penjualan Aktif Memperoleh Omzet:</label>
+                        <div class="flex flex-wrap gap-2">
+                            <label><input type="checkbox" class="u-day-omzet-${id}" value="1" checked onchange="calculateAll()"> S</label>
+                            <label><input type="checkbox" class="u-day-omzet-${id}" value="2" checked onchange="calculateAll()"> S</label>
+                            <label><input type="checkbox" class="u-day-omzet-${id}" value="3" checked onchange="calculateAll()"> R</label>
+                            <label><input type="checkbox" class="u-day-omzet-${id}" value="4" checked onchange="calculateAll()"> K</label>
+                            <label><input type="checkbox" class="u-day-omzet-${id}" value="5" checked onchange="calculateAll()"> J</label>
+                            <label><input type="checkbox" class="u-day-omzet-${id}" value="6" onchange="calculateAll()"> S</label>
+                            <label><input type="checkbox" class="u-day-omzet-${id}" value="7" onchange="calculateAll()"> M</label>
+                        </div>
+                    </div>
+
+                    <!-- REVISI LAYAR: INDIKATOR VISUAL LENGKAP 6 PARAMETER REKAPAN FINANSIAL -->
+                    <div class="metric-group mt-2 !bg-slate-900 !text-slate-100 p-3 rounded-xl font-mono text-[11px]">
+                        <div class="text-sky-400 font-bold border-b border-slate-700 pb-1 uppercase text-[10px] tracking-wider">📊 Rekap Finansial Sektor Usaha:</div>
+                        <div class="flex justify-between py-0.5"><span>• Biaya Produksi Bulanan:</span><span id="u_v_c_bln_${id}" class="text-white">Rp 0</span></div>
+                        <div class="flex justify-between py-0.5"><span>• Biaya Produksi Tahunan:</span><span id="u_v_c_thn_${id}" class="text-white">Rp 0</span></div>
+                        <div class="flex justify-between py-0.5 border-t border-slate-800 mt-1 pt-1"><span>• Laba Kotor Bulanan:</span><span id="u_v_g_bln_${id}" class="text-amber-400">Rp 0</span></div>
+                        <div class="flex justify-between py-0.5"><span>• Laba Bersih Bulanan:</span><span id="u_v_n_bln_${id}" class="text-emerald-400 font-bold">Rp 0</span></div>
+                        <div class="flex justify-between py-0.5 border-t border-slate-800 mt-1 pt-1"><span>• Laba Kotor Tahunan:</span><span id="u_v_g_thn_${id}" class="text-amber-400">Rp 0</span></div>
+                        <div class="flex justify-between py-0.5"><span>• Laba Bersih Tahunan:</span><span id="u_v_n_thn_${id}" class="text-emerald-400 font-bold">Rp 0</span></div>
+                    </div>
+                </div>`;
+            document.getElementById('m3_usaha_container').insertAdjacentHTML('beforeend', html);
+            syncDropdownOptions();
+            if(saved) {
+                document.getElementById(`u_pj_${id}`).value = saved.pj||'';
+                document.getElementById(`u_nama_${id}`).value = saved.nama||'';
+                document.getElementById(`u_kbli_${id}`).value = saved.kbli||'';
+                document.getElementById(`u_komoditas_${id}`).value = saved.komoditas||'';
+                document.getElementById(`u_jml_karyawan_${id}`).value = saved.jml_karyawan||'';
+                document.getElementById(`u_c_bahan_v_${id}`).value = saved.c_bahan_v||'';
+                document.getElementById(`u_c_bahan_p_${id}`).value = saved.c_bahan_p||'Bulanan';
+                document.getElementById(`u_c_ops_v_${id}`).value = saved.c_ops_v||'';
+                document.getElementById(`u_c_ops_p_${id}`).value = saved.c_ops_p||'Bulanan';
+                document.getElementById(`u_jenis_laba_${id}`).value = saved.jenis_laba_input||'KOTOR';
+                document.getElementById(`u_omzet_p_${id}`).value = saved.omzet_periode||'Bulanan';
+                document.getElementById(`u_omzet_v_${id}`).value = saved.omzet_nilai||'';
+            }
+            toggleUsahaDayCheckboxes(id, 'bahan');
+            toggleUsahaDayCheckboxes(id, 'ops');
+            toggleUsahaDayCheckboxes(id, 'omzet');
+            handleKaryawanBox(id); 
+            calculateAll();
+        }
+
+        function toggleUsahaDayCheckboxes(id, type) {
+            const p = document.getElementById(`u_c_${type}_p_${id}`)||document.getElementById(`u_omzet_p_${id}`);
+            const box = document.getElementById(`u_days_${type}_box_${id}`);
+            if(p && p.value === 'Harian') { box.classList.remove('hidden'); } 
+            else if(box) { box.classList.add('hidden'); }
+        }
+
+        function handleKaryawanBox(id) {
+            const j = parseInt(document.getElementById(`u_jml_karyawan_${id}`).value)||0;
+            const box = document.getElementById(`u_salary_box_${id}`);
+            if(j > 1) {
+                box.innerHTML = `<input type="number" id="u_c_gaji_v_${id}" placeholder="Rata upah/org" class="nm-internal-gaji" oninput="document.getElementById('u_multi_lbl_${id}').innerText = formatRupiahVisualBulat(this.value * ${j}); calculateAll();"> <span class="text-[10px] text-gray-400 font-bold">Total: <span id="u_multi_lbl_${id}" class="text-blue-600">Rp 0</span></span>`;
+            } else {
+                box.innerHTML = `<input type="number" id="u_c_gaji_v_${id}" placeholder="Upah Gaji Total" class="nm-internal-gaji" oninput="calculateAll()">`;
+            }
+        }
+
+        function toggleAssetSectionBlock() {
+            isAssetSectionMinimized = !isAssetSectionMinimized;
+            const wrapper = document.getElementById('collapsible_asset_wrapper_box');
+            const btn = document.getElementById('btn_toggle_assets');
+            if(isAssetSectionMinimized) {
+                wrapper.classList.add('hidden'); btn.innerText = "[ 🔽 Tampilkan ]";
+            } else {
+                wrapper.classList.remove('hidden'); btn.innerText = "[ 🔼 Sembunyikan ]";
+            }
+        }
+
+        function addAssetTanahRow() {
+            assetTanahCount++; const id = assetTanahCount;
+            const html = `
+                <div class="flex items-center gap-2 mb-2 bg-white p-2 border border-gray-200 rounded" id="as_tanah_row_${id}">
+                    <input type="number" placeholder="Luas (m²)" class="as-t-luas" oninput="calculateAll()">
+                    <input type="number" placeholder="Harga/m²" class="as-t-harga" oninput="calculateAll()">
+                    <button type="button" onclick="this.parentElement.remove(); calculateAll();" class="text-xs font-bold text-red-600 px-2 py-1 bg-red-50 rounded border border-red-200 shadow-sm hover:bg-red-500 hover:text-white transition-all">X</button>
+                </div>`;
+            document.getElementById('asset_tanah_container').insertAdjacentHTML('beforeend', html);
+        }
+        function addAssetPohonRow() {
+            assetPohonCount++; const id = assetPohonCount;
+            const html = `
+                <div class="flex items-center gap-1 mb-2 bg-white p-2 border border-gray-200 rounded" id="as_pohon_row_${id}">
+                    <input type="text" placeholder="Jenis Pohon" class="as-p-jenis w-24">
+                    <input type="number" placeholder="Btg" class="as-p-qty w-14" oninput="calculateAll()">
+                    <input type="number" placeholder="Harga" class="as-p-price w-20" oninput="calculateAll()">
+                    <button type="button" onclick="this.parentElement.remove(); calculateAll();" class="text-xs font-bold text-red-600 px-2 py-1 bg-red-50 rounded border border-red-200 shadow-sm hover:bg-red-500 hover:text-white transition-all">X</button>
+                </div>`;
+            document.getElementById('asset_pohon_container').insertAdjacentHTML('beforeend', html);
+        }
+        function addAssetBuahRow() {
+            assetBuahCount++; const id = assetBuahCount;
+            const html = `
+                <div class="bg-white p-2 border border-gray-200 rounded mb-2 relative" id="as_buah_row_${id}">
+                    <button type="button" onclick="this.parentElement.remove(); calculateAll();" class="absolute top-2 right-2 text-[10px] font-bold text-red-600 px-2 py-0.5 bg-red-50 rounded border border-red-200 shadow-sm hover:bg-red-500 hover:text-white transition-all">X</button>
+                    <div class="grid grid-cols-2 gap-1 mb-1 pr-6"><input type="text" placeholder="Komoditas (misal: Mangga)" class="as-b-jenis"><input type="number" placeholder="Harga/kg" class="as-b-price" oninput="calculateAll()"></div>
+                    <div class="grid grid-cols-3 gap-1"><input type="number" placeholder="Kg Panen" class="as-b-qty" oninput="calculateAll()"><select class="as-b-cycle col-span-2 !py-[8px]" onchange="calculateAll()"><option value="12">1 Kali Sebulan</option><option value="24">2 Kali Sebulan</option><option value="1">1 Kali Setahun</option><option value="2">2 Kali Setahun</option><option value="3">3 Kali Setahun</option></select></div>
+                </div>`;
+            document.getElementById('asset_buah_container').insertAdjacentHTML('beforeend', html);
+        }
+        function addAssetKendaraanRow() {
+            assetKendaraanCount++; const id = assetKendaraanCount;
+            const html = `
+                <div class="flex items-center gap-2 mb-2 bg-white p-2 border border-gray-200 rounded" id="as_k_row_${id}">
+                    <input type="text" placeholder="Seri (misal: Beat/Supra)" class="as-k-seri">
+                    <input type="number" placeholder="Harga Jual" class="as-k-price" oninput="calculateAll()">
+                    <button type="button" onclick="this.parentElement.remove(); calculateAll();" class="text-xs font-bold text-red-600 px-2 py-1 bg-red-50 rounded border border-red-200 shadow-sm hover:bg-red-500 hover:text-white transition-all">X</button>
+                </div>`;
+            document.getElementById('asset_kendaraan_container').insertAdjacentHTML('beforeend', html);
+        }
+
+        function calculateMakanProjections() {
+            const skala = document.getElementById('m4_makan_skala').value;
+            const nilai = parseFloat(document.getElementById('m4_makan_nilai').value) || 0;
+            
+            if (skala === "Harian") {
+                globalMakanMingguanTransit = nilai * 7;
+            } else if (skala === "Mingguan") {
+                globalMakanMingguanTransit = nilai;
+            } else if (skala === "Bulanan") {
+                globalMakanMingguanTransit = (nilai * 7) / 30;
+            }
+
+            globalMakanBulananFinalAsli = (globalMakanMingguanTransit * 30) / 7;
+
+            document.getElementById('row_proj_makan_hari').style.display = 'none'; 
+            document.getElementById('row_proj_makan_minggu').style.display = 'none'; 
+            document.getElementById('row_proj_makan_bulan').style.display = 'none';
+            
+            document.getElementById('proj_makan_hari_val').innerText = formatRupiahVisualBulat(globalMakanMingguanTransit / 7);
+            document.getElementById('proj_makan_minggu_val').innerText = formatRupiahVisualBulat(globalMakanMingguanTransit);
+            document.getElementById('proj_makan_bulan_val').innerText = formatRupiahVisualBulat(globalMakanBulananFinalAsli);
+
+            if (skala === 'Harian') {
+                document.getElementById('row_proj_makan_minggu').style.display = 'flex';
+                document.getElementById('row_proj_makan_bulan').style.display = 'flex';
+            } else if (skala === 'Mingguan') {
+                document.getElementById('row_proj_makan_hari').style.display = 'flex';
+                document.getElementById('row_proj_makan_bulan').style.display = 'flex';
+            } else {
+                document.getElementById('row_proj_makan_hari').style.display = 'flex';
+                document.getElementById('row_proj_makan_minggu').style.display = 'flex';
+            }
+        }
+
+        function addNonMakanRow(saved = null) {
+            nonMakanCount++; const id = nonMakanCount;
+            const html = `
+                <tr id="nm_table_row_${id}">
+                    <td><input type="text" id="nm_nama_${id}" placeholder="Kebutuhan" class="nm-input-nama" oninput="calculateAll()"></td>
+                    <td><select id="nm_periode_${id}" class="nm-select-periode" onchange="resortNonMakanTableRowsRealtime(); calculateAll();"><option value="Bulanan">Bulanan</option><option value="Tahunan">Tahunan</option></select></td>
+                    <td><input type="number" id="nm_nominal_${id}" class="nm-input-nominal" oninput="calculateAll()"></td>
+                    <td class="text-center"><button type="button" class="text-red-500 font-bold" onclick="this.parentElement.parentElement.remove(); calculateAll();">X</button></td>
+                </tr>`;
+            document.getElementById('m5_nonmakan_table_body').insertAdjacentHTML('beforeend', html);
+            if(saved) { document.getElementById(`nm_nama_${id}`).value = saved.nama; document.getElementById(`nm_periode_${id}`).value = saved.periode; document.getElementById(`nm_nominal_${id}`).value = saved.nominal; }
+            resortNonMakanTableRowsRealtime();
+            calculateAll();
+        }
+
+        // REVISI URUTAN VISUAL TABEL: BULANAN DI ATAS, TAHUNAN DI BAWAH SECARA REAL-TIME
+        function resortNonMakanTableRowsRealtime() {
+            const body = document.getElementById('m5_nonmakan_table_body');
+            const rows = Array.from(body.querySelectorAll('tr'));
+            
+            const rowStates = rows.map(r => {
+                return {
+                    html: r.innerHTML,
+                    id: r.id,
+                    nama: r.querySelector('.nm-input-nama').value,
+                    periode: r.querySelector('.nm-select-periode').value,
+                    nominal: r.querySelector('.nm-input-nominal').value
+                };
+            });
+
+            rowStates.sort((a, b) => {
+                if (a.periode === 'Bulanan' && b.periode === 'Tahunan') return -1;
+                if (a.periode === 'Tahunan' && b.periode === 'Bulanan') return 1;
+                return 0;
+            });
+
+            body.innerHTML = '';
+            rowStates.forEach(state => {
+                const tr = document.createElement('tr');
+                tr.id = state.id;
+                tr.innerHTML = state.html;
+                body.appendChild(tr);
+                
+                tr.querySelector('.nm-input-nama').value = state.nama;
+                tr.querySelector('.nm-select-periode').value = state.periode;
+                tr.querySelector('.nm-input-nominal').value = state.nominal;
+            });
+        }
+
+        function syncDropdownOptions() {
+            const names = Array.from(document.getElementById('m1_art_container').querySelectorAll('.dynamic-row')).map(r => {
+                const id = r.id.replace('art_row_',''); return document.getElementById(`art_nama_${id}`).value.trim();
+            }).filter(n => n);
+            document.querySelectorAll('.art-dropdown-select').forEach(sel => {
+                const curr = sel.value; sel.innerHTML = `<option value="">-- Pilih Anggota --</option>` + names.map(n => `<option value="${n}">${n}</option>`).join('');
+                sel.value = curr;
+            });
+        }
+
+        function getUsahaActiveDaysMultiplier(id, type) {
+            const boxes = document.querySelectorAll(`.u-day-${type}-${id}`);
+            if(boxes.length === 0) return 4.3; // Fallback jika tidak ditemukan
+            let count = 0; boxes.forEach(b => { if(b.checked) count++; });
+            return count;
+        }
+
+        function getFlexibleUsahaMonthlyValue(id, type, period, val) {
+            const v = parseFloat(val)||0;
+            if(period === 'Harian') {
+                const days = getUsahaActiveDaysMultiplier(id, type);
+                return v * days * 4.3;
+            }
+            if(period === 'Mingguan') return v * 4.3;
+            if(period === 'Tahunan') return v / 12;
+            return v; // Bulanan
+        }
+
+        function formatRupiahVisualBulat(num) { 
+            return 'Rp ' + Math.trunc(num).toLocaleString('id-ID'); 
+        }
+
+        function calculateAll() {
+            let totalArtSalaries = 0;
+            const artDataList = [];
+            Array.from(document.getElementById('m1_art_container').querySelectorAll('.dynamic-row')).forEach(row => {
+                const id = row.id.replace('art_row_','');
+                const n = document.getElementById(`art_nama_${id}`).value.trim();
+                const k = document.getElementById(`art_kerja_${id}`).value.trim();
+                const s = document.getElementById(`art_status_kerja_${id}`).value;
+                let v = s === 'BURUH_LEPAS' ? (parseFloat(document.getElementById(`art_gaji_harian_${id}`).value)||0)*(parseInt(document.getElementById(`art_hari_kerja_${id}`).value)||0) : (parseFloat(document.getElementById(`art_gaji_${id}`).value)||0);
+                totalArtSalaries += v; artDataList.push({ nama:n, kerja:k, status_kerja:s, gaji:v });
+            });
+
+            let totalOtherIncomes = 0;
+            Array.from(document.getElementById('m2_pendapatan_container').querySelectorAll('.dynamic-row')).forEach(row => {
+                const id = row.id.replace('p_row_',''); totalOtherIncomes += parseFloat(document.getElementById(`p_nominal_${id}`).value)||0;
+            });
+
+            // PERHITUNGAN LENGKAP MULTI-USAHA DENGAN VARIABEL CEKLIS HARI
+            let aggregateNetBusinessProfit = 0, aggregateGrossBusinessOmzet = 0, aggregateBusinessCosts = 0;
+            const textUsahaNarrativeArray = [];
+
+            Array.from(document.getElementById('m3_usaha_container').querySelectorAll('.dynamic-row')).forEach(row => {
+                const id = row.id.replace('u_row_','');
+                
+                // Gaji internal karyawan
+                const j = parseInt(document.getElementById(`u_jml_karyawan_${id}`).value)||0;
+                const internalSalaryInput = row.querySelector('.nm-internal-gaji');
+                let w = internalSalaryInput ? parseFloat(internalSalaryInput.value)||0 : 0; 
+                if(j > 1) w = w * j;
+                
+                const cBahanBln = getFlexibleUsahaMonthlyValue(id, 'bahan', document.getElementById(`u_c_bahan_p_${id}`).value, document.getElementById(`u_c_bahan_v_${id}`).value);
+                const cOpsBln = getFlexibleUsahaMonthlyValue(id, 'ops', document.getElementById(`u_c_ops_p_${id}`).value, document.getElementById(`u_c_ops_v_${id}`).value);
+                const costsBln = cBahanBln + cOpsBln + w;
+
+                const oPeriode = document.getElementById(`u_omzet_p_${id}`).value;
+                const oValBln = getFlexibleUsahaMonthlyValue(id, 'omzet', oPeriode, document.getElementById(`u_omzet_v_${id}`).value);
+                
+                let omzetBln = 0, labaBln = 0;
+                if(document.getElementById(`u_jenis_laba_${id}`).value === 'KOTOR') { 
+                    omzetBln = oValBln; labaBln = omzetBln - costsBln; 
+                } else { 
+                    labaBln = oValBln; omzetBln = labaBln + costsBln; 
+                }
+
+                // Cetak visual 6 indikator lengkap di layar input usaha
+                document.getElementById(`u_v_c_bln_${id}`).innerText = formatRupiahVisualBulat(costsBln);
+                document.getElementById(`u_v_c_thn_${id}`).innerText = formatRupiahVisualBulat(costsBln * 12);
+                document.getElementById(`u_v_g_bln_${id}`).innerText = formatRupiahVisualBulat(omzetBln);
+                document.getElementById(`u_v_n_bln_${id}`).innerText = formatRupiahVisualBulat(labaBln);
+                document.getElementById(`u_v_g_thn_${id}`).innerText = formatRupiahVisualBulat(omzetBln * 12);
+                document.getElementById(`u_v_n_thn_${id}`).innerText = formatRupiahVisualBulat(labaBln * 12);
+
+                aggregateNetBusinessProfit += labaBln; 
+                aggregateGrossBusinessOmzet += omzetBln; 
+                aggregateBusinessCosts += costsBln;
+
+                // STRUKTUR KALIMAT NARASI SEKTOR USAHA BARU (MURNI LABA BERSIH BULANAN / HANYA KATA UNIT USAHA)
+                if (costsBln > 0 && omzetBln === 0) {
+                    textUsahaNarrativeArray.push(`unit usaha namun belum mendapatkan pendapatan karena belum ada penjualan`);
+                } else {
+                    textUsahaNarrativeArray.push(`unit usaha dengan laba bersih ${formatRupiahVisualBulat(labaBln)} per bulan`);
+                }
+            });
+
+            let totTanah = 0; const tanahDetailsArray = [];
+            document.querySelectorAll('#asset_tanah_container .flex').forEach((el) => { 
+                const luas = parseFloat(el.querySelector('.as-t-luas').value)||0;
+                const harga = parseFloat(el.querySelector('.as-t-harga').value)||0;
+                totTanah += luas * harga; if(luas > 0) tanahDetailsArray.push(`tanah seluas ${luas} m²`);
+            });
+            
+            let totPohon = 0; const pohonDetailsArray = [];
+            document.querySelectorAll('#asset_pohon_container .flex').forEach((el) => { 
+                const qty = parseInt(el.querySelector('.as-p-qty').value)||0;
+                const price = parseFloat(el.querySelector('.as-p-price').value)||0;
+                const jenis = el.querySelector('.as-p-jenis').value.trim() || 'kayu';
+                totPohon += qty * price; if(qty > 0) pohonDetailsArray.push(`${qty} batang pohon ${jenis}`);
+            });
+            
+            let totBuahThn = 0; const buahDetailsArray = [];
+            document.querySelectorAll('#asset_buah_container .relative').forEach((el) => { 
+                const qty = parseFloat(el.querySelector('.as-b-qty').value)||0;
+                const price = parseFloat(el.querySelector('.as-b-price').value)||0;
+                const cycle = parseInt(el.querySelector('.as-b-cycle').value)||1;
+                const jenis = el.querySelector('.as-b-jenis').value.trim() || 'buah/tani';
+                const annualKg = qty * cycle; totBuahThn += annualKg * price; if(annualKg > 0) buahDetailsArray.push(`panen ${jenis} sebanyak ${annualKg} kg/tahun`);
+            });
+            
+            let totKendaraan = 0; const kendaraanDetailsArray = [];
+            document.querySelectorAll('#asset_kendaraan_container .flex').forEach((el) => { 
+                const price = parseFloat(el.querySelector('.as-k-price').value)||0;
+                const seri = el.querySelector('.as-k-seri').value.trim() || 'kendaraan';
+                totKendaraan += price; if(price > 0) kendaraanDetailsArray.push(`${seri}`);
+            });
+
+            document.getElementById('sub_total_asset_tanah').innerText = formatRupiahVisualBulat(totTanah);
+            document.getElementById('sub_total_asset_pohon').innerText = formatRupiahVisualBulat(totPohon);
+            document.getElementById('sub_total_asset_buah_bln').innerText = formatRupiahVisualBulat(totBuahThn / 12) + " / Bulan";
+            document.getElementById('sub_total_asset_buah_thn').innerText = formatRupiahVisualBulat(totBuahThn);
+            document.getElementById('sub_total_asset_kendaraan').innerText = formatRupiahVisualBulat(totKendaraan);
+
+            const valListrik = parseFloat(document.getElementById('m5_listrik_bulanan').value)||0;
+            const valInternet = parseFloat(document.getElementById('m5_internet_bulanan').value)||0;
+            document.getElementById('tr_listrik_warning').style.display = (valListrik < 45000) ? 'table-row' : 'none';
+            document.getElementById('tr_internet_warning').style.display = (document.getElementById('m5_internet_bulanan').value === '0') ? 'table-row' : 'none';
+
+            let screenSumBulanan = valListrik + valInternet, screenSumTahunan = 0, internalValidatorNonFoodMonthly = valListrik + valInternet;
+            
+            // Penyusunan Berjejer Teks Narasi Pengeluaran Urut Otomatis
+            const arrBulananNarrative = [];
+            const arrTahunanNarrative = [];
+
+            if(valListrik > 0) arrBulananNarrative.push(`Listrik sebesar ${formatRupiahVisualBulat(valListrik)} per bulan`);
+            if(valInternet > 0) arrBulananNarrative.push(`Internet sebesar ${formatRupiahVisualBulat(valInternet)} per bulan`);
+
+            Array.from(document.getElementById('m5_nonmakan_table_body').querySelectorAll('tr')).forEach(row => {
+                const id = row.id.replace('nm_table_row_',''); 
+                const n = document.getElementById(`nm_nama_${id}`).value.trim() || 'Kebutuhan';
+                const p = document.getElementById(`nm_periode_${id}`).value; 
+                const v = parseFloat(document.getElementById(`nm_nominal_${id}`).value)||0;
+                
+                if(p === 'Bulanan') { 
+                    screenSumBulanan += v; internalValidatorNonFoodMonthly += v;
+                    if(v > 0) arrBulananNarrative.push(`${n} sebesar ${formatRupiahVisualBulat(v)} per bulan`);
+                } else { 
+                    screenSumTahunan += v; internalValidatorNonFoodMonthly += (v/12); 
+                    if(v > 0) arrTahunanNarrative.push(`${n} sebesar ${formatRupiahVisualBulat(v)} per tahun`);
+                }
+            });
+
+            document.getElementById('mod4_makan_bulanan_screen').innerText = formatRupiahVisualBulat(globalMakanBulananFinalAsli) + " / Bulan";
+            document.getElementById('mod4_total_bulanan_screen').innerText = formatRupiahVisualBulat(screenSumBulanan) + " / Bulan";
+            document.getElementById('mod4_total_tahunan_screen').innerText = formatRupiahVisualBulat(screenSumTahunan) + " / Tahun";
+
+            const validatorExpenses = globalMakanBulananFinalAsli + internalValidatorNonFoodMonthly;
+            const totalRevenue = totalArtSalaries + totalOtherIncomes + aggregateNetBusinessProfit;
+            const delta = totalRevenue - validatorExpenses;
+
+            document.getElementById('v_tot_pendapatan').innerText = formatRupiahVisualBulat(totalArtSalaries + totalOtherIncomes);
+            document.getElementById('v_tot_laba_usaha').innerText = formatRupiahVisualBulat(aggregateNetBusinessProfit);
+            document.getElementById('v_tot_pengeluaran').innerText = formatRupiahVisualBulat(validatorExpenses);
+            document.getElementById('v_selisih').innerText = formatRupiahVisualBulat(delta);
+
+            document.getElementById('sumber_penutup_group').style.display = delta < 0 ? 'block' : 'none';
+            document.getElementById('validation_badge_container').innerHTML = delta < 0 ? `<div id="status_badge" class="badge-status status-danger">🔴 Perlu Konfirmasi (Defisit)</div>` : `<div id="status_badge" class="badge-status status-consistent">🟢 Data Consistent</div>`;
+            document.getElementById('validation_alerts').innerHTML = delta < 0 ? `<div class="alert-danger-box">🔴 Anomali Defisit Finansial: Total pengeluaran bulanan melebihi pendapatan.</div>` : '';
+
+            document.getElementById('preview_gaji_art').innerText = formatRupiahVisualBulat(totalArtSalaries);
+            document.getElementById('preview_sekunder').innerText = formatRupiahVisualBulat(totalOtherIncomes);
+            document.getElementById('preview_u_kotor_bln').innerText = formatRupiahVisualBulat(aggregateGrossBusinessOmzet);
+            document.getElementById('preview_u_biaya_bln').innerText = formatRupiahVisualBulat(aggregateBusinessCosts);
+            document.getElementById('preview_u_bersih_bln').innerText = formatRupiahVisualBulat(aggregateNetBusinessProfit);
+            document.getElementById('preview_u_kotor_thn').innerText = formatRupiahVisualBulat(aggregateGrossBusinessOmzet * 12);
+            document.getElementById('preview_u_biaya_thn').innerText = formatRupiahVisualBulat(aggregateBusinessCosts * 12);
+            document.getElementById('preview_u_bersih_thn').innerText = formatRupiahVisualBulat(aggregateNetBusinessProfit * 12);
+            document.getElementById('preview_exp_makan').innerText = formatRupiahVisualBulat(globalMakanBulananFinalAsli);
+            document.getElementById('preview_exp_bulanan').innerText = formatRupiahVisualBulat(screenSumBulanan);
+            document.getElementById('preview_exp_tahunan').innerText = formatRupiahVisualBulat(screenSumTahunan);
+            document.getElementById('preview_asset_tanah').innerText = formatRupiahVisualBulat(totTanah);
+            document.getElementById('preview_asset_pohon').innerText = formatRupiahVisualBulat(totPohon);
+            document.getElementById('preview_asset_buah_bln').innerText = formatRupiahVisualBulat(totBuahThn / 12) + " / Bulan";
+            document.getElementById('preview_asset_buah_thn').innerText = formatRupiahVisualBulat(totBuahThn);
+            document.getElementById('preview_asset_kendaraan').innerText = formatRupiahVisualBulat(totKendaraan);
+
+            generateNarrativeText(artDataList, totalOtherIncomes, delta, totTanah, totPohon, totBuahThn, totKendaraan, tanahDetailsArray, pohonDetailsArray, buahDetailsArray, kendaraanDetailsArray, arrBulananNarrative, arrTahunanNarrative, textUsahaNarrativeArray);
+        }
+
+        // REVISI TOTAL STRUKTUR KALIMAT NARASI MODUL 6 (PADAT, URUT BULANAN-TAHUNAN, SAKLAR GAJI NOL, GEMBOK MAKAN)
+        function generateNarrativeText(art, sec, delta, tTanah, tPohon, tBuah, tKen, tArr, pArr, bArr, kArr, arrBln, arrThn, arrUsaha) {
+            const nr = document.getElementById('m1_no_rumah').value.trim();
+            if(!nr) { document.getElementById('narrative_output').innerText = "Menunggu data bangunan..."; return; }
+            
+            let t = `Hasil pencacahan pada keluarga di rumah nomor bangunan ${nr}. `;
+            if(document.getElementById('m3_usaha_container').children.length === 0) t += `Keluarga memang tidak memiliki usaha. `;
+            
+            // Saklar Gaji Nol: Sembunyikan nominal pendapatan jika 0/kosong
+            art.forEach(p => { 
+                if(p.kerja) {
+                    if(p.gaji > 0) {
+                        t += `Sdr/i ${p.nama} bekerja sebagai ${p.kerja} dengan pendapatan sebulan ${formatRupiahVisualBulat(p.gaji)}. `;
+                    } else {
+                        t += `Sdr/i ${p.nama} bekerja sebagai ${p.kerja}. `;
+                    }
+                }
+            });
+
+            // Narasi Usaha Terhubung Fleksibel
+            if(arrUsaha.length > 0) {
+                t += `Keluarga memiliki ${arrUsaha.join(', serta ')}. `;
+            }
+            
+            t += `\n\n`;
+            // Pengeluaran Berjejer Urut Skala Tanpa Jumlah Total (Makan Lenyap)
+            if(arrBln.length > 0) {
+                t += `Biaya rutin non makanan skala bulanan meliputi ${arrBln.join(', ')}. `;
+            } else {
+                t += `Biaya rutin non makanan skala bulanan tidak ada yang dilaporkan. `;
+            }
+
+            if(arrThn.length > 0) {
+                t += `Sedangkan pengeluaran non makanan skala tahunan meliputi ${arrThn.join(', ')}. `;
+            }
+            
+            if(tTanah > 0 || pArr.length > 0 || bArr.length > 0 || kArr.length > 0) {
+                t += `\n\nKeluarga ini memiliki rincian aset potensial di lapangan meliputi: `;
+                if(tArr.length > 0) t += `aset tanah berupa ${tArr.join(' dan ')} dengan akumulasi nilai pasar ${formatRupiahVisualBulat(tTanah)}, `;
+                if(pArr.length > 0) t += `aset tegakan pohon berupa ${pArr.join(' serta ')} (total taksiran ${formatRupiahVisualBulat(tPohon)}), `;
+                if(bArr.length > 0) t += `aset hortikultura produktif berupa ${bArr.join(' serta ')} dengan nilai estimasi hasil panen ${formatRupiahVisualBulat(tBuah / 12)}/bulan atau sepadan dengan ${formatRupiahVisualBulat(tBuah)}/tahun, `;
+                if(kArr.length > 0) t += `serta aset bergerak berupa kendaraan ${kArr.join(', ')} dengan taksiran nilai pasar ${formatRupiahVisualBulat(tKen)}.`;
+            }
+            if(delta < 0) t += `\n\nDefisit neraca keuangan ditutup via: ${document.getElementById('v_sumber_defisit').value||'Bantuan/Tabungan'}. `;
+            document.getElementById('narrative_output').innerText = t;
+        }
+
+        function copyNarrative() { navigator.clipboard.writeText(document.getElementById('narrative_output').innerText).then(() => showToast("📋 Tersalin!")); }
+        function shareNarrative() { if (navigator.share) { navigator.share({ text: document.getElementById('narrative_output').innerText }); } else { copyNarrative(); alert("Disalin ke Clipboard!"); } }
+        function triggerManualResetForm() { if(confirm("Reset form master?")) cleanFormAll(); }
+        function cleanFormAll() { location.reload(); }
+
+        function saveDataToStorage() {
+            let records = JSON.parse(localStorage.getItem('se2026_records')||'[]');
+            const nr = document.getElementById('m1_no_rumah').value;
+            const payload = { id: 'se_id_' + Date.now(), timestamp: new Date().toLocaleString('id-ID'), no_rumah: nr, narrative: document.getElementById('narrative_output').innerText };
+            records.push(payload); localStorage.setItem('se2026_records', JSON.stringify(records));
+            playSuccessSound(); showToast("💾 Berhasil disimpan!"); cleanFormAll();
+        }
+
+        function loadRecordsDashboard() {
+            const records = JSON.parse(localStorage.getItem('se2026_records')||'[]');
+            document.getElementById('records_list_container').innerHTML = records.map(r => `<div class="record-item"><div class="record-header"><span>🏠 No Bangunan: ${r.no_rumah}</span></div><div class="text-xs mb-2">${r.narrative.substring(0,80)}...</div></div>`).join('');
+        }
+        function exportToCSV() { alert("Fitur CSV Siap!"); }
+    </script>
+</body>
+</html>
