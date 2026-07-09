@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KangSensus Assistant - SE2026 Master Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #0F172A; --primary-light: #2563EB; --secondary: #F8FAFC; --accent: #E2E8F0;
+            --success: #059669; --warning: #D97706; --danger: #DC2626; --text-main: #334155;
+            --bg-body: #F8FAFC; --bg-card: #FFFFFF; --border-color: #E2E8F0;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-body); color: var(--text-main); padding-bottom: 40px; }
+        .master-nav { display: flex; background: #ffffff; border: 1px solid var(--border-color); border-radius: 16px; margin: 16px; overflow: hidden; padding: 4px; }
+        .master-tab { flex: 1; text-align: center; padding: 10px; font-size: 13px; font-weight: 600; color: #64748B; cursor: pointer; border-radius: 12px; transition: all 0.2s ease; }
+        .master-tab.active { color: #2563EB; background-color: #F0F5FF; font-weight: 700; }
+        .sticky-modul-menu { position: sticky; top: 0; z-index: 999; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); display: flex; overflow-x: auto; padding: 12px 16px; border-bottom: 1px solid var(--border-color); gap: 6px; }
+        .sticky-modul-menu::-webkit-scrollbar { display: none; }
+        .modul-btn { display: inline-block; padding: 6px 14px; font-size: 12px; font-weight: 600; border-radius: 9999px; background: #F1F5F9; color: #64748B; cursor: pointer; transition: all 0.2s ease; border: 1px solid transparent; }
+        .modul-btn.active { background: #2563EB; color: #ffffff; }
+        .container { padding: 16px; max-width: 680px; margin: 0 auto; }
+        .app-panel { display: none; }
+        .app-panel.active { display: block; }
+        .modul-section { display: none; scroll-mt: 70px; }
+        .modul-section.show-tab { display: block; }
+        .card { background: var(--bg-card); border-radius: 20px; padding: 20px; margin-bottom: 16px; border: 1px solid var(--border-color); }
+        .card-title { font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; color: #1E293B; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 600; margin-bottom: 4px; color: #64748B; text-transform: uppercase; }
+        input[type="text"], input[type="number"], select { width: 100%; padding: 8px 12px; font-size: 13px; border: 1px solid #E2E8F0; border-radius: 10px; background-color: #F8FAFC; color: #1E293B; outline: none; font-weight: 500; }
+        input:focus, select:focus { background-color: #ffffff; border-color: #2563EB; }
+        .tight-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 12px; }
+        .tight-table th { background-color: #F8FAFC; border-bottom: 2px solid #E2E8F0; padding: 10px 8px; font-weight: 600; color: #64748B; text-align: left; }
+        .tight-table td { border-bottom: 1px solid #F1F5F9; padding: 10px 8px; background-color: #ffffff; }
+        .wizard-actions { display: flex; gap: 10px; margin-top: 16px; }
+        .btn-wizard-back, .btn-wizard-next, .btn-wizard-save { padding: 10px; font-size: 13px; font-weight: 600; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; text-align: center; }
+        .btn-wizard-back { flex: 1; background: #ffffff; color: #475569; border: 1px solid #E2E8F0; }
+        .btn-wizard-next { flex: 2; background: #2563EB; color: #ffffff; }
+        .btn-wizard-save { flex: 2; background: #10B981; color: #ffffff; }
+        .badge-status { display: inline-flex; align-items: center; padding: 4px 12px; font-weight: 600; font-size: 11px; border-radius: 9999px; margin-bottom: 12px; }
+        .status-consistent { background-color: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; }
+        .status-danger { background-color: #FEF2F2; color: #991B1B; border: 1px solid #FEE2E2; }
+        .metric-group { background: #F8FAFC; border-radius: 14px; padding: 12px 14px; margin-bottom: 12px; border: 1px solid #E2E8F0; }
+        .metric-row { display: flex; justify-content: space-between; font-size: 12px; padding: 6px 0; border-bottom: 1px dashed #E2E8F0; font-weight: 500; color: #64748B; }
+        .metric-row:last-child { border-bottom: none; font-size: 13px; color: #1E293B; font-weight: 600; }
+        .narrative-box { background: #F8FAFC; border: 1px solid #E2E8F0; padding: 14px; border-radius: 14px; font-size: 13px; color: #1E293B; min-height: 70px; white-space: pre-wrap; margin-bottom: 14px; font-weight: 500; }
+        .warning-label { font-size: 11px; color: #D97706; font-weight: 600; margin-top: 4px; display: block; }
+        #password-gate-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); z-index: 999999; display: flex; align-items: center; justify-content: center; padding: 16px; }
+    </style>
+</head>
+<body>
+
+    <div id="password-gate-overlay">
+        <div class="bg-white max-w-sm w-full rounded-2xl p-6 border border-gray-100 text-center">
+            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-xl mx-auto mb-3">🔑</div>
+            <h2 class="text-sm font-bold text-gray-800">Verifikasi Akses Toolkit</h2>
+            <p class="text-xs text-gray-400 mt-0.5 mb-4">Masukkan sandi toolkit sensus</p>
+            <input type="text" id="gate_password_input" placeholder="Masukkan sandi..." class="w-full !p-2.5 text-center font-bold tracking-wide rounded-xl mb-2">
+            <p id="gate_error_msg" class="text-red-600 text-[11px] font-bold mb-3 hidden">⚠️ Kata sandi tidak valid!</p>
+            <button type="button" onclick="verifyGatePass()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs p-2.5 rounded-xl uppercase tracking-wider transition">Buka Toolkit 🚀</button>
+        </div>
+    </div>
+
+    <div id="main-content" class="hidden">
+        <header class="p-4 bg-white border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+                <h1 class="text-md font-bold text-slate-900 tracking-tight">KangSensus Assistant v3 Master</h1>
+                <p id="bubble-speech" class="text-[11px] text-slate-400 font-medium">Semangat pendataan lapangan SE2026!</p>
+            </div>
+            <div class="bg-slate-50 p-1.5 rounded-xl border border-slate-200 w-full sm:w-auto flex items-center gap-2">
+                <span class="text-[10px] uppercase font-bold text-slate-500 pl-1">Petugas:</span>
+                <input type="text" id="nama_petugas_input" placeholder="Nama Anda" oninput="saveProfileName()" class="w-full sm:w-36 !text-xs !bg-white !border-gray-200 text-slate-800 rounded-lg !p-1.5 font-semibold">
+            </div>
+        </header>
+
+        <div class="master-nav">
+            <div id="m_tab_form" class="master-tab active" onclick="switchMasterTab('form-panel')">📝 Pengumpulan Form</div>
+            <div id="m_tab_dash" class="master-tab" onclick="switchMasterTab('dash-panel')">📁 Database Terdata</div>
+        </div>
+
+        <div id="panel_form_container" class="app-panel active">
+            <div id="sticky_nav_bar" class="sticky-modul-menu">
+                <div id="nav_btn_m1" class="modul-btn active" onclick="jumpToModule(1)">1. Identitas & ART</div>
+                <div id="nav_btn_m2" class="modul-btn" onclick="jumpToModule(2)">2. Pengeluaran Bukan Makanan</div>
+                <div id="nav_btn_m3" class="modul-btn" onclick="jumpToModule(3)">3. Pendapatan & Usaha</div>
+                <div id="nav_btn_m4" class="modul-btn" onclick="jumpToModule(4)">4. Pengeluaran Konsumsi</div>
+                <div id="nav_btn_m5" class="modul-btn" onclick="jumpToModule(5)">5. Validasi Finansial</div>
+                <div id="nav_btn_m6" class="modul-btn" onclick="jumpToModule(6)">6. Catatan Anomali</div>
+            </div>
+
+            <div class="container">
+                <div class="text-right mb-3">
+                    <button type="button" class="text-[11px] font-bold text-red-600 bg-red-50 border border-red-100 px-3 py-1.5 rounded-xl transition hover:bg-red-100" onclick="triggerManualResetForm()">🧹 Reset Form Keseluruhan</button>
+                </div>
+
+                <div id="sec_modul_m1" class="modul-section show-tab">
+                    <div class="card">
+                        <div class="card-title">Identitas Keluarga</div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="form-group"><label>Nomor Bangunan *</label><input type="text" id="m1_no_rumah" placeholder="Contoh: 024B" oninput="liveCalcAll()"></div>
+                            <div class="form-group"><label>Nomor Keluarga *</label><input type="text" id="m1_no_keluarga" placeholder="Contoh: 02" oninput="liveCalcAll()"></div>
+                        </div>
+
+                        <div class="border-t border-slate-100 pt-4 mt-2">
+                            <span class="text-xs font-bold text-slate-800 block mb-2 uppercase tracking-wide">Entri Anggota Rumah Tangga (ART)</span>
+                            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 mb-3 space-y-2">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input type="text" id="in_art_nama" placeholder="Nama ART *" class="!bg-white">
+                                    <select id="in_art_status" onchange="toggleFormARTStatus()" class="!bg-white">
+                                        <option value="REGULAR">Kerja Regular</option>
+                                        <option value="BURUH_LEPAS">Buruh Lepas / Harian</option>
+                                        <option value="TANGGUNGAN">Tidak Bekerja / Tanggungan</option>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2" id="box_art_kerja_regular">
+                                    <input type="text" id="in_art_kerja" placeholder="Pekerjaan Utama" class="!bg-white">
+                                    <input type="number" id="in_art_gaji" placeholder="Gaji Bulanan (Rp)" class="!bg-white">
+                                </div>
+                                <div class="grid grid-cols-3 gap-2 hidden" id="box_art_kerja_lepas">
+                                    <input type="text" id="in_art_kerja_lepas" placeholder="Pekerjaan Lepas" class="!bg-white col-span-1">
+                                    <input type="number" id="in_art_gaji_harian" placeholder="Upah Harian" class="!bg-white">
+                                    <input type="number" id="in_art_hari_kerja" placeholder="Hari/Bulan" class="!bg-white">
+                                </div>
+                                <button type="button" onclick="pushARTDataRow()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-lg text-xs transition">+ Tambahkan ART ke Tabel</button>
+                            </div>
+
+                            <div class="metric-group my-2">
+                                <div class="metric-row"><span>Total Pendapatan Gaji ART Rumah Tangga:</span><span id="lbl_m1_total_gaji" class="font-bold text-blue-600">Rp 0 / Bulan</span></div>
+                            </div>
+
+                            <table class="tight-table" id="table_art_display">
+                                <thead><tr><th>Nama ART</th><th>Pekerjaan</th><th>Status</th><th>Estimasi Bulanan</th><th class="w-10">Aksi</th></tr></thead>
+                                <tbody><tr><td colspan="5" class="text-center text-gray-400 font-medium py-3">Belum ada data ART dimasukkan</td></tr></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sec_modul_m2" class="modul-section">
+                    <div class="card">
+                        <div class="card-title">Modul 2: Pengeluaran Bukan Makanan (Estimasi Rutin 1 Bulan)</div>
+                        <p class="text-xs text-gray-400 mb-4">Setiap menginputkan nilai skala harian di bawah, otomatis akan langsung terakumulasi ke pengeluaran bulanan secara real-time.</p>
+                        
+                        <div id="container_modul2_loop" class="space-y-4"></div>
+                    </div>
+                </div>
+
+                <div id="sec_modul_m3" class="modul-section">
+                    <div class="card">
+                        <div class="card-title">Sektor Usaha & Pendapatan Lain</div>
+                        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 mb-3 space-y-2">
+                            <div class="grid grid-cols-2 gap-2">
+                                <select id="in_u_pj" class="art-dropdown-source !bg-white"><option value="">Pilih PJ Usaha *</option></select>
+                                <select id="in_u_kbli" class="!bg-white text-xs">
+                                    <option value="G">Perdagangan Besar / Eceran / Warung (G)</option>
+                                    <option value="A">Pertanian, Kehutanan, Perikanan (A)</option>
+                                    <option value="C">Industri Pengolahan / Kerajinan (C)</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="text" id="in_u_komoditas" placeholder="Komoditas Utama *" class="!bg-white">
+                                <select id="in_u_status" onchange="toggleUsahaStatusForm()" class="!bg-white">
+                                    <option value="DITEMUKAN">Usaha Ditemukan / Aktif</option>
+                                    <option value="TUTUP">Usaha Tutup</option>
+                                </select>
+                            </div>
+                            <div id="box_u_alasan_tutup" class="hidden"><input type="text" id="in_u_alasan" placeholder="Alasan usaha tutup..." class="!bg-white"></div>
+                            
+                            <div id="box_u_keuangan_aktif" class="border-t border-slate-200 pt-2 space-y-2">
+                                <div class="grid grid-cols-2 gap-2 bg-blue-50/50 p-2 rounded-lg border border-blue-100">
+                                    <input type="number" id="in_u_karyawan" placeholder="Jml Karyawan" class="!bg-white">
+                                    <input type="number" id="in_u_gaji_karyawan" placeholder="Total Gaji Karyawan (Bln)" class="!bg-white">
+                                </div>
+                                <div class="grid grid-cols-3 gap-1 bg-slate-100 p-2 rounded-lg">
+                                    <input type="number" id="in_u_v_produksi" placeholder="Biaya Produksi Modal" class="!bg-white col-span-2">
+                                    <select id="in_u_p_produksi" class="!bg-white"><option value="Bulanan">Bulanan</option></select>
+                                </div>
+                                <div class="grid grid-cols-3 gap-1 bg-slate-100 p-2 rounded-lg">
+                                    <input type="number" id="in_u_v_operasional" placeholder="Biaya Operasional" class="!bg-white col-span-2">
+                                    <select id="in_u_p_operasional" class="!bg-white"><option value="Bulanan">Bulanan</option></select>
+                                </div>
+                                <div class="grid grid-cols-3 gap-1 bg-amber-50 p-2 rounded-lg border border-amber-200">
+                                    <input type="number" id="in_u_omzet" placeholder="Nilai Omzet/Laba" class="!bg-white col-span-1">
+                                    <select id="in_u_jenis_omzet" class="!bg-white text-xs"><option value="KOTOR">Laba Kotor</option><option value="BERSIH">Laba Bersih</option></select>
+                                    <select id="in_u_p_omzet" class="!bg-white"><option value="Bulanan">Bulanan</option></select>
+                                </div>
+                            </div>
+                            <button type="button" onclick="pushUsahaDataRow()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 rounded-lg text-xs mt-2 transition">+ Tambahkan Unit Usaha</button>
+                        </div>
+
+                        <div class="metric-group my-2">
+                            <div class="metric-row"><span>Total Laba Bersih Usaha (1 Bulan):</span><span id="lbl_m3_tot_bersih_bln" class="text-emerald-600 font-bold">Rp 0</span></div>
+                        </div>
+                        <div id="usaha_list_wrapper_box" class="space-y-2"></div>
+                    </div>
+                </div>
+
+                <div id="sec_modul_m4" class="modul-section">
+                    <div class="card">
+                        <div class="card-title">Komponen Pengeluaran Konsumsi Makanan</div>
+                        <table class="tight-table">
+                            <thead><tr><th>Konsumsi Utama</th><th>Skala Periode</th><th>Nominal Pengeluaran</th></tr></thead>
+                            <tbody>
+                                <tr>
+                                    <td class="font-bold text-slate-800">Konsumsi Makanan *</td>
+                                    <td><select id="m4_makan_skala" onchange="liveCalcAll()"><option value="Bulanan">Bulanan</option><option value="Harian">Harian</option></select></td>
+                                    <td><input type="number" id="m4_makan_nilai" placeholder="Nominal" oninput="liveCalcAll()"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="metric-group mt-4">
+                            <div class="metric-row"><span>Total Konsumsi Makanan Proyeksi:</span><span id="lbl_m4_makan" class="font-bold text-emerald-600">Rp 0 / Bulan</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sec_modul_m5" class="modul-section">
+                    <div class="card">
+                        <div class="card-title">Sistem Analisis Validasi Finansial</div>
+                        <div class="bg-slate-900 text-slate-300 p-4 rounded-xl text-xs font-mono mb-4 shadow-inner">
+                            <div class="text-sky-400 font-bold border-b border-slate-800 pb-1.5 uppercase tracking-wider text-[10px]">📁 REKAPAN HASIL DATA MENTAH</div>
+                            <div id="raw_mentah_container" class="space-y-2 text-[11px] leading-relaxed"></div>
+                        </div>
+
+                        <div><span id="lbl_status_badge" class="badge-status status-consistent">🟢 Data Consistent</span></div>
+                        
+                        <div class="metric-group">
+                            <div class="metric-row"><span>Total Gaji Keluarga:</span><span id="lbl_v_pendapatan">Rp 0</span></div>
+                            <div class="metric-row"><span>Total Laba Sektor Usaha:</span><span id="lbl_v_usaha">Rp 0</span></div>
+                            <div class="metric-row"><span>Total Seluruh Pengeluaran (Bulanan + Harian):</span><span id="lbl_v_pengeluaran" class="text-red-600 font-bold">Rp 0</span></div>
+                            <div class="metric-row font-bold text-sm border-t border-slate-200 pt-2 text-slate-900"><span>Selisih Neraca Finansial:</span><span id="lbl_v_selisih">Rp 0</span></div>
+                        </div>
+
+                        <div class="form-group hidden" id="box_sumber_defisit">
+                            <label class="text-rose-700 font-bold">⚠️ Faktor Khusus Lapangan Penutup Defisit *</label>
+                            <select id="v_sumber_defisit" class="mb-2 text-xs" onchange="liveCalcAll()">
+                                <option value="Hutang / Pinjaman">Hutang / Pinjaman dari Kerabat atau Bank</option>
+                                <option value="Tabungan">Menggunakan Tabungan Sebelumnya</option>
+                            </select>
+                            <input type="text" id="v_alasan_defisit" placeholder="Tulis rincian narasi pemicu defisit..." oninput="liveCalcAll()">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="sec_modul_m6" class="modul-section">
+                    <div class="card">
+                        <div class="card-title">Output Dokumen Catatan Narasi Anomali</div>
+                        <div class="narrative-box" id="box_output_narasi">Kondisi finansial terpantau konsisten dan normal.</div>
+                        <button type="button" onclick="copyAction('ALL')" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold p-2.5 rounded-xl text-xs transition">📋 Salin Seluruh Catatan</button>
+                    </div>
+                    <div class="wizard-actions">
+                        <button type="button" class="btn-wizard-save" onclick="saveDataRecordToDatabaseMaster()">💾 SIMPAN KE DATABASE MASTER</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="panel_dash_container" class="app-panel">
+            <div class="container">
+                <div class="card">
+                    <div class="card-title">Database Records Terdata Lokal SE2026 <button onclick="exportDataToCSVFile()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-1.5 rounded-xl transition">📥 Export CSV</button></div>
+                    <div id="dashboard_list_box" class="space-y-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DATA STRUKTUR LIST UNTUK MODUL 2 (RENDERING JAVASCRIPT SUPER RINGKAS SESUAI GAMBAR)
+        const dataStrukturModul2 = [
+            { judul: "2.1. TAGIHAN RUMAH TANGGA", items: ["Listrik", "Air PAM", "LPG/Gas masak", "Internet/Wifi rumah", "Pulsa & paket data ponsel"] },
+            { judul: "2.2. TRANSPORTASI", items: ["Pembelian bensin/solar kendaraan pribadi", "Ongkos angkutan umum", "Biaya parkir berkala"] },
+            { judul: "2.3. KEBUTUHAN HARIAN", items: ["Sabun mandi & Sabun cuci", "Sampo & Pasta gigi", "Tisu & Popok bayi", "Pembalut wanita"] },
+            { judul: "2.4. PENDIDIKAN (BULANAN)", items: ["Uang SPP sekolah anak", "Biaya les/kursus privat", "Fotokopi & pengadaan ATK belajar"] },
+            { judul: "2.5. KESEHATAN", items: ["Pembelian obat-obatan ringan", "Vitamin/suplemen", "Biaya berobat ke klinik/faskes"] },
+            { judul: "2.6. JASA", items: ["Biaya potong rambut/barbershop", "Jasa laundry pakaian", "Ongkos jahit pakaian"] },
+            { judul: "2.7. SOSIAL & KOMUNIKASI", items: ["Uang arisan bulanan", "Iuran RT/lingkungan", "Sumbangan sosial/kondangan", "Paket kiriman barang"] }
+        ];
+
+        // RENDER OTOMATIS COMPONENT LIST MODUL 2 AGAR HTML PENDEK
+        const containerM2 = document.getElementById('container_modul2_loop');
+        let m2InputHTML = "";
+        let globalInputCounter = 0;
+
+        dataStrukturModul2.forEach((blok) => {
+            m2InputHTML += `<div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                <span class="text-xs font-bold text-slate-700 block mb-2">${blok.judul}</span>
+                <div class="space-y-2">`;
+            blok.items.forEach((item) => {
+                m2InputHTML += `<div class="grid grid-cols-1 sm:grid-cols-3 gap-2 items-center bg-white p-2 rounded-lg border border-slate-100">
+                    <label class="text-xs font-medium text-slate-600 sm:col-span-1">${item}</label>
+                    <input type="number" id="m2_harian_${globalInputCounter}" placeholder="Skala Harian (Rp)" class="m2-harian-field !bg-slate-50 !p-1.5 text-xs" oninput="liveCalcAll()">
+                    <input type="number" id="m2_bulanan_${globalInputCounter}" placeholder="Bulanan Murni (Rp)" class="m2-bulanan-field !bg-slate-50 !p-1.5 text-xs" oninput="liveCalcAll()">
+                </div>`;
+                globalInputCounter++;
+            });
+            m2InputHTML += `</div></div>`;
+        });
+        containerM2.innerHTML = m2InputHTML;
+
+        let state = { art: [], usaha: [], makan_skala: 'Bulanan', makan_nilai: 0 };
+
+        function verifyGatePass() {
+            const val = document.getElementById('gate_password_input').value.trim().toLowerCase();
+            if(['mumet','pusing','sensus2026','kangsensus'].includes(val)) {
+                document.getElementById('password-gate-overlay').style.display = 'none';
+                document.getElementById('main-content').classList.remove('hidden');
+                loadAllStatesFromLocalStorage();
+            } else { document.getElementById('gate_error_msg').classList.remove('hidden'); }
+        }
+
+        function saveProfileName() { localStorage.setItem('se2026_petugas_name', document.getElementById('nama_petugas_input').value); }
+
+        function switchMasterTab(panelId) {
+            document.querySelectorAll('.app-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.master-tab').forEach(t => t.classList.remove('active'));
+            if(panelId === 'form-panel') {
+                document.getElementById('panel_form_container').classList.add('active');
+                document.getElementById('m_tab_form').classList.add('active');
+            } else {
+                document.getElementById('panel_dash_container').classList.add('active');
+                document.getElementById('m_tab_dash').classList.add('active');
+                renderDashboardDatabaseList();
+            }
+        }
+
+        // REVISI AL: FUNGSI NAVIGASI LANGSUNG JUMP TANPA SEMBUNYIKAN COMPONENT WIZARD LAIN
+        function jumpToModule(step) {
+            document.querySelectorAll('.modul-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.modul-section').forEach(s => s.classList.add('show-tab'));
+            document.getElementById(`nav_btn_m${step}`).classList.add('active');
+            document.getElementById(`sec_modul_m${step}`).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function toggleFormARTStatus() {
+            const status = document.getElementById('in_art_status').value;
+            document.getElementById('box_art_kerja_regular').classList.add('hidden');
+            document.getElementById('box_art_kerja_lepas').classList.add('hidden');
+            if(status === 'REGULAR') document.getElementById('box_art_kerja_regular').classList.remove('hidden');
+            if(status === 'BURUH_LEPAS') document.getElementById('box_art_kerja_lepas').classList.remove('hidden');
+        }
+
+        function toggleUsahaStatusForm() {
+            const s = document.getElementById('in_u_status').value;
+            if(s === 'DITEMUKAN') {
+                document.getElementById('box_u_keuangan_aktif').classList.remove('hidden');
+                document.getElementById('box_u_alasan_tutup').classList.add('hidden');
+            } else {
+                document.getElementById('box_u_keuangan_aktif').classList.add('hidden');
+                document.getElementById('box_u_alasan_tutup').classList.remove('hidden');
+            }
+        }
+
+        function pushARTDataRow() {
+            const nama = document.getElementById('in_art_nama').value.trim();
+            const status = document.getElementById('in_art_status').value;
+            if(!nama) { alert("⚠️ Nama ART wajib diisi."); return; }
+            let kerja = 'Regular', gaji = 0;
+            if(status === 'REGULAR') {
+                kerja = document.getElementById('in_art_kerja').value.trim() || 'Pekerja Tetap';
+                gaji = parseFloat(document.getElementById('in_art_gaji').value) || 0;
+            } else if(status === 'BURUH_LEPAS') {
+                kerja = document.getElementById('in_art_kerja_lepas').value.trim() || 'Buruh Lepas';
+                gaji = (parseFloat(document.getElementById('in_art_gaji_harian').value) || 0) * (parseInt(document.getElementById('in_art_hari_kerja').value) || 0);
+            } else { kerja = 'Tanggungan'; gaji = 0; }
+            state.art.push({ id: Date.now(), nama, status, kerja, gaji });
+            liveCalcAll();
+        }
+
+        function removeARTDataRow(id) { state.art = state.art.filter(a => a.id !== id); liveCalcAll(); }
+
+        function pushUsahaDataRow() {
+            const pj = document.getElementById('in_u_pj').value;
+            const komoditas = document.getElementById('in_u_komoditas').value.trim();
+            const status = document.getElementById('in_u_status').value;
+            if(!pj || !komoditas) { alert("⚠️ PJ Usaha & Komoditas wajib diisi."); return; }
+            let item = { id: Date.now(), pj, komoditas, status, laba_bersih_bln: 0, alasan: '' };
+            if(status === 'DITEMUKAN') {
+                const prod = parseFloat(document.getElementById('in_u_v_produksi').value) || 0;
+                const ops = parseFloat(document.getElementById('in_u_v_operasional').value) || 0;
+                const omz = parseFloat(document.getElementById('in_u_omzet').value) || 0;
+                const jenis = document.getElementById('in_u_jenis_omzet').value;
+                item.laba_bersih_bln = (jenis === 'BERSIH') ? omz : Math.max(0, omz - (prod + ops));
+            } else { item.alasan = document.getElementById('in_u_alasan').value || 'Tutup'; }
+            state.usaha.push(item);
+            liveCalcAll();
+        }
+
+        function removeUsahaRow(id) { state.usaha = state.usaha.filter(u => u.id !== id); liveCalcAll(); }
+
+        // ENGINE PERHITUNGAN DAN REVISI AL AKUMULASI HARIAN KE BULANAN
+        function liveCalcAll() {
+            const fmt = (v) => 'Rp ' + Math.round(v).toLocaleString('id-ID');
+            state.makan_skala = document.getElementById('m4_makan_skala').value;
+            state.makan_nilai = parseFloat(document.getElementById('m4_makan_nilai').value) || 0;
+
+            // Update Dropdown PJ Usaha
+            document.querySelectorAll('.art-dropdown-source').forEach(sel => {
+                const cur = sel.value;
+                sel.innerHTML = `<option value="">Pilih ART</option>` + state.art.map(a => `<option value="${a.nama}">${a.nama}</option>`).join('');
+                sel.value = cur;
+            });
+
+            // Gaji ART
+            let totalGajiART = 0;
+            state.art.forEach(a => totalGajiART += a.gaji);
+            document.getElementById('lbl_m1_total_gaji').innerText = fmt(totalGajiART);
+            document.querySelector('#table_art_display tbody').innerHTML = state.art.map(a => `<tr><td><b>${a.nama}</b></td><td>${a.kerja}</td><td>${a.status}</td><td>${fmt(a.gaji)}</td><td><button onclick="removeARTDataRow(${a.id})" class="text-red-600">✕</button></td></tr>`).join('') || '<tr><td colspan="5" class="text-center py-3 text-gray-400">Belum ada data ART</td></tr>';
+
+            // Hitung Laba Usaha
+            let totalLabaUsaha = 0;
+            state.usaha.forEach(u => totalLabaUsaha += u.laba_bersih_bln);
+            document.getElementById('lbl_m3_tot_bersih_bln').innerText = fmt(totalLabaUsaha);
+            document.getElementById('usaha_list_wrapper_box').innerHTML = state.usaha.map(u => `<div class="p-2 bg-slate-50 border rounded-xl text-xs flex justify-between"><span>💼 ${u.komoditas} (${u.pj}) - Laba: ${fmt(u.laba_bersih_bln)}</span><button onclick="removeUsahaRow(${u.id})" class="text-red-500">Hapus</button></div>`).join('');
+
+            // Makanan Proyeksi
+            let monthlyFood = state.makan_skala === 'Harian' ? state.makan_nilai * 30 : state.makan_nilai;
+            document.getElementById('lbl_m4_makan').innerText = fmt(monthlyFood);
+
+            // REVISI AL LOGIKA UTAMA: AKUMULASI HARIAN (X30) + BULANAN MURNI DARI FORM GRIDS MODUL 2
+            let totalModul2BukanMakanan = 0;
+            for(let i = 0; i < globalInputCounter; i++) {
+                const harianValue = parseFloat(document.getElementById(`m2_harian_${i}`).value) || 0;
+                const bulananValue = parseFloat(document.getElementById(`m2_bulanan_${i}`).value) || 0;
+                totalModul2BukanMakanan += (harianValue * 30) + bulananValue;
+            }
+
+            // Total Seluruh Pengeluaran Gabungan
+            let grandTotalPengeluaran = monthlyFood + totalModul2BukanMakanan;
+            let totalPendapatanKeluarga = totalGajiART + totalLabaUsaha;
+            let selisihFinansial = totalPendapatanKeluarga - grandTotalPengeluaran;
+
+            document.getElementById('lbl_v_pendapatan').innerText = fmt(totalGajiART);
+            document.getElementById('lbl_v_usaha').innerText = fmt(totalLabaUsaha);
+            document.getElementById('lbl_v_pengeluaran').innerText = fmt(grandTotalPengeluaran);
+            
+            const lblS = document.getElementById('lbl_v_selisih');
+            lblS.innerText = fmt(selisihFinansial);
+
+            if(selisihFinansial < 0) {
+                lblS.className = "font-bold text-rose-600";
+                document.getElementById('lbl_status_badge').className = "badge-status status-danger";
+                document.getElementById('lbl_status_badge').innerText = "🔴 Data Defisit Anomali";
+                document.getElementById('box_sumber_defisit').classList.remove('hidden');
+            } else {
+                lblS.className = "font-bold text-emerald-600";
+                document.getElementById('lbl_status_badge').className = "badge-status status-consistent";
+                document.getElementById('lbl_status_badge').innerText = "🟢 Data Consistent";
+                document.getElementById('box_sumber_defisit').classList.add('hidden');
+            }
+
+            // Mentah Container Rekap
+            document.getElementById('raw_mentah_container').innerHTML = `
+                <div>• Total Gaji ART M1: <b>${fmt(totalGajiART)}</b></div>
+                <div>• Total Laba Usaha M3: <b>${fmt(totalLabaUsaha)}</b></div>
+                <div>• Total Pengeluaran Bukan Makanan M2 (Harian akumulasi + Bulanan): <b>${fmt(totalModul2BukanMakanan)}</b></div>
+                <div>• Total Pengeluaran Makanan M4: <b>${fmt(monthlyFood)}</b></div>
+            `;
+
+            // Build Narasi Dinamis
+            let narasi = selisihFinansial < 0 ? `Defisit finansial terdeteksi sebesar ${fmt(Math.abs(selisihFinansial))}. Ditutup dengan ${document.getElementById('v_sumber_defisit').value} karena alasan ${document.getElementById('v_alasan_defisit').value || 'tidak diisi'}.` : "Kondisi finansial terpantau konsisten dan normal.";
+            document.getElementById('box_output_narasi').innerText = narasi;
+            
+            localStorage.setItem('se2026_wizard_master_state', JSON.stringify({ state, totalM2: totalModul2BukanMakanan }));
+        }
+
+        function loadAllStatesFromLocalStorage() {
+            const savedName = localStorage.getItem('se2026_petugas_name') || '';
+            document.getElementById('nama_petugas_input').value = savedName;
+            document.querySelectorAll('.modul-section').forEach(s => s.classList.add('show-tab')); // Tampilkan semua modul agar navigasi lompat instan bekerja penuh
+            liveCalcAll();
+        }
+
+        function triggerManualResetForm() {
+            if(confirm("Sap bersih form?")) {
+                state = { art: [], usaha: [], makan_skala: 'Bulanan', makan_nilai: 0 };
+                document.querySelectorAll('input[type="number"]').forEach(i => i.value = '');
+                liveCalcAll();
+            }
+        }
+
+        function copyAction(mode) {
+            navigator.clipboard.writeText(document.getElementById('box_output_narasi').innerText).then(() => alert("Berhasil disalin!"));
+        }
+
+        function saveDataRecordToDatabaseMaster() {
+            const r = document.getElementById('m1_no_rumah').value;
+            const k = document.getElementById('m1_no_keluarga').value;
+            if(!r || !k) { alert("⚠️ Nomor rumah & keluarga wajib!"); return; }
+            let db = JSON.parse(localStorage.getItem('se2026_database_records_v3_master') || '[]');
+            db.push({ id: Date.now(), timestamp: new Date().toLocaleString(), no_rumah: r, no_keluarga: k, catatan: document.getElementById('box_output_narasi').innerText });
+            localStorage.setItem('se2026_database_records_v3_master', JSON.stringify(db));
+            alert("Record Berhasil Disimpan!");
+            switchMasterTab('dash-panel');
+        }
+
+        function renderDashboardDatabaseList() {
+            let db = JSON.parse(localStorage.getItem('se2026_database_records_v3_master') || '[]');
+            document.getElementById('dashboard_list_box').innerHTML = db.map(r => `<div class="p-3 bg-slate-50 border rounded-xl text-xs"><b>🏠 Rumah: ${r.no_rumah} (Keluarga: ${r.no_keluarga})</b><p class="mt-1">${r.catatan}</p></div>`).join('') || "Kosong";
+        }
+
+        function exportDataToCSVFile() {
+            let db = JSON.parse(localStorage.getItem('se2026_database_records_v3_master') || '[]');
+            let csv = "ID,No Rumah,No Keluarga,Catatan\n" + db.map(r => `"${r.id}","${r.no_rumah}","${r.no_keluarga}","${r.catatan}"`).join("\n");
+            let link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); link.setAttribute("download", "data.csv"); link.click();
+        }
+    </script>
+</body>
+</html>
