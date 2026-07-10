@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KangSensus Assistant - SE2026 Master Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #0F172A;
+            --primary-light: #2563EB;
+            --secondary: #F8FAFC;
+            --accent: #E2E8F0;
+            --success: #059669;
+            --warning: #D97706;
+            --danger: #DC2626;
+            --text-main: #334155;
+            --bg-body: #F8FAFC;
+            --bg-card: #FFFFFF;
+            --border-color: #E2E8F0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding-bottom: 40px;
+        }
+
+        .master-nav {
+            display: flex;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            margin: 12px;
+            padding: 3px;
+        }
+
+        .master-tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748B;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .master-tab.active {
+            color: #2563EB;
+            background-color: #F0F5FF;
+            font-weight: 700;
+        }
+
+        .sticky-modul-menu {
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-color);
+            gap: 4px;
+        }
+
+        .sticky-modul-menu::-webkit-scrollbar { display: none; }
+
+        .modul-btn {
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 9999px;
+            background: #F1F5F9;
+            color: #64748B;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modul-btn.active {
+            background: #2563EB;
+            color: #ffffff;
+        }
+
+        .sticky-modul-menu.all-mode-active .modul-btn:not(.btn-all) {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: #E2E8F0;
+            color: #94A3B8;
+        }
+
+        .modul-btn.btn-all { background: #FEF3C7; color: #B45309; }
+        .modul-btn.btn-all.active { background: #D97706; color: #ffffff; }
+
+        .app-panel, .modul-section { display: none; }
+        .app-panel.active, .modul-section.show-tab { display: block; }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 3px;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 6px 10px;
+            font-size: 13px;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            background-color: #F8FAFC;
+            color: #1E293B;
+            outline: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            background-color: #ffffff;
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08);
+        }
+
+        .tight-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 12px;
+        }
+
+        .tight-table th {
+            background-color: #F8FAFC;
+            border-bottom: 2px solid #E2E8F0;
+            padding: 8px 6px;
+            font-weight: 600;
+            color: #64748B;
+            text-align: left;
+        }
+
+        .tight-table td {
+            border-bottom: 1px solid #F1F5F9;
+            padding: 8px 6px;
+            background-color: #ffffff;
+        }
+
+        .btn-wizard-back, .btn-wizard-next, .btn-wizard-save {
+            padding: 8px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        .btn-wizard-back { background: #ffffff; color: #475569; border: 1px solid #E2E8F0; flex: 1; }
+        .btn-wizard-next { background: #2563EB; color: #ffffff; flex: 2; }
+        .btn-wizard-save { background: #10B981; color: #ffffff; flex: 2; }
+
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 10px;
+            font-weight: 600;
+            font-size: 11px;
+            border-radius: 9999px;
+            margin-bottom: 10px;
+        }
+        .status-consistent { background-color: #ECFDF5; color: #065F46; border: 1px solid #A7F3D0; }
+        .status-danger { background-color: #FEF2F2; color: #991B1B; border: 1px solid #FEE2E2; }
+
+        .metric-group {
+            background: #F8FAFC;
+            border-radius: 12px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            border: 1px solid #E2E8F0;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            padding: 4px 0;
+            border-bottom: 1px dashed #E2E8F0;
+            font-weight: 500;
+            color: #64748B;
+        }
+        .metric-row:last-child { border-bottom: none; font-size: 13px; color: #1E293B; font-weight: 600; }
+    </style>
+</head>
+<body onload="loadAllStatesFromLocalStorage()">
+
+    <div id="main-content">
+        <header class="p-3 bg-white border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+            <div>
+                <h1 class="text-sm font-bold text-slate-900 tracking-tight">KangSensus Assistant v3 Master</h1>
+                <p id="bubble-speech" class="text-[10px] text-slate-400 font-medium">Semangat pendataan lapangan SE2026!</p>
+            </div>
+            <div class="bg-slate-50 p-1 rounded-xl border border-slate-200 w-full sm:w-auto flex items-center gap-2">
+                <span class="text-[9px] uppercase font-bold text-slate-500 pl-1">Petugas:</span>
+                <input type="text" id="nama_petugas_input" placeholder="Nama Anda" oninput="saveProfileName()" class="w-full sm:w-36 !text-xs !bg-white !border-gray-200 text-slate-800 rounded-lg !p-1 font-semibold">
+            </div>
+        </header>
+
+        <div class="master-nav">
+            <div id="m_tab_form" class="master-tab active" onclick="switchMasterTab('form-panel')">📝 Pengumpulan Form</div>
+            <div id="m_tab_dash" class="master-tab" onclick="switchMasterTab('dash-panel')">📁 Database Terdata</div>
+        </div>
+
+        <div id="panel_form_container" class="app-panel active">
+            <div id="sticky_nav_bar" class="sticky-modul-menu">
+                <div id="nav_btn_m1" class="modul-btn active" onclick="navigateWizard(1)">1. Identitas & ART</div>
+                <div id="nav_btn_m2" class="modul-btn" onclick="navigateWizard(2)">2. Pendapatan Lain</div>
+                <div id="nav_btn_m3" class="modul-btn" onclick="navigateWizard(3)">3. Usaha & Aset</div>
+                <div id="nav_btn_m4" class="modul-btn" onclick="navigateWizard(4)">4. Pengeluaran</div>
+                <div id="nav_btn_m5" class="modul-btn" onclick="navigateWizard(5)">5. Validasi Finansial</div>
+                <div id="nav_btn_m6" class="modul-btn" onclick="navigateWizard(6)">6. Catatan Anomali</div>
+                <div id="nav_btn_all" class="modul-btn btn-all" onclick="toggleViewAllMode()">👀 Semua</div>
+            </div>
+
+            <div class="p-3 max-w-2xl mx-auto">
+                <div class="text-right mb-2">
+                    <button type="button" class="text-[10px] font-bold text-red-600 bg-red-50 border border-red-100 px-2.5 py-1 rounded-lg transition hover:bg-red-100" onclick="triggerManualResetForm()">🧹 Reset Form</button>
+                </div>
+
+                <div id="sec_modul_m1" class="modul-section show-tab">
+                    <div class="card">
+                        <div class="text-xs font-bold uppercase tracking-wider text-slate-800 mb-3">Identitas Keluarga</div>
+                        <div class="grid grid-cols-2 gap-2 mb-3">
+                            <div class="form-group"><label>Nomor Bangunan *</label><input type="text" id="m1_no_rumah" placeholder="Contoh: 024B" oninput="liveCalcAll()"></div>
+                            <div class="form-group"><label>Nomor Keluarga *</label><input type="text" id="m1_no_keluarga" placeholder="Contoh: 02" oninput="liveCalcAll()"></div>
+                        </div>
+
+                        <div class="border-t border-slate-100 pt-3">
+                            <span class="text-xs font-bold text-slate-800 block mb-1.5 uppercase tracking-wide">Entri Anggota Rumah Tangga (ART)</span>
+                            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 mb-3 space-y-2">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    <input type="text" id="in_art_nama" placeholder="Nama ART *" class="!bg-white">
+                                    <select id="in_art_status" onchange="toggleFormARTStatus()" class="!bg-white">
+                                        <option value="REGULAR">Kerja Regular</option>
+                                        <option value="BURUH_LEPAS">Buruh Lepas / Harian</option>
+                                        <option value="TANGGUNGAN">Tidak Bekerja / Tanggungan</option>
+                                    </select>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="box_art_kerja_regular">
+                                    <input type="text" id="in_art_kerja" placeholder="Pekerjaan Utama" class="!bg-white">
+                                    <input type="number" id="in_art_gaji" placeholder="Gaji Bulanan (Rp)" class="!bg-white">
+                                </div>
+                                <div class="grid grid-cols-3 gap-2 hidden" id="box_art_kerja_lepas">
+                                    <input type="text" id="in_art_kerja_lepas" placeholder="Pekerjaan Lepas" class="!bg-white col-span-1">
+                                    <input type="number" id="in_art_gaji_harian" placeholder="Upah Harian" class="!bg-white">
+                                    <input type="number" id="in_art_hari_kerja" placeholder="Hari/Bulan" class="!bg-white">
+                                </div>
+                                <button type="button" onclick="pushARTDataRow()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-1.5 rounded-lg text-xs transition">+ Tambahkan ART</button>
+                            </div>
+
+                            <div class="metric-group my-2">
+                                <div class="metric-row"><span>Total Pendapatan Gaji ART Rumah Tangga:</span><span id="lbl_m1_total_gaji" class="font-bold text-blue-600">Rp 0 / Bulan</span></div>
+                            </div>
+
+                            <div class="overflow-x-auto">
+                                <table class="tight-table" id="table_art_display">
+                                    <thead><tr><th>Nama ART</th><th>Pekerjaan</th><th>Status</th><th>Estimasi Bulanan</th><th class="w-8">Aksi</th></tr></thead>
+                                    <tbody><tr><td colspan="5" class="text-center text-gray-400 font-medium py-2">Belum ada data ART</td></tr></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex"><button type="button" class="btn-wizard-next w-full" onclick="navigateWizard(2)">Selanjutnya Sektor Pendapatan ➡️</button></div>
+                </div>
+
+                <div id="sec_modul_m2" class="modul-section">
+                    <div class="card">
+                        <div class="text-xs font-bold uppercase tracking-wider text-slate-800 mb-3">Pendapatan Lainnya</div>
+                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 mb-2 space-y-2">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                                <select id="in_p_penerima" class="art-dropdown-source !bg-white"><option value="">Pilih ART</option></select>
+                                <input type="text" id="in_p_sumber" placeholder="Sumber Dana (Pensiun/Bansos)" class="!bg-white">
+                                <input type="number" id="in_p_nominal" placeholder="Nominal / Bln" class="!bg-white">
+                            </div>
+                            <button type="button" onclick="pushPendapatanRow()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-1.5 rounded-lg text-xs transition">+ Tambahkan Pendapatan</button>
+                        </div>
+
+                        <div class="metric-group my-2">
+                            <div class="metric-row"><span>Total Kelompok Pendapatan Lainnya:</span><span id="lbl_m2_total_lain" class="font-bold text-blue-600">Rp 0 / Bulan</span></div>
+                        </div>
+
+                        <table class="tight-table" id="table_pendapatan_display">
+                            <thead><tr><th>Penerima</th><th>Sumber Pendapatan</th><th>Nominal / Bulan</th><th class="w-8">X</th></tr></thead>
+                            <tbody><tr><td colspan="4" class="text-center text-gray-400 font-medium py-2">Belum ada pendapatan lainnya</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="button" class="btn-wizard-back" onclick="navigateWizard(1)">⬅️ Kembali</button>
+                        <button type="button" class="btn-wizard-next" onclick="navigateWizard(3)">Selanjutnya Sektor Usaha ➡️</button>
+                    </div>
+                </div>
+
+                <div id="sec_modul_m3" class="modul-section">
+                    <div class="card">
+                        <div class="text-xs font-bold uppercase tracking-wider text-slate-800 mb-3">Sektor Usaha Rumah Tangga</div>
+                        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 mb-3 space-y-2">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <select id="in_u_pj" class="art-dropdown-source !bg-white"><option value="">Pilih PJ Usaha *</option></select>
+                                <select id="in_u_kbli" class="!bg-white text-xs">
+                                    <option value="A">Pertanian, Kehutanan, Perikanan (A)</option>
+                                    <option value="B">Pertambangan & Penggalian (B)</option>
+                                    <option value="C">Industri Pengolahan / Kerajinan (C)</option>
+                                    <option value="D">Pengadaan Listrik, Gas, Uap (D)</option>
+                                    <option value="E">Pengelolaan Air, Limbah, Sampah (E)</option>
+                                    <option value="F">Konstruksi / Pemborong Bangunan (F)</option>
+                                    <option value="G">Perdagangan Besar / Eceran / Warung (G)</option>
+                                    <option value="H">Transportasi & Pergudangan (H)</option>
+                                    <option value="I">Penyediaan Akomodasi & Makan Minum (I)</option>
+                                    <option value="J">Informasi & Komunikasi / Konter (J)</option>
+                                    <option value="K">Jasa Keuangan & Asuransi (K)</option>
+                                    <option value="L">Real Estat / Makelar Agen (L)</option>
+                                    <option value="M">Jasa Profesional / Pengacara (M)</option>
+                                    <option value="N">Jasa Penyewaan & Rental (N)</option>
+                                    <option value="P">Jasa Pendidikan / Bimbel (P)</option>
+                                    <option value="Q">Jasa Kesehatan / Dokter Bidan (Q)</option>
+                                    <option value="R">Kesenian, Hiburan, Rekreasi (R)</option>
+                                    <option value="S">Jasa Lainnya / Salon / Bengkel (S)</option>
+                                </select>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <input type="text" id="in_u_komoditas" placeholder="Komoditas Utama *" class="!bg-white">
+                                <select id="in_u_status" onchange="toggleUsahaStatusForm()" class="!bg-white">
+                                    <option value="DITEMUKAN">Usaha Ditemukan / Aktif</option>
+                                    <option value="TUTUP">Usaha Tutup</option>
+                                    <option value="TIDAK_DITEMUKAN">Usaha Tidak Ditemukan</option>
+                                </select>
+                            </div>
+                            
+                            <div id="box_u_alasan_tutup" class="hidden"><input type="text" id="in_u_alasan" placeholder="Alasan usaha tutup/tidak ditemukan..." class="!bg-white"></div>
+                            
+                            <div id="box_u_keuangan_aktif" class="border-t border-slate-200 pt-2 space-y-2">
+                                <div class="grid grid-cols-2 gap-2 bg-blue-50/50 p-2 rounded-lg border border-blue-100">
+                                    <input type="number" id="in_u_karyawan" placeholder="Jml Karyawan" class="!bg-white">
+                                    <input type="number" id="in_u_gaji_karyawan" placeholder="Total Gaji Karyawan" class="!bg-white">
+                                </div>
+                                
+                                <div class="bg-slate-100 p-2 rounded-lg space-y-1">
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+                                        <input type="number" id="in_u_v_produksi" placeholder="Biaya Produksi Modal" class="!bg-white">
+                                        <select id="in_u_p_produksi" onchange="toggleUsahaDays('produksi')" class="!bg-white"><option value="Harian">Harian</option><option value="Mingguan">Mingguan</option><option value="Bulanan" selected>Bulanan</option><option value="Tahunan">Tahunan</option></select>
+                                        <span class="text-[10px] text-gray-500 flex items-center font-semibold pl-1">e.g. kulakan stok</span>
+                                    </div>
+                                    <div id="cb_days_produksi" class="hidden flex flex-wrap gap-1 p-1 bg-white border border-gray-200 rounded text-[11px]"></div>
+                                </div>
+
+                                <div class="bg-slate-100 p-2 rounded-lg space-y-1">
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+                                        <input type="number" id="in_u_v_operasional" placeholder="Biaya Operasional" class="!bg-white">
+                                        <select id="in_u_p_operasional" onchange="toggleUsahaDays('operasional')" class="!bg-white"><option value="Harian">Harian</option><option value="Mingguan">Mingguan</option><option value="Bulanan" selected>Bulanan</option><option value="Tahunan">Tahunan</option></select>
+                                        <span class="text-[10px] text-gray-500 flex items-center font-semibold pl-1">e.g. listrik warung</span>
+                                    </div>
+                                    <div id="cb_days_operasional" class="hidden flex flex-wrap gap-1 p-1 bg-white border border-gray-200 rounded text-[11px]"></div>
+                                </div>
+
+                                <div class="bg-slate-100 p-2 rounded-lg space-y-1">
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+                                        <input type="number" id="in_u_v_non_operasional" placeholder="Biaya Non-Operasional" class="!bg-white">
+                                        <select id="in_u_p_non_operasional" onchange="toggleUsahaDays('non_operasional')" class="!bg-white"><option value="Harian">Harian</option><option value="Mingguan">Mingguan</option><option value="Bulanan" selected>Bulanan</option><option value="Tahunan">Tahunan</option></select>
+                                        <span class="text-[10px] text-gray-500 flex items-center font-semibold pl-1">e.g. sewa ruko kios</span>
+                                    </div>
+                                    <div id="cb_days_non_operasional" class="hidden flex flex-wrap gap-1 p-1 bg-white border border-gray-200 rounded text-[11px]"></div>
+                                </div>
+
+                                <div class="bg-amber-50 p-2 rounded-lg border border-amber-200 space-y-1">
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+                                        <input type="number" id="in_u_omzet" placeholder="Nilai Omzet/Laba" class="!bg-white">
+                                        <select id="in_u_jenis_omzet" class="!bg-white text-xs"><option value="KOTOR">Laba Kotor</option><option value="BERSIH">Laba Bersih</option></select>
+                                        <select id="in_u_p_omzet" onchange="toggleUsahaDays('omzet')" class="!bg-white"><option value="Harian">Harian</option><option value="Mingguan">Mingguan</option><option value="Bulanan" selected>Bulanan</option><option value="Tahunan">Tahunan</option></select>
+                                    </div>
+                                    <div id="cb_days_omzet" class="hidden flex flex-wrap gap-1 p-1 bg-white border border-gray-200 rounded text-[11px]"></div>
+                                </div>
+                            </div>
+                            <button type="button" onclick="pushUsahaDataRow()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-1.5 rounded-lg text-xs mt-1 transition">+ Tambahkan Unit Usaha</button>
+                        </div>
+
+                        <div class="metric-group my-2">
+                            <div class="text-[10px] font-bold text-slate-700 uppercase mb-1 tracking-wide">📊 Akumulasi Sektor Usaha:</div>
+                            <div class="grid grid-cols-2 gap-x-4 gap-y-0.5 text-xs">
+                                <div class="flex justify-between border-b border-gray-100 py-0.5"><span>Biaya Prod (Bln):</span><span id="lbl_m3_tot_prod_bln" class="font-semibold">Rp 0</span></div>
+                                <div class="flex justify-between border-b border-gray-100 py-0.5"><span>Biaya Prod (Thn):</span><span id="lbl_m3_tot_prod_thn" class="font-semibold">Rp 0</span></div>
+                                <div class="flex justify-between border-b border-gray-100 py-0.5"><span>Laba Kotor (Bln):</span><span id="lbl_m3_tot_kotor_bln" class="font-semibold">Rp 0</span></div>
+                                <div class="flex justify-between border-b border-gray-100 py-0.5"><span>Laba Kotor (Thn):</span><span id="lbl_m3_tot_kotor_thn" class="font-semibold">Rp 0</span></div>
+                                <div class="flex justify-between py-0.5 col-span-2 font-bold text-slate-800"><span>Laba Bersih (Bln/Thn):</span><div><span id="lbl_m3_tot_bersih_bln" class="text-emerald-600">Rp 0</span> / <span id="lbl_m3_tot_bersih_thn" class="text-emerald-600">Rp 0</span></div></div>
+                            </div>
+                        </div>
+
+                        <div id="usaha_list_wrapper_box" class="space-y-1.5"></div>
+
+                        <div class="mt-3 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                            <span class="text-xs font-bold text-slate-900 block mb-2 uppercase tracking-wide">🌳 Taksiran Aset Kekayaan Lapangan</span>
+                            
+                            <div class="mb-2 border-b border-slate-200 pb-2">
+                                <label class="block text-[11px] font-bold text-slate-700 mb-0.5">Aset Tanah / Pekarangan:</label>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+                                    <input type="number" id="as_t_luas" placeholder="Luas (m²)" class="!bg-white">
+                                    <input type="number" id="as_t_harga" placeholder="Harga / m²" class="!bg-white">
+                                    <button type="button" onclick="pushAssetRow('tanah')" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold py-1 rounded-lg">+</button>
+                                </div>
+                                <table class="tight-table" id="table_as_tanah"><thead><tr><th>Luas</th><th>Harga/m²</th><th>Total</th><th class="w-8">X</th></tr></thead><tbody></tbody></table>
+                            </div>
+
+                            <div class="mb-2 border-b border-slate-200 pb-2">
+                                <label class="block text-[11px] font-bold text-slate-700 mb-0.5">Aset Kayu / Pohon Tegakan:</label>
+                                <div class="grid grid-cols-1 sm:grid-cols-4 gap-1.5">
+                                    <input type="text" id="as_p_jenis" placeholder="Jenis Pohon" class="!bg-white sm:col-span-2">
+                                    <input type="number" id="as_p_qty" placeholder="Batang" class="!bg-white">
+                                    <input type="number" id="as_p_harga" placeholder="Taksiran/Btg" class="!bg-white">
+                                </div>
+                                <button type="button" onclick="pushAssetRow('pohon')" class="w-full bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold py-1 rounded-lg mt-1">+</button>
+                                <table class="tight-table" id="table_as_pohon"><thead><tr><th>Jenis</th><th>Batang</th><th>Harga/Btg</th><th>Total</th><th class="w-8">X</th></tr></thead><tbody></tbody></table>
+                            </div>
+
+                            <div class="mb-2 border-b border-slate-200 pb-2">
+                                <label class="block text-[11px] font-bold text-slate-700 mb-0.5">Aset Hortikultura Produktif:</label>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 mb-1">
+                                    <input type="text" id="as_b_jenis" placeholder="Komoditas" class="!bg-white">
+                                    <input type="number" id="as_b_qty" placeholder="Kg" class="!bg-white">
+                                    <input type="number" id="as_b_harga" placeholder="Harga/Kg" class="!bg-white">
+                                    <select id="as_b_cycle" class="!bg-white text-[11px]"><option value="12">1x Sebulan</option><option value="24">2x Sebulan</option><option value="1">1x Setahun</option><option value="2">2x Setahun</option></select>
+                                </div>
+                                <button type="button" onclick="pushAssetRow('buah')" class="w-full bg-slate-700 hover:bg-slate-800 text-white text-[11px] font-bold py-1 rounded-lg transition">+ Tambah Hortikultura</button>
+                                <table class="tight-table" id="table_as_buah"><thead><tr><th>Komoditas</th><th>Hasil</th><th>Bulan</th><th>Tahun</th><th class="w-8">X</th></tr></thead><tbody></tbody></table>
+                            </div>
+
+                            <div>
+                                <label class="block text-[11px] font-bold text-slate-700 mb-0.5">Aset Kendaraan Bergerak:</label>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+                                    <input type="text" id="as_k_seri" placeholder="Seri Kendaraan" class="!bg-white">
+                                    <input type="number" id="as_k_harga" placeholder="Taksiran Jual" class="!bg-white">
+                                    <button type="button" onclick="pushAssetRow('kendaraan')" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-bold py-1 rounded-lg">+</button>
+                                </div>
+                                <table class="tight-table" id="table_as_kendaraan"><thead><tr><th>Seri</th><th>Nilai Jual</th><th class="w-8">X</th></tr></thead><tbody></tbody></table>
+                            </div>
+
+                            <div class="metric-group mt-2 bg-white">
+                                <div class="metric-row"><span>Total Taksiran Hortikultura (Bulan/Tahun):</span><div><span id="lbl_m3_total_horti_bln" class="font-bold text-slate-800">Rp 0</span> / <span id="lbl_m3_total_horti_thn" class="font-bold text-slate-800">Rp 0</span></div></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="button" class="btn-wizard-back" onclick="navigateWizard(2)">⬅️ Kembali</button>
+                        <button type="button" class="btn-wizard-next" onclick="navigateWizard(4)">Selanjutnya Pengeluaran ➡️</button>
+                    </div>
+                </div>
+                <!-- MODUL 4 -->
+                <div id="sec_modul_m4" class="modul-section">
+                    <div class="card">
+                        <div class="text-xs font-bold uppercase tracking-wider text-slate-800 mb-3">Estimasi Pengeluaran Rumah Tangga</div>
+                        <div class="space-y-2">
+                            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                                <span class="text-[11px] font-bold text-slate-700 block mb-1 uppercase tracking-wide">🍲 Konsumsi & Makanan</span>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="form-group"><label>Beli Pokok (Bln)</label><input type="number" id="m4_makan_beli" value="0" oninput="liveCalcAll()"></div>
+                                    <div class="form-group"><label>Produksi Sendiri (Bln)</label><input type="number" id="m4_makan_sendiri" value="0" oninput="liveCalcAll()"></div>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                                <span class="text-[11px] font-bold text-slate-700 block mb-1 uppercase tracking-wide">🏠 Non-Makanan Bulanan</span>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                    <div class="form-group"><label>Perumahan/Sewa</label><input type="number" id="m4_non_perumahan" value="0" oninput="liveCalcAll()"></div>
+                                    <div class="form-group"><label>Pulsa/Internet</label><input type="number" id="m4_non_pulsa" value="0" oninput="liveCalcAll()"></div>
+                                    <div class="form-group"><label>Bahan Bakar/Gas</label><input type="number" id="m4_non_bakar" value="0" oninput="liveCalcAll()"></div>
+                                </div>
+                            </div>
+
+                            <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                                <span class="text-[11px] font-bold text-slate-700 block mb-1 uppercase tracking-wide">📆 Non-Makanan Tahunan / Berkala</span>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                    <div class="form-group"><label>Sandang/Pakaian</label><input type="number" id="m4_th_pakaian" value="0" oninput="liveCalcAll()"></div>
+                                    <div class="form-group"><label>Pajak/PBB/STNK</label><input type="number" id="m4_th_pajak" value="0" oninput="liveCalcAll()"></div>
+                                    <div class="form-group"><label>Pendidikan/Sekolah</label><input type="number" id="m4_th_pendidikan" value="0" oninput="liveCalcAll()"></div>
+                                    <div class="form-group"><label>Kesehatan/Klinik</label><input type="number" id="m4_th_kesehatan" value="0" oninput="liveCalcAll()"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="metric-group mt-3">
+                            <div class="metric-row"><span>Total Pengeluaran Makanan (Bln):</span><span id="lbl_m4_tot_makan" class="font-semibold text-slate-800">Rp 0</span></div>
+                            <div class="metric-row"><span>Total Pengeluaran Non-Makanan (Bln):</span><span id="lbl_m4_tot_nonmakan" class="font-semibold text-slate-800">Rp 0</span></div>
+                            <div class="metric-row"><span>Total Pengeluaran Disetahunkan:</span><span id="lbl_m4_grand_total_thn" class="font-bold text-red-600">Rp 0 / Tahun</span></div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="button" class="btn-wizard-back" onclick="navigateWizard(3)">⬅️ Kembali</button>
+                        <button type="button" class="btn-wizard-next" onclick="navigateWizard(5)">Analisis Validasi Finansial ➡️</button>
+                    </div>
+                </div>
+
+                <!-- MODUL 5 -->
+                <div id="sec_modul_m5" class="modul-section">
+                    <div class="card">
+                        <div class="text-xs font-bold uppercase tracking-wider text-slate-800 mb-2">Validasi & Konsistensi Finansial</div>
+                        <center><div id="badge_status_konsistensi" class="badge-status status-consistent">⏳ MENGHITUNG KONSISTENSI...</div></center>
+                        
+                        <div class="space-y-2">
+                            <div class="metric-group">
+                                <div class="text-[11px] font-bold text-slate-700 uppercase mb-1 tracking-wide">💰 Sisi Pendapatan Bersih (Inflow):</div>
+                                <div class="grid grid-cols-2 gap-1 text-xs">
+                                    <div class="flex justify-between border-b border-gray-100 py-0.5"><span>Gaji Karyawan ART:</span><span id="v_in_gaji">Rp 0</span></div>
+                                    <div class="flex justify-between border-b border-gray-100 py-0.5"><span>Pendapatan Lainnya:</span><span id="v_in_lain">Rp 0</span></div>
+                                    <div class="flex justify-between border-b border-gray-100 py-0.5"><span>Laba Bersih Usaha:</span><span id="v_in_usaha">Rp 0</span></div>
+                                    <div class="flex justify-between border-b border-gray-100 py-0.5"><span>Hasil Hortikultura:</span><span id="v_in_horti">Rp 0</span></div>
+                                    <div class="flex justify-between py-0.5 col-span-2 font-bold text-slate-900 bg-blue-50 px-1 rounded mt-1"><span>TOTAL INFLOW (TAHUNAN):</span><span id="v_in_total">Rp 0</span></div>
+                                </div>
+                            </div>
+
+                            <div class="metric-group">
+                                <div class="text-[11px] font-bold text-slate-700 uppercase mb-1 tracking-wide">💸 Sisi Pengeluaran Domestik (Outflow):</div>
+                                <div class="grid grid-cols-2 gap-1 text-xs">
+                                    <div class="flex justify-between border-b border-gray-100 py-0.5"><span>Konsumsi Makanan:</span><span id="v_out_makan">Rp 0</span></div>
+                                    <div class="flex justify-between border-b border-gray-100 py-0.5"><span>Operasional Bulanan:</span><span id="v_out_non_bln">Rp 0</span></div>
+                                    <div class="flex justify-between border-b border-gray-100 py-0.5"><span>Berkala Tahunan:</span><span id="v_out_non_thn">Rp 0</span></div>
+                                    <div class="flex justify-between py-0.5 col-span-2 font-bold text-slate-900 bg-red-50 px-1 rounded mt-1"><span>TOTAL OUTFLOW (TAHUNAN):</span><span id="v_out_total">Rp 0</span></div>
+                                </div>
+                            </div>
+
+                            <div class="p-2.5 rounded-xl border text-xs" id="box_analisis_selisih">
+                                <div class="flex justify-between font-bold mb-1">
+                                    <span>Selisih (Inflow - Outflow):</span>
+                                    <span id="v_selisih_value">Rp 0</span>
+                                </div>
+                                <p id="v_analisis_deskripsi" class="text-slate-500 leading-relaxed text-[11px]">Memproses kalkulasi silang...</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="button" class="btn-wizard-back" onclick="navigateWizard(4)">⬅️ Kembali</button>
+                        <button type="button" class="btn-wizard-next" onclick="navigateWizard(6)">Tulis Catatan Lapangan ➡️</button>
+                    </div>
+                </div>
+
+                <!-- MODUL 6 -->
+                <div id="sec_modul_m6" class="modul-section">
+                    <div class="card">
+                        <div class="text-xs font-bold uppercase tracking-wider text-slate-800 mb-2">Catatan Lapangan & Anomali</div>
+                        <div class="form-group mb-2">
+                            <label>Kondisi Khusus / Justifikasi Anomali Kuesioner</label>
+                            <textarea id="m6_catatan_anomali" rows="4" placeholder="Tuliskan alasan jika pengeluaran jauh lebih besar dari pendapatan, atau temuan lapangan unik lainnya di sini..." oninput="liveCalcAll()"></textarea>
+                        </div>
+                        <div class="bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-[11px] text-slate-500 space-y-1">
+                            <p>💡 <b>Tips SE2026:</b> Catatan lapangan yang valid mengurangi risiko kuesioner Anda ditolak oleh Pemeriksa/PML saat pengawasan.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="button" class="btn-wizard-back" onclick="navigateWizard(5)">⬅️ Kembali</button>
+                        <button type="button" class="btn-wizard-save" onclick="commitSaveCurrentFormToDatabase()">💾 Simpan ke Database</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DATABASE PANEL -->
+        <div id="panel_database_container" class="app-panel">
+            <div class="p-3 max-w-4xl mx-auto">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3 bg-white p-3 rounded-xl border border-gray-200">
+                    <div>
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800">Data Rumah Tangga Terdata</h2>
+                        <p class="text-[11px] text-slate-400">Total Terentri: <span id="db_total_count" class="font-bold text-slate-700">0</span> Keluarga</p>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 w-full sm:w-auto">
+                        <button type="button" onclick="exportDatabaseToCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">📊 Unduh CSV</button>
+                        <button type="button" onclick="triggerClearAllDatabase()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition">🗑️ Kosongkan DB</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto bg-white border border-slate-200 rounded-xl">
+                    <table class="tight-table mt-0">
+                        <thead>
+                            <tr class="bg-slate-50">
+                                <th>No. Bangunan / Kel</th>
+                                <th>ART (Gaji)</th>
+                                <th>Usaha (KBLI)</th>
+                                <th>Inflow (Thn)</th>
+                                <th>Outflow (Thn)</th>
+                                <th>Status</th>
+                                <th class="w-10 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="db_table_body_rows">
+                            <tr><td colspan="7" class="text-center text-gray-400 font-medium py-4">Belum ada keluarga yang disimpan ke database.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIKA JAVASCRIPT KANGSENSUS -->
+    <script>
+        // State Global Aplikasi
+        let dbKeluarga = [];
+        let wizardStep = 1;
+        let viewAllMode = false;
+
+        let activeForm_ART = [];
+        let activeForm_PendapatanLain = [];
+        let activeForm_Usaha = [];
+        let activeForm_Aset = { tanah: [], pohon: [], buah: [], kendaraan: [] };
+
+        // Variabel penampung pilihan hari perulangan usaha
+        let tempSelectedDays = { produksi: [], operasional: [], non_operasional: [], omzet: [] };
+
+        function switchMasterTab(tabId) {
+            document.getElementById('m_tab_form').classList.remove('active');
+            document.getElementById('m_tab_dash').classList.remove('active');
+            document.getElementById('panel_form_container').classList.remove('active');
+            document.getElementById('panel_database_container').classList.remove('active');
+
+            if (tabId === 'form-panel') {
+                document.getElementById('m_tab_form').classList.add('active');
+                document.getElementById('panel_form_container').classList.add('active');
+            } else {
+                document.getElementById('m_tab_dash').classList.add('active');
+                document.getElementById('panel_database_container').classList.add('active');
+                renderDatabaseTable();
+            }
+        }
+
+        function navigateWizard(step) {
+            if (viewAllMode) return;
+            wizardStep = step;
+            
+            // Atur tombol menu aktif
+            for (let i = 1; i <= 6; i++) {
+                document.getElementById(`nav_btn_m${i}`).classList.remove('active');
+                document.getElementById(`sec_modul_m1` && document.getElementById(`sec_modul_m${i}`)).classList.remove('show-tab');
+            }
+            
+            document.getElementById(`nav_btn_m${step}`).classList.add('active');
+            document.getElementById(`sec_modul_m${step}`).classList.add('show-tab');
+            
+            // Scroll otomatis menu sticky ke tombol aktif
+            document.getElementById(`nav_btn_m${step}`).scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        }
+
+        function toggleViewAllMode() {
+            viewAllMode = !viewAllMode;
+            const menuBar = document.getElementById('sticky_nav_bar');
+            const btnAll = document.getElementById('nav_btn_all');
+
+            if (viewAllMode) {
+                menuBar.classList.add('all-mode-active');
+                btnAll.classList.add('active');
+                for (let i = 1; i <= 6; i++) {
+                    document.getElementById(`sec_modul_m${i}`).classList.add('show-tab');
+                }
+            } else {
+                menuBar.classList.remove('all-mode-active');
+                btnAll.classList.remove('active');
+                navigateWizard(1);
+            }
+        }
+
+        function toggleFormARTStatus() {
+            const status = document.getElementById('in_art_status').value;
+            document.getElementById('box_art_kerja_regular').classList.add('hidden');
+            document.getElementById('box_art_kerja_lepas').classList.add('hidden');
+
+            if (status === 'REGULAR') {
+                document.getElementById('box_art_kerja_regular').classList.remove('hidden');
+            } else if (status === 'BURUH_LEPAS') {
+                document.getElementById('box_art_kerja_lepas').classList.remove('hidden');
+            }
+        }
+
+        function pushARTDataRow() {
+            const nama = document.getElementById('in_art_nama').value.trim();
+            const status = document.getElementById('in_art_status').value;
+            
+            if(!nama) { alert("Nama ART harus diisi!"); return; }
+
+            let pekerjaan = "Tidak Bekerja";
+            let estimasiGaji = 0;
+
+            if (status === 'REGULAR') {
+                pekerjaan = document.getElementById('in_art_kerja').value.trim() || "Pekerja Regular";
+                estimasiGaji = parseFloat(document.getElementById('in_art_gaji').value) || 0;
+            } else if (status === 'BURUH_LEPAS') {
+                pekerjaan = document.getElementById('in_art_kerja_lepas').value.trim() || "Buruh Lepas";
+                let upah = parseFloat(document.getElementById('in_art_gaji_harian').value) || 0;
+                let hari = parseFloat(document.getElementById('in_art_hari_kerja').value) || 0;
+                estimasiGaji = upah * hari;
+            }
+
+            activeForm_ART.push({ nama, status, pekerjaan, estimasiGaji });
+            
+            // Reset fields
+            document.getElementById('in_art_nama').value = "";
+            document.getElementById('in_art_kerja').value = "";
+            document.getElementById('in_art_gaji').value = "";
+            document.getElementById('in_art_kerja_lepas').value = "";
+            document.getElementById('in_art_gaji_harian').value = "";
+            document.getElementById('in_art_hari_kerja').value = "";
+            
+            syncARTDropdownSources();
+            liveCalcAll();
+        }
+
+        function removeARTDataRow(index) {
+            activeForm_ART.splice(index, 1);
+            syncARTDropdownSources();
+            liveCalcAll();
+        }
+
+        function syncARTDropdownSources() {
+            const dropdowns = document.querySelectorAll('.art-dropdown-source');
+            dropdowns.forEach(select => {
+                const curVal = select.value;
+                select.innerHTML = '<option value="">Pilih ART *</option>';
+                activeForm_ART.forEach((art, idx) => {
+                    select.innerHTML += `<option value="${art.nama}">${art.nama} (${art.pekerjaan})</option>`;
+                });
+                select.value = curVal;
+            });
+        }
+
+        function pushPendapatanRow() {
+            const penerima = document.getElementById('in_p_penerima').value;
+            const sumber = document.getElementById('in_p_sumber').value.trim();
+            const nominal = parseFloat(document.getElementById('in_p_nominal').value) || 0;
+
+            if(!penerima || !sumber || nominal <= 0) { alert("Lengkapi data penerima, sumber, dan nominal!"); return; }
+
+            activeForm_PendapatanLain.push({ penerima, sumber, nominal });
+            document.getElementById('in_p_sumber').value = "";
+            document.getElementById('in_p_nominal').value = "";
+            liveCalcAll();
+        }
+
+        function removePendapatanRow(index) {
+            activeForm_PendapatanLain.splice(index, 1);
+            liveCalcAll();
+        }
+
+        function toggleUsahaStatusForm() {
+            const isAktif = document.getElementById('in_u_status').value === 'DITEMUKAN';
+            document.getElementById('box_u_alasan_tutup').classList.toggle('hidden', isAktif);
+            document.getElementById('box_u_keuangan_aktif').classList.toggle('hidden', !isAktif);
+        }
+
+        function toggleUsahaDays(type) {
+            const period = document.getElementById(`in_u_p_${type}`).value;
+            const container = document.getElementById(`cb_days_${type}`);
+            container.innerHTML = "";
+            tempSelectedDays[type] = [];
+
+            if (period === 'Harian' || period === 'Mingguan') {
+                container.classList.remove('hidden');
+                const days = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
+                days.forEach((day, idx) => {
+                    container.innerHTML += `
+                        <label class="flex items-center gap-1 cursor-pointer bg-slate-50 px-1.5 py-0.5 rounded border border-gray-200">
+                            <input type="checkbox" value="${idx+1}" onchange="updateSelectedDays('${type}', this)" class="scale-90"> ${day}
+                        </label>
+                    `;
+                });
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+
+        function updateSelectedDays(type, cb) {
+            let val = parseInt(cb.value);
+            if(cb.checked) {
+                tempSelectedDays[type].push(val);
+            } else {
+                tempSelectedDays[type] = tempSelectedDays[type].filter(d => d !== val);
+            }
+        }
+
+        function calculateNormalizedMonthlyValue(val, period, type) {
+            if (period === 'Bulanan') return val;
+            if (period === 'Tahunan') return val / 12;
+            
+            let daysCount = tempSelectedDays[type]?.length || 4; // default ke 4 hari seminggu jika tidak dipilih
+            if (period === 'Harian') return val * daysCount * 4.33; 
+            if (period === 'Mingguan') return val * 4.33;
+            return val;
+        }
+
+        function pushUsahaDataRow() {
+            const pj = document.getElementById('in_u_pj').value;
+            const kbli = document.getElementById('in_u_kbli').value;
+            const komoditas = document.getElementById('in_u_komoditas').value.trim();
+            const status = document.getElementById('in_u_status').value;
+
+            if(!pj || !komoditas) { alert("Penanggung Jawab dan Komoditas Usaha wajib diisi!"); return; }
+
+            let detailUsaha = { pj, kbli, komoditas, status, b_produksi: 0, b_operasional: 0, b_non_operasional: 0, omzet: 0, laba_bersih: 0 };
+
+            if (status === 'DITEMUKAN') {
+                const vProd = parseFloat(document.getElementById('in_u_v_produksi').value) || 0;
+                const pProd = document.getElementById('in_u_p_produksi').value;
+                detailUsaha.b_produksi = calculateNormalizedMonthlyValue(vProd, pProd, 'produksi');
+
+                const vOper = parseFloat(document.getElementById('in_u_v_operasional').value) || 0;
+                const pOper = document.getElementById('in_u_p_operasional').value;
+                detailUsaha.b_operasional = calculateNormalizedMonthlyValue(vOper, pOper, 'operasional');
+
+                const vNon = parseFloat(document.getElementById('in_u_v_non_operasional').value) || 0;
+                const pNon = document.getElementById('in_u_p_non_operasional').value;
+                detailUsaha.b_non_operasional = calculateNormalizedMonthlyValue(vNon, pNon, 'non_operasional');
+
+                const vOmzet = parseFloat(document.getElementById('in_u_omzet').value) || 0;
+                const pOmzet = document.getElementById('in_u_p_omzet').value;
+                const jenisOmzet = document.getElementById('in_u_jenis_omzet').value;
+
+                let omzetBulan = calculateNormalizedMonthlyValue(vOmzet, pOmzet, 'omzet');
+                detailUsaha.omzet = omzetBulan;
+
+                let totalBiaya = detailUsaha.b_produksi + detailUsaha.b_operasional + detailUsaha.b_non_operasional;
+                if (jenisOmzet === 'BERSIH') {
+                    detailUsaha.laba_bersih = omzetBulan;
+                    detailUsaha.omzet = omzetBulan + totalBiaya; // rekonstruksi omzet kotor
+                } else {
+                    detailUsaha.laba_bersih = omzetBulan - totalBiaya;
+                }
+            } else {
+                detailUsaha.alasan_tutup = document.getElementById('in_u_alasan').value || "Sektor tutup/tidak ditemukan";
+            }
+
+            activeForm_Usaha.push(detailUsaha);
+            
+            // Clean up inputs
+            document.getElementById('in_u_komoditas').value = "";
+            document.getElementById('in_u_v_produksi').value = "";
+            document.getElementById('in_u_v_operasional').value = "";
+            document.getElementById('in_u_v_non_operasional').value = "";
+            document.getElementById('in_u_omzet').value = "";
+            
+            liveCalcAll();
+        }
+
+        function removeUsahaDataRow(index) {
+            activeForm_Usaha.splice(index, 1);
+            liveCalcAll();
+        }
+
+        function pushAssetRow(category) {
+            if (category === 'tanah') {
+                let luas = parseFloat(document.getElementById('as_t_luas').value) || 0;
+                let harga = parseFloat(document.getElementById('as_t_harga').value) || 0;
+                if(luas && harga) activeForm_Aset.tanah.push({ luas, harga, total: luas * harga });
+                document.getElementById('as_t_luas').value = ""; document.getElementById('as_t_harga').value = "";
+            } else if (category === 'pohon') {
+                let jenis = document.getElementById('as_p_jenis').value || "Kayu Kebun";
+                let qty = parseFloat(document.getElementById('as_p_qty').value) || 0;
+                let harga = parseFloat(document.getElementById('as_p_harga').value) || 0;
+                if(qty && harga) activeForm_Aset.pohon.push({ jenis, qty, harga, total: qty * harga });
+                document.getElementById('as_p_jenis').value = ""; document.getElementById('as_p_qty').value = ""; document.getElementById('as_p_harga').value = "";
+            } else if (category === 'buah') {
+                let jenis = document.getElementById('as_b_jenis').value || "Buah/Horti";
+                let qty = parseFloat(document.getElementById('as_b_qty').value) || 0;
+                let harga = parseFloat(document.getElementById('as_b_harga').value) || 0;
+                let cycle = parseInt(document.getElementById('as_b_cycle').value) || 1;
+                if(qty && harga) {
+                    let totalTahun = qty * harga * cycle;
+                    activeForm_Aset.buah.push({ jenis, qty, harga, cycle, totalTahun });
+                }
+                document.getElementById('as_b_jenis').value = ""; document.getElementById('as_b_qty').value = ""; document.getElementById('as_b_harga').value = "";
+            } else if (category === 'kendaraan') {
+                let seri = document.getElementById('as_k_seri').value || "Motor";
+                let harga = parseFloat(document.getElementById('as_k_harga').value) || 0;
+                if(harga) activeForm_Aset.kendaraan.push({ seri, harga });
+                document.getElementById('as_k_seri').value = ""; document.getElementById('as_k_harga').value = "";
+            }
+            liveCalcAll();
+        }
+
+        function removeAssetRow(category, index) {
+            activeForm_Aset[category].splice(index, 1);
+            liveCalcAll();
+        }
+
+        function formatRupiah(num) {
+            return "Rp " + Math.round(num).toLocaleString('id-ID');
+        }
+
+        function liveCalcAll() {
+            // 1. Hitung Gaji ART (Modul 1)
+            let totalGajiART = activeForm_ART.reduce((acc, curr) => acc + curr.estimasiGaji, 0);
+            document.getElementById('lbl_m1_total_gaji').innerText = formatRupiah(totalGajiART) + " / Bulan";
+
+            // Render Tabel ART
+            let tbodyART = document.querySelector('#table_art_display tbody');
+            if(activeForm_ART.length === 0) {
+                tbodyART.innerHTML = '<tr><td colspan="5" class="text-center text-gray-400 py-2">Belum ada data ART</td></tr>';
+            } else {
+                tbodyART.innerHTML = activeForm_ART.map((art, idx) => `
+                    <tr>
+                        <td class="font-semibold text-slate-800">${art.nama}</td>
+                        <td>${art.pekerjaan}</td>
+                        <td><span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 font-medium">${art.status}</span></td>
+                        <td class="font-bold text-slate-700">${formatRupiah(art.estimasiGaji)}</td>
+                        <td><button type="button" onclick="removeARTDataRow(${idx})" class="text-red-500 font-bold">✕</button></td>
+                    </tr>
+                `).join('');
+            }
+
+            // 2. Hitung Pendapatan Lain (Modul 2)
+            let totalLain = activeForm_PendapatanLain.reduce((acc, curr) => acc + curr.nominal, 0);
+            document.getElementById('lbl_m2_total_lain').innerText = formatRupiah(totalLain) + " / Bulan";
+
+            let tbodyP = document.querySelector('#table_pendapatan_display tbody');
+            if(activeForm_PendapatanLain.length === 0) {
+                tbodyP.innerHTML = '<tr><td colspan="4" class="text-center text-gray-400 py-2">Belum ada pendapatan lainnya</td></tr>';
+            } else {
+                tbodyP.innerHTML = activeForm_PendapatanLain.map((p, idx) => `
+                    <tr>
+                        <td>${p.penerima}</td>
+                        <td>${p.sumber}</td>
+                        <td class="font-bold">${formatRupiah(p.nominal)}</td>
+                        <td><button type="button" onclick="removePendapatanRow(${idx})" class="text-red-500 font-bold">✕</button></td>
+                    </tr>
+                `).join('');
+            }
+
+            // 3. Hitung Usaha (Modul 3)
+            let totProdBln = 0, totKotorBln = 0, totBersihBln = 0;
+            let wrapperUsaha = document.getElementById('usaha_list_wrapper_box');
+            wrapperUsaha.innerHTML = "";
+
+            activeForm_Usaha.forEach((u, idx) => {
+                totProdBln += u.b_produksi;
+                totKotorBln += u.omzet;
+                totBersihBln += u.laba_bersih;
+
+                wrapperUsaha.innerHTML += `
+                    <div class="bg-white border border-slate-200 p-2 rounded-lg flex justify-between items-center text-xs">
+                        <div>
+                            <span class="font-bold text-slate-800">[KBLI-${u.kbli}] ${u.komoditas}</span>
+                            <p class="text-[10px] text-gray-400">PJ: ${u.pj} | Status: ${u.status}</p>
+                        </div>
+                        <div class="text-right flex items-center gap-3">
+                            <div>
+                                <span class="block font-bold text-emerald-600">${formatRupiah(u.laba_bersih)}/bln</span>
+                                <span class="text-[9px] text-gray-400 block">Biaya: ${formatRupiah(u.b_produksi + u.b_operasional + u.b_non_operasional)}</span>
+                            </div>
+                            <button type="button" onclick="removeUsahaDataRow(${idx})" class="text-red-500 font-bold text-sm px-1">✕</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('lbl_m3_tot_prod_bln').innerText = formatRupiah(totProdBln);
+            document.getElementById('lbl_m3_tot_prod_thn').innerText = formatRupiah(totProdBln * 12);
+            document.getElementById('lbl_m3_tot_kotor_bln').innerText = formatRupiah(totKotorBln);
+            document.getElementById('lbl_m3_tot_kotor_thn').innerText = formatRupiah(totKotorBln * 12);
+            document.getElementById('lbl_m3_tot_bersih_bln').innerText = formatRupiah(totBersihBln);
+            document.getElementById('lbl_m3_tot_bersih_thn').innerText = formatRupiah(totBersihBln * 12);
+
+            // Taksiran Aset Horti
+            let totHortiThn = activeForm_Aset.buah.reduce((acc, curr) => acc + curr.totalTahun, 0);
+            document.getElementById('lbl_m3_total_horti_bln').innerText = formatRupiah(totHortiThn / 12);
+            document.getElementById('lbl_m3_total_horti_thn').innerText = formatRupiah(totHortiThn);
+
+            // Render Tables Aset
+            document.querySelector('#table_as_tanah tbody').innerHTML = activeForm_Aset.tanah.map((t, idx) => `<tr><td>${t.luas} m²</td><td>${formatRupiah(t.harga)}</td><td class="font-bold">${formatRupiah(t.total)}</td><td><button type="button" onclick="removeAssetRow('tanah', ${idx})" class="text-red-500">✕</button></td></tr>`).join('');
+            document.querySelector('#table_as_pohon tbody').innerHTML = activeForm_Aset.pohon.map((p, idx) => `<tr><td>${p.jenis}</td><td>${p.qty} btg</td><td>${formatRupiah(p.harga)}</td><td class="font-bold">${formatRupiah(p.total)}</td><td><button type="button" onclick="removeAssetRow('pohon', ${idx})" class="text-red-500">✕</button></td></tr>`).join('');
+            document.querySelector('#table_as_buah tbody').innerHTML = activeForm_Aset.buah.map((b, idx) => `<tr><td>${b.jenis}</td><td>${b.qty} kg</td><td>${formatRupiah(b.totalTahun/b.cycle)}</td><td class="font-bold">${formatRupiah(b.totalTahun)}</td><td><button type="button" onclick="removeAssetRow('buah', ${idx})" class="text-red-500">✕</button></td></tr>`).join('');
+            document.querySelector('#table_as_kendaraan tbody').innerHTML = activeForm_Aset.kendaraan.map((k, idx) => `<tr><td>${k.seri}</td><td class="font-bold">${formatRupiah(k.harga)}</td><td><button type="button" onclick="removeAssetRow('kendaraan', ${idx})" class="text-red-500">✕</button></td></tr>`).join('');
+
+            // 4. Hitung Pengeluaran (Modul 4)
+            let mBeli = parseFloat(document.getElementById('m4_makan_beli').value) || 0;
+            let mSendiri = parseFloat(document.getElementById('m4_makan_sendiri').value) || 0;
+            let totalMakanBln = mBeli + mSendiri;
+
+            let nPerumahan = parseFloat(document.getElementById('m4_non_perumahan').value) || 0;
+            let nPulsa = parseFloat(document.getElementById('m4_non_pulsa').value) || 0;
+            let nBakar = parseFloat(document.getElementById('m4_non_bakar').value) || 0;
+            let totalNonMakanBln = nPerumahan + nPulsa + nBakar;
+
+            let tPakaian = parseFloat(document.getElementById('m4_th_pakaian').value) || 0;
+            let tPajak = parseFloat(document.getElementById('m4_th_pajak').value) || 0;
+            let tPendidikan = parseFloat(document.getElementById('m4_th_pendidikan').value) || 0;
+            let tKesehatan = parseFloat(document.getElementById('m4_th_kesehatan').value) || 0;
+            let totalNonMakanThn = tPakaian + tPajak + tPendidikan + tKesehatan;
+
+            let grandTotalPengeluaranThn = (totalMakanBln * 12) + (totalNonMakanBln * 12) + totalNonMakanThn;
+
+            document.getElementById('lbl_m4_tot_makan').innerText = formatRupiah(totalMakanBln);
+            document.getElementById('lbl_m4_tot_nonmakan').innerText = formatRupiah(totalNonMakanBln);
+            document.getElementById('lbl_m4_grand_total_thn').innerText = formatRupiah(grandTotalPengeluaranThn) + " / Tahun";
+
+            // 5. Modul Validasi (Modul 5) Cross-matching Finansial
+            let grandInflowThn = (totalGajiART * 12) + (totalLain * 12) + (totBersihBln * 12) + totHortiThn;
+            let grandOutflowThn = grandTotalPengeluaranThn;
+
+            document.getElementById('v_in_gaji').innerText = formatRupiah(totalGajiART * 12);
+            document.getElementById('v_in_lain').innerText = formatRupiah(totalLain * 12);
+            document.getElementById('v_in_usaha').innerText = formatRupiah(totBersihBln * 12);
+            document.getElementById('v_in_horti').innerText = formatRupiah(totHortiThn);
+            document.getElementById('v_in_total').innerText = formatRupiah(grandInflowThn);
+
+            document.getElementById('v_out_makan').innerText = formatRupiah(totalMakanBln * 12);
+            document.getElementById('v_out_non_bln').innerText = formatRupiah(totalNonMakanBln * 12);
+            document.getElementById('v_out_non_thn').innerText = formatRupiah(totalNonMakanThn);
+            document.getElementById('v_out_total').innerText = formatRupiah(grandOutflowThn);
+
+            let selisihVal = grandInflowThn - grandOutflowThn;
+            document.getElementById('v_selisih_value').innerText = formatRupiah(selisihVal);
+
+            const badgeStatus = document.getElementById('badge_status_konsistensi');
+            const boxAnalisis = document.getElementById('box_analisis_selisih');
+            const descAnalisis = document.getElementById('v_analisis_deskripsi');
+
+            // Syarat Rule: Outflow melebihi 130% Inflow atau Inflow minus
+            if (grandInflowThn > 0 && grandOutflowThn > (grandInflowThn * 1.30)) {
+                badgeStatus.innerText = "⚠️ DATA ANOMALI (KONSISTENSI RENDAH)";
+                badgeStatus.className = "badge-status status-danger";
+                boxAnalisis.className = "p-2.5 rounded-xl border text-xs bg-red-50 border-red-200 text-red-900";
+                descAnalisis.innerText = "Pengeluaran rumah tangga bernilai >130% dibandingkan total pendapatan bersihnya. Berikan penjelasan rasional pada Modul 6 (misal: menggunakan tabungan, pinjol, warisan, atau dibantu anak di luar kota).";
+            } else if (grandInflowThn < 0 || grandOutflowThn < 0) {
+                badgeStatus.innerText = "❌ STRUKTUR RUMAH TANGGA BERESIKO NEGATIF";
+                badgeStatus.className = "badge-status status-danger";
+                boxAnalisis.className = "p-2.5 rounded-xl border text-xs bg-rose-50 border-rose-200 text-rose-900";
+                descAnalisis.innerText = "Arus finansial operasional bernilai minus karena modal usaha merugi besar. Mohon verifikasi ulang data omzet kuesioner.";
+            } else {
+                badgeStatus.innerText = "✅ DATA KONSISTEN & LOGIS";
+                badgeStatus.className = "badge-status status-consistent";
+                boxAnalisis.className = "p-2.5 rounded-xl border text-xs bg-emerald-50 border-emerald-200 text-emerald-900";
+                descAnalisis.innerText = "Struktur arus keuangan logis. Pendapatan rumah tangga mencukupi pengeluaran konsumsi dan operasional tahunan.";
+            }
+        }
+
+        function commitSaveCurrentFormToDatabase() {
+            let noRumah = document.getElementById('m1_no_rumah').value.trim();
+            let noKeluarga = document.getElementById('m1_no_keluarga').value.trim();
+
+            if (!noRumah || !noKeluarga) {
+                alert("Nomor Bangunan dan Nomor Keluarga wajib diisi untuk database!");
+                navigateWizard(1);
+                return;
+            }
+
+            // Hitung kalkulasi akhir untuk disimpan
+            let totalGajiART = activeForm_ART.reduce((acc, curr) => acc + curr.estimasiGaji, 0);
+            let totalLain = activeForm_PendapatanLain.reduce((acc, curr) => acc + curr.nominal, 0);
+            let totBersihBln = activeForm_Usaha.reduce((acc, curr) => acc + curr.laba_bersih, 0);
+            let totHortiThn = activeForm_Aset.buah.reduce((acc, curr) => acc + curr.totalTahun, 0);
+
+            let mBeli = parseFloat(document.getElementById('m4_makan_beli').value) || 0;
+            let mSendiri = parseFloat(document.getElementById('m4_makan_sendiri').value) || 0;
+            let nPerumahan = parseFloat(document.getElementById('m4_non_perumahan').value) || 0;
+            let nPulsa = parseFloat(document.getElementById('m4_non_pulsa').value) || 0;
+            let nBakar = parseFloat(document.getElementById('m4_non_bakar').value) || 0;
+            let tPakaian = parseFloat(document.getElementById('m4_th_pakaian').value) || 0;
+            let tPajak = parseFloat(document.getElementById('m4_th_pajak').value) || 0;
+            let tPendidikan = parseFloat(document.getElementById('m4_th_pendidikan').value) || 0;
+            let tKesehatan = parseFloat(document.getElementById('m4_th_kesehatan').value) || 0;
+
+            let grandInflowThn = (totalGajiART * 12) + (totalLain * 12) + (totBersihBln * 12) + totHortiThn;
+            let grandOutflowThn = ((mBeli + mSendiri) * 12) + ((nPerumahan + nPulsa + nBakar) * 12) + (tPakaian + tPajak + tPendidikan + tKesehatan);
+            
+            let status = (grandInflowThn > 0 && grandOutflowThn > (grandInflowThn * 1.30)) ? "ANOMALI" : "KONSISTEN";
+            let catatan = document.getElementById('m6_catatan_anomali').value.trim();
+
+            let dataKeluargaBaru = {
+                noRumah, noKeluarga,
+                artCount: activeForm_ART.length,
+                totalGaji: totalGajiART,
+                kbliList: activeForm_Usaha.map(u => u.kbli).join(','),
+                inflowThn: grandInflowThn,
+                outflowThn: grandOutflowThn,
+                status, catatan,
+                timestamp: new Date().toLocaleString('id-ID')
+            };
+
+            dbKeluarga.push(dataKeluargaBaru);
+            saveDatabaseToLocalStorage();
+            triggerManualResetForm();
+            
+            alert("Data sukses disimpan ke database internal!");
+            switchMasterTab('dash-panel');
+        }
+
+        function renderDatabaseTable() {
+            let tbody = document.getElementById('db_table_body_rows');
+            document.getElementById('db_total_count').innerText = dbKeluarga.length;
+
+            if (dbKeluarga.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-gray-400 py-4">Belum ada keluarga yang disimpan ke database.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = dbKeluarga.map((k, idx) => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="font-bold text-slate-900">B:${k.noRumah} / K:${k.noKeluarga}</td>
+                    <td>${k.artCount} ART (${formatRupiah(k.totalGaji)})</td>
+                    <td><span class="font-mono bg-slate-100 text-[11px] px-1 py-0.5 rounded">${k.kbliList || '-'}</span></td>
+                    <td class="font-semibold text-emerald-600">${formatRupiah(k.inflowThn)}</td>
+                    <td class="font-semibold text-red-600">${formatRupiah(k.outflowThn)}</td>
+                    <td><span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${k.status === 'KONSISTEN' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">${k.status}</span></td>
+                    <td class="text-center"><button type="button" onclick="deleteKeluargaRowRecord(${idx})" class="text-xs bg-red-50 text-red-600 px-2 py-1 rounded border border-red-100 hover:bg-red-100">Hapus</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteKeluargaRowRecord(index) {
+            if(confirm("Hapus data rekor keluarga ini?")) {
+                dbKeluarga.splice(index, 1);
+                saveDatabaseToLocalStorage();
+                renderDatabaseTable();
+            }
+        }
+
+        function triggerManualResetForm() {
+            // Reset Arrays
+            activeForm_ART = [];
+            activeForm_PendapatanLain = [];
+            activeForm_Usaha = [];
+            activeForm_Aset = { tanah: [], pohon: [], buah: [], kendaraan: [] };
+
+            // Reset Inputs DOM
+            document.getElementById('m1_no_rumah').value = "";
+            document.getElementById('m1_no_keluarga').value = "";
+            document.getElementById('m6_catatan_anomali').value = "";
+            
+            const numInputs = document.querySelectorAll('input[type="number"]');
+            numInputs.forEach(i => i.value = "0");
+
+            syncARTDropdownSources();
+            liveCalcAll();
+            if(viewAllMode) toggleViewAllMode();
+        }
+
+        function saveDatabaseToLocalStorage() {
+            localStorage.setItem('se2026_db_keluarga', JSON.stringify(dbKeluarga));
+        }
+
+        function saveProfileName() {
+            localStorage.setItem('se2026_nama_petugas', document.getElementById('nama_petugas_input').value);
+        }
+
+        function loadAllStatesFromLocalStorage() {
+            let storedDb = localStorage.getItem('se2026_db_keluarga');
+            if(storedDb) dbKeluarga = JSON.parse(storedDb);
+
+            let storedNama = localStorage.getItem('se2026_nama_petugas');
+            if(storedNama) document.getElementById('nama_petugas_input').value = storedNama;
+
+            liveCalcAll();
+        }
+
+        function triggerClearAllDatabase() {
+            if(confirm("⚠️ PERINGATAN! Anda akan menghapus seluruh isi database terdata di HP/Laptop ini. Ekspor CSV terlebih dahulu agar aman. Lanjutkan hapus total?")) {
+                dbKeluarga = [];
+                saveDatabaseToLocalStorage();
+                renderDatabaseTable();
+            }
+        }
+
+        function exportDatabaseToCSV() {
+            if(dbKeluarga.length === 0) { alert("Tidak ada data untuk diekspor!"); return; }
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "No Bangunan,No Keluarga,Jumlah ART,Total Gaji ART,KBLI Usaha,Total Inflow Setahun,Total Outflow Setahun,Status Validasi,Catatan Lapangan,Waktu Input\n";
+
+            dbKeluarga.forEach(k => {
+                let safeCatatan = k.catatan.replace(/,/g, ';').replace(/\n/g, ' ');
+                csvContent += `${k.noRumah},${k.noKeluarga},${k.artCount},${k.totalGaji},"${k.kbliList}",${k.inflowThn},${k.outflowThn},${k.status},"${safeCatatan}",${k.timestamp}\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `KangSensus_SE2026_Export_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
