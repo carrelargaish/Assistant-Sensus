@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Manajemen Warga - Ringkas & Modern</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-slate-50 font-sans min-h-screen p-4 md:p-8">
+
+    <div class="max-w-5xl mx-auto space-y-8">
+        
+        <div class="text-center md:text-left border-b border-slate-200 pb-4">
+            <h1 class="text-2xl font-bold text-slate-800">Sistem Data Warga</h1>
+            <p class="text-sm text-slate-500 mt-1">Kelola informasi data warga dengan cepat, ringkas, dan efisien.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-1">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-150 sticky top-8">
+                    <div class="mb-5">
+                        <h2 class="text-lg font-semibold text-slate-800">Tambah Warga</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Isi form di bawah untuk menambah data.</p>
+                    </div>
+
+                    <form id="wargaForm" onsubmit="simpanDataWarga(event)" class="space-y-4">
+                        <div>
+                            <label for="nama" class="block text-xs font-medium text-slate-600 mb-1">Nama Lengkap</label>
+                            <input type="text" id="nama" required 
+                                class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 focus:bg-white transition-all text-sm text-slate-800" 
+                                placeholder="Contoh: Budi Santoso">
+                        </div>
+
+                        <div>
+                            <label for="nik" class="block text-xs font-medium text-slate-600 mb-1">NIK (No. KTP)</label>
+                            <input type="number" id="nik" required 
+                                class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 focus:bg-white transition-all text-sm text-slate-800" 
+                                placeholder="16 digit angka NIK">
+                        </div>
+
+                        <div>
+                            <label for="alamat" class="block text-xs font-medium text-slate-600 mb-1">Alamat / RT RW</label>
+                            <input type="text" id="alamat" required 
+                                class="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 focus:bg-white transition-all text-sm text-slate-800" 
+                                placeholder="Contoh: RT 03/RW 01, Dusun Krajan">
+                        </div>
+
+                        <button type="submit" 
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg shadow-sm transition-all text-sm cursor-pointer text-center mt-2">
+                            + Tambah Warga
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-150 overflow-hidden">
+                    
+                    <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                        <div>
+                            <h2 class="text-lg font-semibold text-slate-800">Daftar Warga Terdaftar</h2>
+                            <p class="text-xs text-slate-400 mt-0.5">Total terdata: <span id="totalWarga" class="font-bold text-blue-600">0</span> orang</p>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-150 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                                    <th class="py-3.5 px-5">Nama & NIK</th>
+                                    <th class="py-3.5 px-5">Alamat</th>
+                                    <th class="py-3.5 px-5 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelWargaBody" class="divide-y divide-slate-100 text-sm text-slate-700">
+                                </tbody>
+                        </table>
+                    </div>
+
+                    <div id="emptyState" class="p-12 text-center">
+                        <span class="text-4xl">📁</span>
+                        <p class="text-slate-400 text-sm mt-2">Belum ada data warga. Silakan tambahkan melalui form.</p>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center space-x-2 text-sm">
+        <span id="toastIcon">✅</span>
+        <span id="toastMessage">Data berhasil disimpan!</span>
+    </div>
+
+    <script>
+        // Array Penampung Data Utama (Simulasi Database)
+        let databaseWarga = [];
+
+        // Fungsi Utama Saat Form Ditekan
+        function simpanDataWarga(event) {
+            event.preventDefault(); // Mencegah reload halaman web
+
+            // 1. Mengambil nilai yang diinput user dari tampilan baru
+            const nama = document.getElementById('nama').value;
+            const nik = document.getElementById('nik').value;
+            const alamat = document.getElementById('alamat').value;
+
+            // 2. KUNCI UTAMA LOGIKA: Nomor Bangunan & Keluarga tetap dibuat di background agar logikanya tidak rusak
+            const nomorBangunan = "AUTO-" + Math.floor(100 + Math.random() * 900); // Otomatisasi logika (Bisa diganti "" atau "0")
+            const nomorKeluarga = "AUTO-" + Math.floor(1000 + Math.random() * 9000); // Otomatisasi logika (Bisa diganti "" atau "0")
+
+            // 3. Satukan data ke dalam struktur payload/objek database lama Kakak
+            const dataBaru = {
+                id: Date.now(), // ID Unik untuk penanda hapus data
+                nama: nama,
+                nik: nik,
+                alamat: alamat,
+                nomor_bangunan: nomorBangunan, // Logika program tetap menerima parameter ini
+                nomor_keluarga: nomorKeluarga   // Logika program tetap menerima parameter ini
+            };
+
+            // 4. Memasukkan data ke simulasi database (Logika Pemrograman)
+            databaseWarga.push(dataBaru);
+
+            // Log ke konsol untuk memastikan payload data utuh terkirim ke sistem backend
+            console.log("Data berhasil diproses ke sistem dengan payload lengkap:", dataBaru);
+
+            // 5. Perbarui Tampilan Web
+            perbaruiTabel();
+            showToast("✅ Data warga berhasil ditambahkan!");
+            
+            // Reset isian form kembali bersih
+            document.getElementById('wargaForm').reset();
+        }
+
+        // Fungsi untuk merender ulang isi tabel data
+        function perbaruiTabel() {
+            const tbody = document.getElementById('tabelWargaBody');
+            const emptyState = document.getElementById('emptyState');
+            const totalWargaText = document.getElementById('totalWarga');
+            
+            // Update counter total data
+            totalWargaText.innerText = databaseWarga.length;
+
+            // Cek jika data kosong
+            if (databaseWarga.length === 0) {
+                tbody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            // Render baris tabel
+            tbody.innerHTML = databaseWarga.map((warga) => `
+                <tr class="hover:bg-slate-50/80 transition-colors">
+                    <td class="py-4 px-5">
+                        <div class="font-medium text-slate-800">${warga.nama}</div>
+                        <div class="text-xs text-slate-400 mt-0.5">NIK: ${warga.nik}</div>
+                    </td>
+                    <td class="py-4 px-5 text-slate-600 text-xs md:text-sm">
+                        ${warga.alamat}
+                        <div class="text-[10px] text-slate-400 mt-0.5">
+                            [No.Bgn: ${warga.nomor_bangunan} | No.KK: ${warga.nomor_keluarga}]
+                        </div>
+                    </td>
+                    <td class="py-4 px-5 text-center">
+                        <button onclick="hapusDataWarga(${warga.id})" 
+                            class="text-xs font-medium text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-2.5 py-1.5 rounded-md transition-all cursor-pointer">
+                            Hapus
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Fungsi Logika untuk menghapus data warga
+        function hapusDataWarga(id) {
+            databaseWarga = databaseWarga.filter(warga => warga.id !== id);
+            perbaruiTabel();
+            showToast("🗑️ Data warga berhasil dihapus!");
+        }
+
+        // Fungsi animasi untuk menampilkan sistem Toast Notifikasi ringkas
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = message;
+            
+            // Munculkan toast naik ke atas
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            // Sembunyikan otomatis setelah 3 detik
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
