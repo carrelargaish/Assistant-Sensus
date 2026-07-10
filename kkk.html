@@ -642,21 +642,31 @@
         }
 
         function navigateWizard(step) {
-            if (viewAllMode) return;
-            wizardStep = step;
-            
-            // Atur tombol menu aktif
-            for (let i = 1; i <= 6; i++) {
-                document.getElementById(`nav_btn_m${i}`).classList.remove('active');
-                document.getElementById(`sec_modul_m1` && document.getElementById(`sec_modul_m${i}`)).classList.remove('show-tab');
-            }
-            
-            document.getElementById(`nav_btn_m${step}`).classList.add('active');
-            document.getElementById(`sec_modul_m${step}`).classList.add('show-tab');
-            
-            // Scroll otomatis menu sticky ke tombol aktif
-            document.getElementById(`nav_btn_m${step}`).scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-        }
+    if (viewAllMode) return;
+    wizardStep = step;
+    
+    // 1. Reset semua tombol navigasi dan sembunyikan semua section modul
+    for (let i = 1; i <= 6; i++) {
+        const navBtn = document.getElementById(`nav_btn_m${i}`);
+        const secModul = document.getElementById(`sec_modul_m${i}`);
+        
+        if (navBtn) navBtn.classList.remove('active');
+        if (secModul) secModul.classList.remove('show-tab');
+    }
+    
+    // 2. Aktifkan tombol dan modul yang sedang dipilih
+    const activeBtn = document.getElementById(`nav_btn_m${step}`);
+    const activeSec = document.getElementById(`sec_modul_m${step}`);
+    
+    if (activeBtn) activeBtn.classList.add('active');
+    if (activeSec) activeSec.classList.add('show-tab');
+    
+    // 3. Scroll otomatis menu sticky ke tombol aktif agar pas di layar HP
+    if (activeBtn) {
+        activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+}
+
 
         function toggleViewAllMode() {
             viewAllMode = !viewAllMode;
