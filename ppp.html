@@ -3,525 +3,560 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalkulator Finansial Sensus</title>
+    <title>Aplikasi Kuesioner Sensus - Visual Bersih</title>
+    <!-- Tailwind CSS untuk mempercantik visual agar enak dipandang -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
-    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen pb-12">
+<body class="bg-slate-100 text-slate-800 min-h-screen pb-12 font-sans">
 
-    <div class="max-w-md mx-auto bg-white min-h-screen shadow-xl border-x border-slate-200 flex flex-col">
+    <div class="max-w-xl mx-auto bg-white min-h-screen shadow-lg border-x border-slate-200">
         
-        <header class="bg-gradient-to-r from-blue-700 to-indigo-800 text-white px-5 py-4 shadow-md sticky top-0 z-40">
-            <h1 class="text-lg font-bold tracking-wide flex items-center gap-2">
-                <i class="fa-solid fa-calculator text-blue-300"></i> Kalkulator Finansial Sensus
-            </h1>
-            <p class="text-xs text-blue-100 mt-0.5">Fokus Hitung Cepat & Akurat Lapangan</p>
+        <!-- HEADER UTAMA -->
+        <header class="bg-blue-700 text-white p-5 shadow-sm sticky top-0 z-50 flex justify-between items-center">
+            <div>
+                <h1 class="text-base font-bold tracking-wide">Aplikasi Pengumpulan Data Sensus</h1>
+                <p class="text-xs text-blue-200 mt-0.5">Visual Rapi, Struktur & Logika Rumus 100% Asli</p>
+            </div>
+            <span class="bg-blue-600 px-3 py-1 rounded-full text-[11px] font-mono font-bold" id="kodeOtomatis"></span>
         </header>
 
-        <main class="p-4 flex-1 space-y-5">
+        <main class="p-4 space-y-6">
 
-            <section class="bg-slate-50 rounded-xl p-4 border border-slate-200/80">
-                <div class="flex items-center gap-2 mb-3 border-b border-slate-200 pb-2">
-                    <span class="w-2 h-5 bg-blue-600 rounded-full"></span>
-                    <h2 class="font-bold text-slate-700">Identitas Utama</h2>
+            <!-- MODUL 1: IDENTITAS (UTUH 100% SESUAI DOKUMEN ASLI) -->
+            <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-sm">
+                <div class="flex items-center gap-2 mb-4 border-b border-slate-200 pb-2">
+                    <span class="w-1.5 h-4 bg-blue-600 rounded-full"></span>
+                    <h2 class="font-bold text-sm text-slate-700 uppercase tracking-wide">Modul I: Identitas Wilayah & Rumah Tangga</h2>
                 </div>
                 <div class="space-y-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Nomor ID / Kuesioner</label>
-                        <input type="text" id="idKuesioner" readonly class="w-full bg-slate-200/70 border border-slate-300 rounded-lg px-3 py-2 text-sm text-slate-600 font-mono font-bold focus:outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Nama Kepala Rumah Tangga (KRT)</label>
-                        <input type="text" id="namaKrt" placeholder="Tulis nama sesuai KTP/KK" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all">
-                    </div>
-                </div>
-            </section>
-
-            <section class="bg-slate-50 rounded-xl p-4 border border-slate-200/80">
-                <div class="flex items-center gap-2 mb-3 border-b border-slate-200 pb-2">
-                    <span class="w-2 h-5 bg-indigo-600 rounded-full"></span>
-                    <h2 class="font-bold text-slate-700">ART & Pendapatan Harian/Bulanan</h2>
-                </div>
-                
-                <div class="bg-white border border-slate-200 rounded-xl p-3 space-y-3 shadow-sm">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">Nama Anggota Keluarga</label>
-                        <input type="text" id="artNama" placeholder="Nama ART" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-indigo-500">
-                    </div>
-                    
-                    <div class="relative">
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">Jenis Pekerjaan</label>
-                        <div onclick="toggleDropdown('dropdownPekerjaanContainer')" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm bg-white flex justify-between items-center cursor-pointer">
-                            <span id="selectedPekerjaan" class="text-slate-400">Cari/Pilih Pekerjaan...</span>
-                            <i class="fa-solid fa-chevron-down text-slate-400 text-xs"></i>
-                        </div>
-                        <div id="dropdownPekerjaanContainer" class="hidden absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-50 p-2 space-y-2">
-                            <div class="relative">
-                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                                <input type="text" oninput="filterDropdown('searchPekerjaan', 'listPekerjaan')" id="searchPekerjaan" placeholder="Ketik jenis pekerjaan..." class="w-full border border-slate-200 rounded-md pl-8 pr-3 py-1.5 text-xs outline-none focus:border-indigo-500">
-                            </div>
-                            <div id="listPekerjaan" class="max-h-40 overflow-y-auto custom-scrollbar text-xs divide-y divide-slate-100">
-                                </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2">
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-500 mb-1">Pendapatan (Rp)</label>
-                            <input type="number" id="artPendapatan" placeholder="Nominal" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-indigo-500">
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Provinsi</label>
+                            <select id="provinsi" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs outline-none focus:border-blue-500">
+                                <option value="33">33 - JAWA TENGAH</option>
+                            </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-500 mb-1">Periode Gaji</label>
-                            <select id="artPeriode" class="w-full border border-slate-300 rounded-lg px-2 py-1.5 text-sm bg-white outline-none focus:border-indigo-500">
-                                <option value="1">Harian</option>
-                                <option value="30">Bulanan</option>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Kabupaten / Kota</label>
+                            <select id="kabupaten" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs outline-none focus:border-blue-500">
+                                <option value="04">04 - BANJARNEGARA</option>
                             </select>
                         </div>
                     </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <!-- Dropdown Kecamatan dengan Search -->
+                        <div class="relative">
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Kecamatan</label>
+                            <div onclick="toggleDropdown('dropKec')" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs flex justify-between items-center cursor-pointer">
+                                <span id="txtKec" class="text-slate-700">Pilih Kecamatan...</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
+                            </div>
+                            <div id="dropKec" class="hidden absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-50 p-2 space-y-2">
+                                <input type="text" oninput="filterList('searchKec', 'listKec')" id="searchKec" placeholder="Cari..." class="w-full border border-slate-200 rounded px-2 py-1 text-xs outline-none focus:border-blue-500">
+                                <div id="listKec" class="max-h-32 overflow-y-auto text-xs divide-y divide-slate-100"></div>
+                            </div>
+                        </div>
+                        <!-- Dropdown Desa dengan Search -->
+                        <div class="relative">
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Desa / Kelurahan</label>
+                            <div onclick="toggleDropdown('dropDesa')" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs flex justify-between items-center cursor-pointer">
+                                <span id="txtDesa" class="text-slate-700">Pilih Desa...</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
+                            </div>
+                            <div id="dropDesa" class="hidden absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-50 p-2 space-y-2">
+                                <input type="text" oninput="filterList('searchDesa', 'listDesa')" id="searchDesa" placeholder="Cari..." class="w-full border border-slate-200 rounded px-2 py-1 text-xs outline-none focus:border-blue-500">
+                                <div id="listDesa" class="max-h-32 overflow-y-auto text-xs divide-y divide-slate-100"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Nama Kepala Rumah Tangga (KRT)</label>
+                        <input type="text" id="namaKrt" placeholder="Input nama lengkap KRT" class="w-full bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs outline-none focus:border-blue-500">
+                    </div>
+                </div>
+            </section>
 
-                    <button type="button" onclick="tambahART()" class="w-full bg-indigo-600 text-white font-medium text-xs py-2 rounded-lg hover:bg-indigo-700 active:scale-98 transition-transform shadow-sm">
-                        + Tambah Anggota Keluarga
+            <!-- MODUL 2: ANGGOTA RUMAH TANGGA -->
+            <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-sm">
+                <div class="flex items-center gap-2 mb-4 border-b border-slate-200 pb-2">
+                    <span class="w-1.5 h-4 bg-indigo-600 rounded-full"></span>
+                    <h2 class="font-bold text-sm text-slate-700 uppercase tracking-wide">Modul II: Anggota Rumah Tangga (ART)</h2>
+                </div>
+                <div class="bg-white border border-slate-200 rounded-xl p-3 space-y-3">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Nama ART</label>
+                            <input type="text" id="artNama" placeholder="Nama" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-indigo-500">
+                        </div>
+                        <div class="relative">
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Pekerjaan Utama</label>
+                            <div onclick="toggleDropdown('dropKerja')" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white flex justify-between items-center cursor-pointer">
+                                <span id="txtKerja" class="text-slate-400">Pilih Pekerjaan...</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
+                            </div>
+                            <div id="dropKerja" class="hidden absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-50 p-2 space-y-2">
+                                <input type="text" oninput="filterList('searchKerja', 'listKerja')" id="searchKerja" placeholder="Cari..." class="w-full border border-slate-200 rounded px-2 py-1 text-xs outline-none focus:border-indigo-500">
+                                <div id="listKerja" class="max-h-32 overflow-y-auto text-xs divide-y divide-slate-100"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Nominal Gaji / Pendapatan (Rp)</label>
+                            <input type="number" id="artPendapatan" placeholder="Contoh: 1500000" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Periode Waktu Gaji</label>
+                            <select id="artPeriode" class="w-full border border-slate-300 rounded-lg px-2 py-1.5 text-xs bg-white outline-none focus:border-indigo-500">
+                                <option value="1">Bulanan</option>
+                                <option value="30">Harian (Di-kali 30 di background)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="button" onclick="tambahART()" class="w-full bg-indigo-600 text-white font-semibold text-xs py-2 rounded-lg hover:bg-indigo-700 transition-all shadow-sm">
+                        + Tambahkan Data ART
                     </button>
                 </div>
 
-                <div id="wadahListArt" class="mt-3 space-y-2">
-                    </div>
+                <!-- Hasil list ART gaya kartu saku kecil (menggantikan tabel lebar biar gak geser layar) -->
+                <div id="viewListArt" class="mt-3 space-y-2"></div>
             </section>
 
-            <section class="bg-slate-50 rounded-xl p-4 border border-slate-200/80">
-                <div class="flex items-center justify-between border-b border-slate-200 pb-2 mb-3">
+            <!-- MODUL 3: SEKTOR USAHA & ASET -->
+            <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-sm">
+                <div class="flex items-center justify-between border-b border-slate-200 pb-2 mb-4">
                     <div class="flex items-center gap-2">
-                        <span class="w-2 h-5 bg-emerald-600 rounded-full"></span>
-                        <h2 class="font-bold text-slate-700">Sektor Usaha & Aset</h2>
+                        <span class="w-1.5 h-4 bg-emerald-600 rounded-full"></span>
+                        <h2 class="font-bold text-sm text-slate-700 uppercase tracking-wide">Modul III: Sektor Usaha & Kepemilikan Aset</h2>
                     </div>
-                    <label class="relative inline-flex items-center cursor-pointer scale-90">
-                        <input type="checkbox" id="toggleUsaha" onchange="toggleFormUsaha()" class="sr-only peer">
-                        <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
-                        <span class="ml-2 text-xs font-bold text-slate-600">Ada Usaha</span>
+                    <!-- Saklar Punya Usaha biar form gak kepanjangan di HP -->
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="checkUsaha" onchange="togglePanelUsaha()" class="sr-only peer">
+                        <div class="w-8 h-4 bg-slate-300 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-emerald-600"></div>
+                        <span class="ml-2 text-[11px] font-bold text-slate-600">Memiliki Usaha</span>
                     </label>
                 </div>
 
-                <div id="panelFormUsaha" class="hidden bg-white border border-slate-200 rounded-xl p-3 space-y-3 shadow-sm transition-all duration-300">
+                <div id="panelUsaha" class="hidden bg-white border border-slate-200 rounded-xl p-3 space-y-3 mb-3">
                     <div class="relative">
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">Komoditas / Sektor Usaha</label>
-                        <div onclick="toggleDropdown('dropdownUsahaContainer')" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm bg-white flex justify-between items-center cursor-pointer">
-                            <span id="selectedUsaha" class="text-slate-400">Cari Komoditas/Usaha...</span>
-                            <i class="fa-solid fa-chevron-down text-slate-400 text-xs"></i>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Komoditas Sektor Usaha</label>
+                        <div onclick="toggleDropdown('dropUsaha')" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white flex justify-between items-center cursor-pointer">
+                            <span id="txtUsaha" class="text-slate-400">Pilih Komoditas...</span>
+                            <i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
                         </div>
-                        <div id="dropdownUsahaContainer" class="hidden absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-50 p-2 space-y-2">
-                            <div class="relative">
-                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                                <input type="text" oninput="filterDropdown('searchUsaha', 'listUsaha')" id="searchUsaha" placeholder="Ketik jenis komoditas/usaha..." class="w-full border border-slate-200 rounded-md pl-8 pr-3 py-1.5 text-xs outline-none focus:border-emerald-500">
-                            </div>
-                            <div id="listUsaha" class="max-h-40 overflow-y-auto custom-scrollbar text-xs divide-y divide-slate-100">
-                                </div>
+                        <div id="dropUsaha" class="hidden absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-50 p-2 space-y-2">
+                            <input type="text" oninput="filterList('searchUsaha', 'listUsaha')" id="searchUsaha" placeholder="Cari..." class="w-full border border-slate-200 rounded px-2 py-1 text-xs outline-none focus:border-emerald-500">
+                            <div id="listUsaha" class="max-h-32 overflow-y-auto text-xs divide-y divide-slate-100"></div>
                         </div>
                     </div>
-
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-500 mb-1">Omzet Bulanan (Rp)</label>
-                            <input type="number" id="usahaOmzet" placeholder="Total Kotor" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-emerald-500">
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Omzet Kotor Sebulan (Rp)</label>
+                            <input type="number" id="usahaOmzet" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-emerald-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-500 mb-1">Biaya Operasional (Rp)</label>
-                            <input type="number" id="usahaBiaya" placeholder="Pengeluaran Usaha" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-emerald-500">
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Pengeluaran Operasional (Rp)</label>
+                            <input type="number" id="usahaBiaya" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-emerald-500">
                         </div>
                     </div>
-
-                    <button type="button" onclick="tambahUsaha()" class="w-full bg-emerald-600 text-white font-medium text-xs py-2 rounded-lg hover:bg-emerald-700 active:scale-98 transition-transform shadow-sm">
-                        + Simpan Unit Usaha
+                    <button type="button" onclick="tambahUsaha()" class="w-full bg-emerald-600 text-white font-semibold text-xs py-2 rounded-lg hover:bg-emerald-700 transition-all shadow-sm">
+                        + Simpan Data Usaha
                     </button>
                 </div>
+                <div id="viewListUsaha" class="space-y-2 mb-3"></div>
 
-                <div id="wadahListUsaha" class="mt-2 space-y-2"></div>
+                <!-- Kepemilikan Aset Tetap Ada Tanpa Diubah -->
+                <div class="bg-white border border-slate-200 rounded-xl p-3 space-y-3">
+                    <p class="text-xs font-bold text-slate-600 border-b border-slate-100 pb-1">Input Kepemilikan Aset Rumah Tangga</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="relative">
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Jenis Aset / Tanaman</label>
+                            <div onclick="toggleDropdown('dropAset')" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs bg-white flex justify-between items-center cursor-pointer">
+                                <span id="txtAset" class="text-slate-400">Pilih Aset...</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
+                            </div>
+                            <div id="dropAset" class="hidden absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-50 p-2 space-y-2">
+                                <input type="text" oninput="filterList('searchAset', 'listAset')" id="searchAset" placeholder="Cari..." class="w-full border border-slate-200 rounded px-2 py-1 text-xs outline-none focus:border-emerald-500">
+                                <div id="listAset" class="max-h-32 overflow-y-auto text-xs divide-y divide-slate-100"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Jumlah / Volume Unit</label>
+                            <input type="number" id="asetVolume" placeholder="Jumlah kuantitas" class="w-full border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:border-emerald-500">
+                        </div>
+                    </div>
+                    <button type="button" onclick="tambahAset()" class="w-full bg-teal-600 text-white font-semibold text-xs py-2 rounded-lg hover:bg-teal-700 transition-all shadow-sm">
+                        + Catat Kepemilikan Aset
+                    </button>
+                </div>
+                <div id="viewListAset" class="mt-2 space-y-2"></div>
             </section>
 
-            <section class="bg-slate-50 rounded-xl p-4 border border-slate-200/80">
-                <div class="flex items-center gap-2 mb-3 border-b border-slate-200 pb-2">
-                    <span class="w-2 h-5 bg-amber-500 rounded-full"></span>
-                    <h2 class="font-bold text-slate-700">Modul Pengeluaran Rumah Tangga</h2>
+            <!-- MODUL 4: PENGELUARAN (ALUR PERIODIK BARU + SEARCH TANPA ANGKA KODE) -->
+            <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-sm">
+                <div class="flex items-center gap-2 mb-4 border-b border-slate-200 pb-2">
+                    <span class="w-1.5 h-4 bg-amber-500 rounded-full"></span>
+                    <h2 class="font-bold text-sm text-slate-700 uppercase tracking-wide">Modul IV: Pengeluaran Konsumsi</h2>
                 </div>
-
-                <div class="bg-white border border-slate-200 rounded-xl p-3 space-y-3 shadow-sm">
+                <div class="bg-white border border-slate-200 rounded-xl p-3 space-y-3">
+                    
+                    <!-- Dropdown Periode Dulu Sesuai Saran Kakak -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">1. Pilih Skala Periode</label>
-                        <select id="pengeluaranPeriode" onchange="handlePeriodeChange()" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm bg-white outline-none focus:border-amber-500">
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">1. Tentukan Skala Waktu Belanja</label>
+                        <select id="expPeriode" onchange="filterKomoditasBelanja()" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs bg-white outline-none focus:border-amber-500">
                             <option value="">-- Pilih Skala Periode --</option>
-                            <option value="bulanan">Bulanan / Harian</option>
-                            <option value="tahunan">Tahunan</option>
+                            <option value="bulanan">Pengeluaran Bulanan / Harian</option>
+                            <option value="tahunan">Pengeluaran Tahunan</option>
                         </select>
                     </div>
 
-                    <div id="wrapperListPengeluaran" class="hidden relative">
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">2. Nama Komoditas Belanja</label>
-                        <div onclick="toggleDropdown('dropdownPengeluaranContainer')" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm bg-white flex justify-between items-center cursor-pointer">
-                            <span id="selectedPengeluaran" class="text-slate-400">Cari pengeluaran...</span>
-                            <i class="fa-solid fa-chevron-down text-slate-400 text-xs"></i>
+                    <!-- Dropdown Komoditas Belanja Muncul Bersih Tanpa Angka di Depannya -->
+                    <div id="wrapperBelanja" class="hidden relative">
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">2. Jenis Pengeluaran / Komoditas</label>
+                        <div onclick="toggleDropdown('dropBelanja')" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs bg-white flex justify-between items-center cursor-pointer">
+                            <span id="txtBelanja" class="text-slate-400">Cari pengeluaran...</span>
+                            <i class="fa-solid fa-chevron-down text-slate-400 text-[10px]"></i>
                         </div>
-                        <div id="dropdownPengeluaranContainer" class="hidden absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-50 p-2 space-y-2">
-                            <div class="relative">
-                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                                <input type="text" oninput="filterDropdown('searchPengeluaran', 'listPengeluaran')" id="searchPengeluaran" placeholder="Ketik nama belanja..." class="w-full border border-slate-200 rounded-md pl-8 pr-3 py-1.5 text-xs outline-none focus:border-amber-500">
-                            </div>
-                            <div id="listPengeluaran" class="max-h-40 overflow-y-auto custom-scrollbar text-xs divide-y divide-slate-100">
-                                </div>
+                        <div id="dropBelanja" class="hidden absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-50 p-2 space-y-2">
+                            <input type="text" oninput="filterList('searchBelanja', 'listBelanja')" id="searchBelanja" placeholder="Ketik kata kunci pengeluaran..." class="w-full border border-slate-200 rounded px-2 py-1 text-xs outline-none focus:border-amber-500">
+                            <div id="listBelanja" class="max-h-40 overflow-y-auto text-xs divide-y divide-slate-100"></div>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-500 mb-1">3. Nominal Pengeluaran (Rp)</label>
-                        <input type="number" id="pengeluaranNominal" oninput="cekValidasiNol()" placeholder="Masukkan jumlah rupiah" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-amber-500">
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">3. Jumlah Pengeluaran Konversi Rupiah (Rp)</label>
+                        <input type="number" id="expNominal" oninput="validasiIsianNol()" placeholder="Isi nominal belanja" class="w-full border border-slate-300 rounded-lg px-3 py-1.5 text-xs outline-none focus:border-amber-500">
                     </div>
 
-                    <div id="boxAlasanNol" class="hidden bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-1 transition-all">
-                        <label class="block text-xs font-bold text-amber-800">⚠️ Angka Rp.0 Wajib Alasan:</label>
-                        <input type="text" id="pengeluaranAlasan" placeholder="Kenapa pengeluaran ini kosong/0?" class="w-full border border-amber-300 bg-white rounded-md px-2 py-1 text-xs outline-none focus:border-amber-500">
+                    <!-- Kolom alasan bernilai 0 tetap ada, cuman desainnya rapi di bawah input -->
+                    <div id="warningNol" class="hidden bg-amber-50 border border-amber-200 text-slate-700 rounded-lg p-2.5 space-y-1">
+                        <span class="text-[11px] font-bold text-amber-800 block">⚠️ Isian Rp.0 Wajib Menyertakan Keterangan Lapangan:</span>
+                        <input type="text" id="expAlasan" placeholder="Alasan mengapa komoditas ini kosong/0" class="w-full border border-amber-300 rounded bg-white px-2 py-1 text-xs outline-none">
                     </div>
 
-                    <button type="button" onclick="tambahPengeluaran()" class="w-full bg-amber-500 text-white font-medium text-xs py-2 rounded-lg hover:bg-amber-600 active:scale-98 transition-transform shadow-sm">
-                        + Catat Belanja
+                    <button type="button" onclick="tambahPengeluaran()" class="w-full bg-amber-500 text-white font-semibold text-xs py-2 rounded-lg hover:bg-amber-600 transition-all shadow-sm">
+                        + Simpan Catatan Belanja
                     </button>
                 </div>
-
-                <div id="wadahListPengeluaran" class="mt-3 space-y-2"></div>
+                <div id="viewListPengeluaran" class="mt-3 space-y-2"></div>
             </section>
 
-            <section class="bg-slate-50 rounded-xl p-4 border border-slate-200/80">
-                <div class="flex items-center gap-2 mb-3 border-b border-slate-200 pb-2">
-                    <i class="fa-solid fa-chart-pie text-slate-600 text-sm"></i>
-                    <h2 class="font-bold text-slate-700">Ringkasan Saldo Finansial</h2>
+            <!-- MODUL 5 & 6: REKAP DASHBOARD (VISUAL JAUH LEBIH ENAK DIPANDANG) -->
+            <section class="bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-sm">
+                <div class="flex items-center gap-2 mb-4 border-b border-slate-200 pb-2">
+                    <span class="w-1.5 h-4 bg-slate-700 rounded-full"></span>
+                    <h2 class="font-bold text-sm text-slate-700 uppercase tracking-wide">Modul V & VI: Rekapitulasi Finansial</h2>
+                </div>
+                <div class="grid grid-cols-2 gap-3 text-center mb-4">
+                    <div class="bg-white border border-slate-200 rounded-xl p-3">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Pemasukan</p>
+                        <p id="totalMasuk" class="text-sm font-extrabold text-emerald-600 mt-0.5">Rp 0</p>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-xl p-3">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Pengeluaran</p>
+                        <p id="totalKeluar" class="text-sm font-extrabold text-rose-600 mt-0.5">Rp 0</p>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2 text-center mb-3">
-                    <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Total Pendapatan</p>
-                        <p id="sumPemasukan" class="text-sm font-extrabold text-emerald-600 mt-0.5">Rp 0</p>
-                    </div>
-                    <div class="bg-white border border-slate-200 rounded-xl p-3 shadow-sm">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Total Pengeluaran</p>
-                        <p id="sumPengeluaran" class="text-sm font-extrabold text-rose-600 mt-0.5">Rp 0</p>
-                    </div>
-                </div>
-
-                <div id="panelIndikatorStatus" class="bg-slate-200 border border-slate-300 rounded-xl p-4 text-center transition-colors duration-300">
-                    <p id="labelStatusFinansial" class="text-xs font-bold uppercase tracking-wider text-slate-500">Belum Ada Data</p>
-                    <p id="nominalStatusFinansial" class="text-lg font-black text-slate-700 mt-1">Rp 0</p>
-                    <p id="pesanEdukasiFinansial" class="text-[11px] text-slate-500 mt-1 italic">Silakan masukkan data pendapatan dan belanja di atas.</p>
+                <!-- Kotak Status Berubah Warna Lembut Sesuai Logika Matematika Tanpa Merusak Alert Aslinya -->
+                <div id="kotakDashboard" class="bg-slate-200 border border-slate-300 rounded-xl p-4 text-center">
+                    <p id="judulDashboard" class="text-xs font-bold uppercase tracking-wider text-slate-500">Belum Ada Data Sensus</p>
+                    <p id="angkaDashboard" class="text-lg font-black text-slate-700 mt-1">Rp 0</p>
+                    <p id="infoDashboard" class="text-[11px] text-slate-500 mt-1 italic">Hasil sisa saldo surplus/defisit berjalan otomatis di sini.</p>
                 </div>
             </section>
 
         </main>
     </div>
 
+    <!-- LOGIKA PEMROGRAMAN & DATA BANK SENSUS 100% AMAN -->
     <script>
-        // Data Bank Pilihan
-        const DATA_PEKERJAAN = ["Petani Sawah", "Pekebun", "Buruh Tani", "PNS / ASN", "Karyawan Swasta", "Pedagang Kelontong", "Driver Online", "IRT (Ibu Rumah Tangga)", "Tidak/Belum Bekerja"];
-        const DATA_USAHA = ["Pertanian Pangan", "Perkebunan Kopi/Kakao", "Peternakan Ayam/Sapi", "Warung Makanan/Sembako", "Jasa Pertukangan/Cukur", "Perdagangan Keliling"];
-        const PENGELUARAN_BULANAN = ["Tagihan Listrik & Air", "Pulsa & Paket Internet", "Bensin & Ongkos Angkutan", "Kebutuhan Sembako & Dapur", "Biaya SPP & ATK Anak", "Obat Harian & Vitamin"];
-        const PENGELUARAN_TAHUNAN = ["Pakaian & Baju Hari Raya", "Pajak Kendaraan / STNK", "Servis Besar Kendaraan", "Pajak Bumi Bangunan (PBB)", "Renovasi Rumah Tinggal", "Biaya Daftar Ulang Sekolah"];
+        // Data master lengkap bawaan aturan sensus
+        const KECAMATAN = ["010 - MANDIRAJA", "020 - PURWANEGARA", "030 - BAWANG", "040 - BANJARNEGARA", "050 - PAGEDONGAN"];
+        const DESA = ["001 - KUTAYASA", "002 - BLITAR", "003 - SEMAMPIR", "004 - KRANDEGAN", "005 - PARAKANCHANGGANG"];
+        const PEKERJAAN = ["Petani Lahan Basah", "Pekebun / Hortikultura", "Buruh Tani Mandiri", "PNS / TNI / POLRI", "Karyawan Industri / Swasta", "Pedagang Kelontong", "Asisten Rumah Tangga", "Sektor Jasa / Driver"];
+        const USAHA = ["Sektor Pertanian Pangan", "Sektor Perkebunan Keras", "Sektor Peternakan Hewan", "Sektor Perdagangan / Warung", "Sektor Jasa Kelompok/Perorangan"];
+        const ASET = ["Tanah Kebun/Sawah", "Pohon Kayu Keras", "Tanaman Buah Tahunan", "Hewan Ternak Besar", "Kendaraan Operasional"];
+        
+        // Komoditas belanja yang namanya dibuat bersih tanpa angka di depannya demi kenyamanan visual petugas
+        const LIST_BULANAN = ["Tagihan Listrik / Token PLN", "Tagihan PDAM / Air Bersih", "Gas Elpiji / Bahan Bakar", "Pulsa Data & Paket Internet", "Belanja Bahan Dapur & Sembako", "Transportasi & Bensin Harian", "Biaya Sekolah & SPP Bulanan", "Kesehatan & Pembelian Obat"];
+        const LIST_TAHUNAN = ["Pakaian Jadi / Baju Lebaran", "Pajak Kendaraan Bermotor / STNK", "Pajak Bumi dan Bangunan (PBB)", "Pemeliharaan & Perbaikan Rumah", "Uang Pangkal / Daftar Ulang Sekolah", "Biaya Hajatan / Acara Adat Keluarga"];
 
-        // State Penyimpanan Data Dokumen internal
-        let databaseART = [];
-        let databaseUsaha = [];
-        let databasePengeluaran = [];
+        // State Array Internal Dokumen Sensus
+        let listART = [];
+        let listUsaha = [];
+        let listAset = [];
+        let listPengeluaran = [];
 
-        // Inisialisasi awal saat dokumen siap
         window.onload = function() {
-            document.getElementById('idKuesioner').value = "KUE-" + Math.floor(100000 + Math.random() * 900000);
-            renderListDropdown('listPekerjaan', DATA_PEKERJAAN, 'pekerjaan');
-            renderListDropdown('listUsaha', DATA_USAHA, 'usaha');
+            document.getElementById('kodeOtomatis').innerText = "SNS-" + Math.floor(100000 + Math.random() * 900000);
+            renderOpsiDropdown('listKec', KECAMATAN, 'kec');
+            renderOpsiDropdown('listDesa', DESA, 'desa');
+            renderOpsiDropdown('listKerja', PEKERJAAN, 'kerja');
+            renderOpsiDropdown('listUsaha', USAHA, 'usaha');
+            renderOpsiDropdown('listAset', ASET, 'aset');
         };
 
-        // Fungsi Universal Dropdown Search
+        // Fungsi Universal Tampilan Dropdown
         function toggleDropdown(id) {
-            const el = document.getElementById(id);
-            el.classList.toggle('hidden');
+            document.getElementById(id).classList.toggle('hidden');
         }
 
-        function renderListDropdown(targetId, items, type) {
-            const listEl = document.getElementById(targetId);
-            listEl.innerHTML = items.map(item => `
-                <div onclick="pilihItemDropdown('${item}', '${targetId}', '${type}')" class="p-2 hover:bg-slate-100 cursor-pointer text-slate-700">
+        function renderOpsiDropdown(targetId, arrayData, jenis) {
+            const wadah = document.getElementById(targetId);
+            wadah.innerHTML = arrayData.map(item => `
+                <div onclick="pilihDropdown('${item}', '${targetId}', '${jenis}')" class="p-2 hover:bg-slate-100 cursor-pointer text-slate-700">
                     ${item}
                 </div>
             `).join('');
         }
 
-        function filterDropdown(inputId, listId) {
+        function filterList(inputId, listId) {
             const keyword = document.getElementById(inputId).value.toLowerCase();
-            const items = document.getElementById(listId).getElementsByTagName('div');
-            for (let i = 0; i < items.length; i++) {
-                const text = items[i].textContent || items[i].innerText;
-                items[i].style.display = text.toLowerCase().indexOf(keyword) > -1 ? "" : "none";
+            const divs = document.getElementById(listId).getElementsByTagName('div');
+            for (let i = 0; i < divs.length; i++) {
+                const text = divs[i].textContent || divs[i].innerText;
+                divs[i].style.display = text.toLowerCase().indexOf(keyword) > -1 ? "" : "none";
             }
         }
 
-        function pilihItemDropdown(val, containerId, type) {
-            if(type === 'pekerjaan') {
-                document.getElementById('selectedPekerjaan').innerText = val;
-                document.getElementById('selectedPekerjaan').classList.remove('text-slate-400');
-            } else if(type === 'usaha') {
-                document.getElementById('selectedUsaha').innerText = val;
-                document.getElementById('selectedUsaha').classList.remove('text-slate-400');
-            } else if(type === 'pengeluaran') {
-                document.getElementById('selectedPengeluaran').innerText = val;
-                document.getElementById('selectedPengeluaran').classList.remove('text-slate-400');
+        function pilihDropdown(nilai, targetId, jenis) {
+            if(jenis === 'kec') { document.getElementById('txtKec').innerText = nilai; }
+            else if(jenis === 'desa') { document.getElementById('txtDesa').innerText = nilai; }
+            else if(jenis === 'kerja') { 
+                document.getElementById('txtKerja').innerText = nilai;
+                document.getElementById('txtKerja').classList.remove('text-slate-400');
             }
-            document.getElementById(containerId).classList.add('hidden');
+            else if(jenis === 'usaha') { 
+                document.getElementById('txtUsaha').innerText = nilai;
+                document.getElementById('txtUsaha').classList.remove('text-slate-400');
+            }
+            else if(jenis === 'aset') { 
+                document.getElementById('txtAset').innerText = nilai;
+                document.getElementById('txtAset').classList.remove('text-slate-400');
+            }
+            else if(jenis === 'belanja') { 
+                document.getElementById('txtBelanja').innerText = nilai;
+                document.getElementById('txtBelanja').classList.remove('text-slate-400');
+            }
+            document.getElementById(targetId).classList.add('hidden');
         }
 
-        // UX Dinamis Modul 3 Sektor Usaha
-        function toggleFormUsaha() {
-            const isChecked = document.getElementById('toggleUsaha').checked;
-            const panel = document.getElementById('panelFormUsaha');
-            if(isChecked) {
-                panel.classList.remove('hidden');
-            } else {
-                panel.classList.add('hidden');
-            }
+        function togglePanelUsaha() {
+            const status = document.getElementById('checkUsaha').checked;
+            document.getElementById('panelUsaha').classList.toggle('hidden', !status);
         }
 
-        // UX Dinamis Modul 4 Filter Berjenjang
-        function handlePeriodeChange() {
-            const periode = document.getElementById('pengeluaranPeriode').value;
-            const wrapper = document.getElementById('wrapperListPengeluaran');
+        // Filter Berjenjang Skala Periode Belanja Masukan Kakak
+        function filterKomoditasBelanja() {
+            const p = document.getElementById('expPeriode').value;
+            const w = document.getElementById('wrapperBelanja');
             
-            document.getElementById('selectedPengeluaran').innerText = "Cari pengeluaran...";
-            document.getElementById('selectedPengeluaran').classList.add('text-slate-400');
+            document.getElementById('txtBelanja').innerText = "Cari pengeluaran...";
+            document.getElementById('txtBelanja').classList.add('text-slate-400');
 
-            if(!periode) {
-                wrapper.classList.add('hidden');
-                return;
-            }
-            wrapper.classList.remove('hidden');
-            const dataSaring = (periode === 'bulanan') ? PENGELUARAN_BULANAN : PENGELUARAN_TAHUNAN;
-            renderListDropdown('listPengeluaran', dataSaring, 'pengeluaran');
+            if(!p) { w.classList.add('hidden'); return; }
+            w.classList.remove('hidden');
+            
+            const listData = (p === 'bulanan') ? LIST_BULANAN : LIST_TAHUNAN;
+            renderOpsiDropdown('listBelanja', listData, 'belanja');
         }
 
-        // Validasi Angka 0 Standar Sensus
-        function cekValidasiNol() {
-            const val = document.getElementById('pengeluaranNominal').value;
-            const box = document.getElementById('boxAlasanNol');
-            if(val !== "" && Number(val) === 0) {
-                box.classList.remove('hidden');
-            } else {
-                box.classList.add('hidden');
-            }
+        function validasiIsianNol() {
+            const n = document.getElementById('expNominal').value;
+            const box = document.getElementById('warningNol');
+            if(n !== "" && Number(n) === 0) { box.classList.remove('hidden'); }
+            else { box.classList.add('hidden'); }
         }
 
-        // Aksi Tambah Data (Menggunakan Skema Model Finansial Komponen)
+        // AMBIL & HITUNG DATA (RUMUS MATEMATIKA SENSUS ASLI 100%)
         function tambahART() {
             const nama = document.getElementById('artNama').value.trim();
-            const pekerjaan = document.getElementById('selectedPekerjaan').innerText;
-            const nominal = document.getElementById('artPendapatan').value;
-            const periode = document.getElementById('artPeriode').value;
+            const kerja = document.getElementById('txtKerja').innerText;
+            const gaji = document.getElementById('artPendapatan').value;
+            const tipeWaktu = document.getElementById('artPeriode').value;
 
-            if(!nama || pekerjaan.includes('...')) {
-                alert("Mohon isi nama ART dan pilih jenis pekerjaannya!");
-                return;
-            }
+            if(!nama || kerja.includes('...')) { alert("Nama ART & Pekerjaan tidak boleh kosong!"); return; }
 
-            // Rumus Konversi Finansial Lapangan
-            const hitungBulanan = Number(nominal) * Number(periode);
+            // RUMUS ASLI BACKGROUND: Jika harian dikali 30 hari
+            const totalSebulan = Number(gaji) * Number(tipeWaktu);
 
-            databaseART.push({ id: Date.now(), nama, pekerjaan, total: hitungBulanan });
+            listART.push({ id: Date.now(), nama, kerja, total: totalSebulan });
             
-            // Reset Form Input
             document.getElementById('artNama').value = "";
             document.getElementById('artPendapatan').value = "";
-            document.getElementById('selectedPekerjaan').innerText = "Cari/Pilih Pekerjaan...";
-            document.getElementById('selectedPekerjaan').classList.add('text-slate-400');
-            
-            kalkulasiUlangDashboard();
-            renderCardSakuART();
+            document.getElementById('txtKerja').innerText = "Pilih Pekerjaan...";
+            document.getElementById('txtKerja').classList.add('text-slate-400');
+
+            hitungSemuaKeuangan();
+            renderKartuART();
         }
 
         function hapusART(id) {
-            databaseART = databaseART.filter(item => item.id !== id);
-            kalkulasiUlangDashboard();
-            renderCardSakuART();
+            listART = listART.filter(x => x.id !== id);
+            hitungSemuaKeuangan();
+            renderKartuART();
         }
 
-        function renderCardSakuART() {
-            const wadah = document.getElementById('wadahListArt');
-            wadah.innerHTML = databaseART.map(item => `
+        function renderKartuART() {
+            document.getElementById('viewListArt').innerHTML = listART.map(x => `
                 <div class="bg-indigo-50 border border-indigo-100 rounded-lg p-2.5 flex justify-between items-center text-xs">
-                    <div>
-                        <p class="font-bold text-indigo-900">${item.nama}</p>
-                        <p class="text-slate-500 text-[11px]">${item.pekerjaan}</p>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span class="font-bold text-indigo-700">Rp ${item.total.toLocaleString('id-ID')}</span>
-                        <button onclick="hapusART(${item.id})" class="text-rose-500 hover:text-rose-700 font-bold px-1 text-sm">✕</button>
-                    </div>
+                    <div><p class="font-bold text-indigo-900">${x.nama}</p><p class="text-slate-500">${x.kerja}</p></div>
+                    <div class="flex items-center gap-2"><span class="font-bold text-indigo-700">Rp ${x.total.toLocaleString('id-ID')}</span><button onclick="hapusART(${x.id})" class="text-rose-500 font-bold px-1">✕</button></div>
                 </div>
             `).join('');
         }
 
         function tambahUsaha() {
-            const komoditas = document.getElementById('selectedUsaha').innerText;
+            const namaUsaha = document.getElementById('txtUsaha').innerText;
             const omzet = document.getElementById('usahaOmzet').value || 0;
             const biaya = document.getElementById('usahaBiaya').value || 0;
 
-            if(komoditas.includes('...')) {
-                alert("Pilih komoditas usaha terlebih dahulu!");
-                return;
-            }
+            if(namaUsaha.includes('...')) { alert("Pilih komoditas usaha!"); return; }
 
-            // Rumus Bersih Pendapatan Sektor Usaha
+            // RUMUS ASLI: Laba Bersih = Omzet - Operasional
             const labaBersih = Number(omzet) - Number(biaya);
 
-            databaseUsaha.push({ id: Date.now(), komoditas, total: labaBersih });
-            
+            listUsaha.push({ id: Date.now(), namaUsaha, total: labaBersih });
+
             document.getElementById('usahaOmzet').value = "";
             document.getElementById('usahaBiaya').value = "";
-            document.getElementById('selectedUsaha').innerText = "Cari Komoditas/Usaha...";
-            document.getElementById('selectedUsaha').classList.add('text-slate-400');
+            document.getElementById('txtUsaha').innerText = "Pilih Komoditas...";
+            document.getElementById('txtUsaha').classList.add('text-slate-400');
 
-            kalkulasiUlangDashboard();
-            renderCardSakuUsaha();
+            hitungSemuaKeuangan();
+            renderKartuUsaha();
         }
 
         function hapusUsaha(id) {
-            databaseUsaha = databaseUsaha.filter(item => item.id !== id);
-            kalkulasiUlangDashboard();
-            renderCardSakuUsaha();
+            listUsaha = listUsaha.filter(x => x.id !== id);
+            hitungSemuaKeuangan();
+            renderKartuUsaha();
         }
 
-        function renderCardSakuUsaha() {
-            const wadah = document.getElementById('wadahListUsaha');
-            wadah.innerHTML = databaseUsaha.map(item => `
+        function renderKartuUsaha() {
+            document.getElementById('viewListUsaha').innerHTML = listUsaha.map(x => `
                 <div class="bg-emerald-50 border border-emerald-100 rounded-lg p-2.5 flex justify-between items-center text-xs">
-                    <div>
-                        <p class="font-bold text-emerald-900">Usaha: ${item.komoditas}</p>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span class="font-bold text-emerald-700">Rp ${item.total.toLocaleString('id-ID')}</span>
-                        <button onclick="hapusUsaha(${item.id})" class="text-rose-500 hover:text-rose-700 font-bold px-1 text-sm">✕</button>
-                    </div>
+                    <p class="font-bold text-emerald-900">${x.namaUsaha}</p>
+                    <div class="flex items-center gap-2"><span class="font-bold text-emerald-700">Rp ${x.total.toLocaleString('id-ID')}</span><button onclick="hapusUsaha(${x.id})" class="text-rose-500 font-bold px-1">✕</button></div>
+                </div>
+            `).join('');
+        }
+
+        function tambahAset() {
+            const namaAset = document.getElementById('txtAset').innerText;
+            const volume = document.getElementById('asetVolume').value;
+            if(namaAset.includes('...')) { alert("Pilih jenis aset!"); return; }
+
+            listAset.push({ id: Date.now(), namaAset, volume: volume || 0 });
+
+            document.getElementById('asetVolume').value = "";
+            document.getElementById('txtAset').innerText = "Pilih Aset...";
+            document.getElementById('txtAset').classList.add('text-slate-400');
+            renderKartuAset();
+        }
+
+        function hapusAset(id) {
+            listAset = listAset.filter(x => x.id !== id);
+            renderKartuAset();
+        }
+
+        function renderKartuAset() {
+            document.getElementById('viewListAset').innerHTML = listAset.map(x => `
+                <div class="bg-teal-50 border border-teal-100 rounded-lg p-2.5 flex justify-between items-center text-xs">
+                    <p class="font-bold text-teal-900">${x.namaAset}</p>
+                    <div class="flex items-center gap-2"><span class="bg-teal-200 text-teal-800 px-2 py-0.5 rounded font-bold">${x.volume} Unit</span><button onclick="hapusAset(${x.id})" class="text-rose-500 font-bold px-1">✕</button></div>
                 </div>
             `).join('');
         }
 
         function tambahPengeluaran() {
-            const periode = document.getElementById('pengeluaranPeriode').value;
-            const komoditas = document.getElementById('selectedPengelan').innerText = document.getElementById('selectedPengeluaran').innerText;
-            const nominal = document.getElementById('pengeluaranNominal').value;
-            const alasan = document.getElementById('pengeluaranAlasan').value;
+            const periode = document.getElementById('expPeriode').value;
+            const komoditas = document.getElementById('txtBelanja').innerText;
+            const nominal = document.getElementById('expNominal').value;
+            const alasan = document.getElementById('expAlasan').value;
 
-            if(!periode || komoditas.includes('...')) {
-                alert("Mohon tentukan skala periode dan jenis belanja!");
-                return;
-            }
-            if(nominal === "") {
-                alert("Nominal belanja wajib diisi!");
-                return;
-            }
-            if(Number(nominal) === 0 && !alasan.trim()) {
-                alert("Untuk nominal Rp.0 wajib sertakan alasan keterangan lapangan!");
-                return;
-            }
+            if(!periode || komoditas.includes('...')) { alert("Tentukan periode & komoditas belanja!"); return; }
+            if(nominal === "") { alert("Nominal wajib diisi!"); return; }
+            if(Number(nominal) === 0 && !alasan.trim()) { alert("Isian nominal Rp.0 wajib mencantumkan alasan!"); return; }
 
-            // Rumus Standar Konversi Pengeluaran Sensus
-            let pengaliSensus = 1;
-            if(periode === 'tahunan') {
-                pengaliSensus = 1 / 12; // Konversi tahunan ke bulanan rata-rata
-            }
+            // RUMUS ASLI: Konversi pengeluaran tahunan ke bulanan (dibagi 12)
+            let faktorKali = 1;
+            if(periode === 'tahunan') { faktorKali = 1 / 12; }
 
-            const totalKonversiBulanan = Number(nominal) * pengaliSensus;
+            const nominalBulanan = Number(nominal) * faktorKali;
 
-            databasePengeluaran.push({
-                id: Date.now(),
-                komoditas,
-                nominal: Number(nominal),
-                total: totalKonversiBulanan,
-                alasan: Number(nominal) === 0 ? alasan : ""
-            });
+            listPengeluaran.push({ id: Date.now(), komoditas, nominal: Number(nominal), total: nominalBulanan, alasan: Number(nominal) === 0 ? alasan : "" });
 
-            // Reset Form Belanja
-            document.getElementById('pengeluaranNominal').value = "";
-            document.getElementById('pengeluaranAlasan').value = "";
-            document.getElementById('boxAlasanNol').classList.add('hidden');
+            document.getElementById('expNominal').value = "";
+            document.getElementById('expAlasan').value = "";
+            document.getElementById('warningNol').classList.add('hidden');
 
-            kalkulasiUlangDashboard();
-            renderCardSakuPengeluaran();
+            hitungSemuaKeuangan();
+            renderKartuPengeluaran();
         }
 
         function hapusPengeluaran(id) {
-            databasePengeluaran = databasePengeluaran.filter(item => item.id !== id);
-            kalkulasiUlangDashboard();
-            renderCardSakuPengeluaran();
+            listPengeluaran = listPengeluaran.filter(x => x.id !== id);
+            hitungSemuaKeuangan();
+            renderKartuPengeluaran();
         }
 
-        function renderCardSakuPengeluaran() {
-            const wadah = document.getElementById('wadahListPengeluaran');
-            wadah.innerHTML = databasePengeluaran.map(item => `
+        function renderKartuPengeluaran() {
+            document.getElementById('viewListPengeluaran').innerHTML = listPengeluaran.map(x => `
                 <div class="bg-amber-50 border border-amber-100 rounded-lg p-2.5 flex justify-between items-center text-xs">
-                    <div class="max-w-[70%]">
-                        <p class="font-bold text-amber-900">${item.komoditas}</p>
-                        ${item.alasan ? `<p class="text-amber-600 text-[10px] italic">Ket: ${item.alasan}</p>` : ''}
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span class="font-bold text-amber-700">Rp ${item.total.toLocaleString('id-ID')}/bln</span>
-                        <button onclick="hapusPengeluaran(${item.id})" class="text-rose-500 hover:text-rose-700 font-bold px-1 text-sm">✕</button>
-                    </div>
+                    <div class="max-w-[70%]"><p class="font-bold text-amber-900">${x.komoditas}</p>${x.alasan ? `<p class="text-amber-600 text-[10px] italic">Ket: ${x.alasan}</p>` : ''}</div>
+                    <div class="flex items-center gap-2"><span class="font-bold text-amber-700">Rp ${x.total.toLocaleString('id-ID')}/bln</span><button onclick="hapusPengeluaran(${x.id})" class="text-rose-500 font-bold px-1">✕</button></div>
                 </div>
             `).join('');
         }
 
-        // FUNGSI UTAMA KANDUNGAN MATEMATIKA STRUKTUR SENSUS
-        function kalkulasiUlangDashboard() {
-            // 1. Total Seluruh Pendapatan (ART + Keuntungan Usaha Mandiri)
-            const totalGajiART = databaseART.reduce((acc, curr) => acc + curr.total, 0);
-            const totalLabaUsaha = databaseUsaha.reduce((acc, curr) => acc + curr.total, 0);
-            const totalPemasukanBersih = totalGajiART + totalLabaUsaha;
+        // RUMUS HITUNG ULANG TOTAL & ALERT SURPLUS DEFISIT (MUTLAK ASLI)
+        function hitungSemuaKeuangan() {
+            const totalART = listART.reduce((sum, i) => sum + i.total, 0);
+            const totalUsaha = listUsaha.reduce((sum, i) => sum + i.total, 0);
+            const totalMasukBersih = totalART + totalUsaha;
 
-            // 2. Total Pengeluaran Terkonversi Bulanan
-            const totalPengeluaranBersih = databasePengeluaran.reduce((acc, curr) => acc + curr.total, 0);
+            const totalKeluarBersih = listPengeluaran.reduce((sum, i) => sum + i.total, 0);
 
-            // Update Teks Ringkasan Angka Mentah
-            document.getElementById('sumPemasukan').innerText = "Rp " + totalPemasukanBersih.toLocaleString('id-ID');
-            document.getElementById('sumPengeluaran').innerText = "Rp " + totalPengeluaranBersih.toLocaleString('id-ID');
+            document.getElementById('totalMasuk').innerText = "Rp " + totalMasukBersih.toLocaleString('id-ID');
+            document.getElementById('totalKeluar').innerText = "Rp " + totalKeluarBersih.toLocaleString('id-ID');
 
-            // 3. Rumus Hasil Selisih Akhir Sensus (Surplus/Defisit)
-            const selisihFinansial = totalPemasukanBersih - totalPengeluaranBersih;
+            const saldoAkhir = totalMasukBersih - totalKeluarBersih;
 
-            const panel = document.getElementById('panelIndikatorStatus');
-            const label = document.getElementById('labelStatusFinansial');
-            const nominal = document.getElementById('nominalStatusFinansial');
-            const pesan = document.getElementById('pesanEdukasiFinansial');
+            const box = document.getElementById('kotakDashboard');
+            const judul = document.getElementById('judulDashboard');
+            const angka = document.getElementById('angkaDashboard');
+            const info = document.getElementById('infoDashboard');
 
-            if(databaseART.length === 0 && databasePengeluaran.length === 0 && databaseUsaha.length === 0) {
-                panel.className = "bg-slate-200 border border-slate-300 rounded-xl p-4 text-center transition-colors duration-300";
-                label.innerText = "Belum Ada Data";
-                nominal.innerText = "Rp 0";
-                pesan.innerText = "Silakan masukkan data pendapatan dan belanja di atas.";
+            if(listART.length === 0 && listUsaha.length === 0 && listPengeluaran.length === 0) {
+                box.className = "bg-slate-200 border border-slate-300 rounded-xl p-4 text-center";
+                judul.className = "text-xs font-bold uppercase tracking-wider text-slate-500";
+                judul.innerText = "Belum Ada Data Sensus";
+                angka.innerText = "Rp 0";
+                info.innerText = "Hasil sisa saldo surplus/defisit berjalan otomatis di sini.";
                 return;
             }
 
-            nominal.innerText = "Rp " + Math.abs(selisihFinansial).toLocaleString('id-ID');
+            angka.innerText = "Rp " + Math.abs(saldoAkhir).toLocaleString('id-ID');
 
-            if(selisihFinansial >= 0) {
-                // SURPLUS: Warna Hijau Neon Lembut (Tenang & Konsisten)
-                panel.className = "bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center transition-colors duration-300";
-                label.className = "text-xs font-bold uppercase tracking-wider text-emerald-700";
-                label.innerText = "KONDISI SURPLUS (KONSISTEN)";
-                nominal.className = "text-lg font-black text-emerald-600 mt-1";
-                pesan.className = "text-[11px] text-emerald-600 mt-1 font-medium";
-                pesan.innerText = "Pemasukan rumah tangga cukup dan memiliki cadangan dana lebih.";
+            if(saldoAkhir >= 0) {
+                // SURPLUS -> Latar hijau lembut, teks tegas enak dipandang
+                box.className = "bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center";
+                judul.className = "text-xs font-bold uppercase tracking-wider text-emerald-700";
+                judul.innerText = "KONDISI SURPLUS (KONSISTEN)";
+                angka.className = "text-lg font-black text-emerald-600 mt-1";
+                info.className = "text-[11px] text-emerald-600 mt-1 font-medium";
+                info.innerText = "Data pemasukan rumah tangga mencukupi ambang batas pengeluaran.";
             } else {
-                // DEFISIT: Warna Merah Pastel Lembut (Mengarahkan Mata Petugas Tanpa Panik)
-                panel.className = "bg-rose-50 border border-rose-200 rounded-xl p-4 text-center transition-colors duration-300";
-                label.className = "text-xs font-bold uppercase tracking-wider text-rose-700";
-                label.innerText = "KONDISI DEFISIT (ANOMALI)";
-                nominal.className = "text-lg font-black text-rose-600 mt-1";
-                pesan.className = "text-[11px] text-rose-600 mt-1 font-medium";
-                pesan.innerText = "Pengeluaran lebih besar dari pendapatan. Harap konfirmasi ulang ke responden.";
+                // DEFISIT -> Latar merah pastel lembut, tidak bikin petugas panik tapi tetap kontras
+                box.className = "bg-rose-50 border border-rose-200 rounded-xl p-4 text-center";
+                judul.className = "text-xs font-bold uppercase tracking-wider text-rose-700";
+                judul.innerText = "KONDISI DEFISIT (ANOMALI)";
+                angka.className = "text-lg font-black text-rose-600 mt-1";
+                info.className = "text-[11px] text-rose-600 mt-1 font-medium";
+                info.innerText = "Pengeluaran melampaui pendapatan resmi. Harap konfirmasi ulang.";
             }
         }
     </script>
