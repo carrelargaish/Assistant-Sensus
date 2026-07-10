@@ -206,7 +206,7 @@
         .metric-row:last-child { border-bottom: none; font-size: 13px; color: #1E293B; font-weight: 600; }
     </style>
 </head>
-<body onload="loadAllStatesFromLocalStorage()">
+<body>
 
     <div id="main-content">
         <header class="p-3 bg-white border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
@@ -241,6 +241,7 @@
                     <button type="button" class="text-[10px] font-bold text-red-600 bg-red-50 border border-red-100 px-2.5 py-1 rounded-lg transition hover:bg-red-100" onclick="triggerManualResetForm()">🧹 Reset Form</button>
                 </div>
 
+                <!-- MODUL 1 -->
                 <div id="sec_modul_m1" class="modul-section show-tab">
                     <div class="card">
                         <div class="text-xs font-bold uppercase tracking-wider text-slate-800 mb-3">Identitas Keluarga</div>
@@ -287,6 +288,7 @@
                     <div class="flex"><button type="button" class="btn-wizard-next w-full" onclick="navigateWizard(2)">Selanjutnya Sektor Pendapatan ➡️</button></div>
                 </div>
 
+                <!-- MODUL 2 -->
                 <div id="sec_modul_m2" class="modul-section">
                     <div class="card">
                         <div class="text-xs font-bold uppercase tracking-wider text-slate-800 mb-3">Pendapatan Lainnya</div>
@@ -314,6 +316,7 @@
                     </div>
                 </div>
 
+                <!-- MODUL 3 -->
                 <div id="sec_modul_m3" class="modul-section">
                     <div class="card">
                         <div class="text-xs font-bold uppercase tracking-wider text-slate-800 mb-3">Sektor Usaha Rumah Tangga</div>
@@ -466,6 +469,7 @@
                         <button type="button" class="btn-wizard-next" onclick="navigateWizard(4)">Selanjutnya Pengeluaran ➡️</button>
                     </div>
                 </div>
+
                 <!-- MODUL 4 -->
                 <div id="sec_modul_m4" class="modul-section">
                     <div class="card">
@@ -642,31 +646,30 @@
         }
 
         function navigateWizard(step) {
-    if (viewAllMode) return;
-    wizardStep = step;
-    
-    // 1. Reset semua tombol navigasi dan sembunyikan semua section modul
-    for (let i = 1; i <= 6; i++) {
-        const navBtn = document.getElementById(`nav_btn_m${i}`);
-        const secModul = document.getElementById(`sec_modul_m${i}`);
-        
-        if (navBtn) navBtn.classList.remove('active');
-        if (secModul) secModul.classList.remove('show-tab');
-    }
-    
-    // 2. Aktifkan tombol dan modul yang sedang dipilih
-    const activeBtn = document.getElementById(`nav_btn_m${step}`);
-    const activeSec = document.getElementById(`sec_modul_m${step}`);
-    
-    if (activeBtn) activeBtn.classList.add('active');
-    if (activeSec) activeSec.classList.add('show-tab');
-    
-    // 3. Scroll otomatis menu sticky ke tombol aktif agar pas di layar HP
-    if (activeBtn) {
-        activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-    }
-}
-
+            if (viewAllMode) return;
+            wizardStep = step;
+            
+            // 1. Reset semua tombol navigasi dan sembunyikan semua section modul
+            for (let i = 1; i <= 6; i++) {
+                const navBtn = document.getElementById(`nav_btn_m${i}`);
+                const secModul = document.getElementById(`sec_modul_m${i}`);
+                
+                if (navBtn) navBtn.classList.remove('active');
+                if (secModul) secModul.classList.remove('show-tab');
+            }
+            
+            // 2. Aktifkan tombol dan modul yang sedang dipilih
+            const activeBtn = document.getElementById(`nav_btn_m${step}`);
+            const activeSec = document.getElementById(`sec_modul_m${step}`);
+            
+            if (activeBtn) activeBtn.classList.add('active');
+            if (activeSec) activeSec.classList.add('show-tab');
+            
+            // 3. Scroll otomatis menu sticky ke tombol aktif agar pas di layar HP
+            if (activeBtn) {
+                activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
+        }
 
         function toggleViewAllMode() {
             viewAllMode = !viewAllMode;
@@ -742,7 +745,7 @@
             dropdowns.forEach(select => {
                 const curVal = select.value;
                 select.innerHTML = '<option value="">Pilih ART *</option>';
-                activeForm_ART.forEach((art, idx) => {
+                activeForm_ART.forEach((art) => {
                     select.innerHTML += `<option value="${art.nama}">${art.nama} (${art.pekerjaan})</option>`;
                 });
                 select.value = curVal;
@@ -807,7 +810,7 @@
             if (period === 'Bulanan') return val;
             if (period === 'Tahunan') return val / 12;
             
-            let daysCount = tempSelectedDays[type]?.length || 4; // default ke 4 hari seminggu jika tidak dipilih
+            let daysCount = tempSelectedDays[type]?.length || 4; 
             if (period === 'Harian') return val * daysCount * 4.33; 
             if (period === 'Mingguan') return val * 4.33;
             return val;
@@ -846,7 +849,7 @@
                 let totalBiaya = detailUsaha.b_produksi + detailUsaha.b_operasional + detailUsaha.b_non_operasional;
                 if (jenisOmzet === 'BERSIH') {
                     detailUsaha.laba_bersih = omzetBulan;
-                    detailUsaha.omzet = omzetBulan + totalBiaya; // rekonstruksi omzet kotor
+                    detailUsaha.omzet = omzetBulan + totalBiaya; 
                 } else {
                     detailUsaha.laba_bersih = omzetBulan - totalBiaya;
                 }
@@ -1039,7 +1042,6 @@
             const boxAnalisis = document.getElementById('box_analisis_selisih');
             const descAnalisis = document.getElementById('v_analisis_deskripsi');
 
-            // Syarat Rule: Outflow melebihi 130% Inflow atau Inflow minus
             if (grandInflowThn > 0 && grandOutflowThn > (grandInflowThn * 1.30)) {
                 badgeStatus.innerText = "⚠️ DATA ANOMALI (KONSISTENSI RENDAH)";
                 badgeStatus.className = "badge-status status-danger";
@@ -1068,7 +1070,6 @@
                 return;
             }
 
-            // Hitung kalkulasi akhir untuk disimpan
             let totalGajiART = activeForm_ART.reduce((acc, curr) => acc + curr.estimasiGaji, 0);
             let totalLain = activeForm_PendapatanLain.reduce((acc, curr) => acc + curr.nominal, 0);
             let totBersihBln = activeForm_Usaha.reduce((acc, curr) => acc + curr.laba_bersih, 0);
@@ -1140,13 +1141,11 @@
         }
 
         function triggerManualResetForm() {
-            // Reset Arrays
             activeForm_ART = [];
             activeForm_PendapatanLain = [];
             activeForm_Usaha = [];
             activeForm_Aset = { tanah: [], pohon: [], buah: [], kendaraan: [] };
 
-            // Reset Inputs DOM
             document.getElementById('m1_no_rumah').value = "";
             document.getElementById('m1_no_keluarga').value = "";
             document.getElementById('m6_catatan_anomali').value = "";
@@ -1178,7 +1177,7 @@
         }
 
         function triggerClearAllDatabase() {
-            if(confirm("⚠️ PERINGATAN! Anda akan menghapus seluruh isi database terdata di HP/Laptop ini. Ekspor CSV terlebih dahulu agar aman. Lanjutkan hapus total?")) {
+            if(confirm("⚠️ PERINGATAN! Hapus total database?")) {
                 dbKeluarga = [];
                 saveDatabaseToLocalStorage();
                 renderDatabaseTable();
@@ -1204,6 +1203,10 @@
             link.click();
             document.body.removeChild(link);
         }
+
+        window.onload = function() {
+            loadAllStatesFromLocalStorage();
+        };
     </script>
 </body>
 </html>
